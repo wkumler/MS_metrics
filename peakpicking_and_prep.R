@@ -96,6 +96,7 @@ feature_bounds <- msnexp_filled %>%
   select(feature=feat_id, filename, mzmin, mzmax, rtmin, rtmax)
 
 # Exporting ----
+write.csv(file_data, "made_data/file_data.csv", row.names = FALSE)
 saveRDS(msnexp_filled, "made_data/msnexp_filled.rds")
-write.csv(rt_corrections, "made_data/rt_corrections.csv")
+write.csv(rt_corrections, "made_data/rt_corrections.csv", row.names = FALSE)
 write.csv(feature_bounds, "made_data/feature_bounds.csv", row.names = FALSE)
