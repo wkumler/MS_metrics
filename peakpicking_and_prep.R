@@ -84,7 +84,7 @@ peak_data_long <- msnexp_filled %>%
   chromPeaks() %>%
   as.data.frame() %>%
   rownames_to_column()
-feature_data <- msnexp_filled %>%
+peak_data <- msnexp_filled %>%
   featureDefinitions() %>%
   as.data.frame() %>%
   select(mzmed, rtmed, npeaks, peakidx) %>%
@@ -94,11 +94,11 @@ feature_data <- msnexp_filled %>%
   mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
   unnest_wider(peak_data) %>%
   mutate(filename=mzML_files[sample])
-feature_bounds <- feature_data %>%
+peak_bounds <- peak_data %>%
   select(feature=feat_id, filename, mzmin, mzmax, rtmin, rtmax)
 
 # Some visualization ----
-feature_data %>%
+peak_data %>%
   group_by(feat_id) %>%
   summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
             min_rt=min(rtmin), max_rt=max(rtmax),
@@ -114,18 +114,18 @@ feature_data %>%
   theme_bw() +
   theme(legend.position = c(0.15, 0.75), legend.background = element_rect(fill = NA)) +
   ggtitle("Overall distributions of features")
-feature_data %>%
+peak_data %>%
   filter(feat_mzmed%between%pmppm(118.0865)) %>%
   ggplot() +
   geom_rect(aes(xmin=rtmin/60, xmax=rtmax/60, ymin=mzmin, ymax=mzmax, color=feat_id),
             linewidth=1, fill=NA)
 
-feature_data %>%
+peak_data %>%
   filter(feat_mzmed%between%pmppm(118.0865)) %>%
   ggplot() +
   geom_bar(aes(x=filename)) +
   theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
-feature_data %>%
+peak_data %>%
   filter(feat_mzmed%between%pmppm(118.0865)) %>%
   ggplot() +
   geom_bar(aes(x=filename)) +
@@ -136,4 +136,4 @@ feature_data %>%
 write.csv(file_data, "made_data/file_data.csv", row.names = FALSE)
 saveRDS(msnexp_filled, "made_data/msnexp_filled.rds")
 write.csv(rt_corrections, "made_data/rt_corrections.csv", row.names = FALSE)
-write.csv(feature_bounds, "made_data/feature_bounds.csv", row.names = FALSE)
+write.csv(peak_bounds, "made_data/peak_bounds.csv", row.names = FALSE)
