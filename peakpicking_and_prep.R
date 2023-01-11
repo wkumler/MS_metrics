@@ -62,7 +62,7 @@ msnexp_filled <- fillChromPeaks(msnexp_grouped, fpp)
 
 
 
-# Organizing into useful format ----
+# Extracting corrected retention times for later use ----
 init_rts <- msnexp_filled %>%
   dropAdjustedRtime() %>%
   rtime() %>%
@@ -79,11 +79,12 @@ rt_corrections <- msnexp_filled %>%
   mutate(new_rt=new_rt/60, rt=init_rt/60) %>%
   select(-init_rt, -scanid)
 
+# Organizing into useful format ----
 peak_data_long <- msnexp_filled %>%
   chromPeaks() %>%
   as.data.frame() %>%
   rownames_to_column()
-feature_bounds <- msnexp_filled %>%
+feature_data <- msnexp_filled %>%
   featureDefinitions() %>%
   as.data.frame() %>%
   select(mzmed, rtmed, npeaks, peakidx) %>%
@@ -92,8 +93,44 @@ feature_bounds <- msnexp_filled %>%
   rename_with(~paste0("feat_", .x)) %>%
   mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
   unnest_wider(peak_data) %>%
-  mutate(filename=mzML_files[sample]) %>%
+  mutate(filename=mzML_files[sample])
+feature_bounds <- feature_data %>%
   select(feature=feat_id, filename, mzmin, mzmax, rtmin, rtmax)
+
+# Some visualization ----
+feature_data %>%
+  group_by(feat_id) %>%
+  summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
+            min_rt=min(rtmin), max_rt=max(rtmax),
+            max_int=max(maxo), max_area=max(into)) %>%
+  mutate(int_group=cut(max_int, breaks = 10^c(3:9))) %>%
+  ggplot() +
+  geom_rect(aes(xmin=min_rt/60, xmax=max_rt/60, ymin=min_mz, ymax=max_mz, color=int_group),
+            linewidth=1, fill=NA) +
+  scale_color_viridis_d(name="Max feature\nintensity") +
+  scale_x_continuous(name="Retention time (min)", breaks = seq(0, 1500, 120), 
+                     sec.axis = sec_axis(~.*60, name = "Retention time (s)"), ) +
+  scale_y_continuous(breaks = seq(60, 720, 30), name = "m/z ratio") +
+  theme_bw() +
+  theme(legend.position = c(0.15, 0.75), legend.background = element_rect(fill = NA)) +
+  ggtitle("Overall distributions of features")
+feature_data %>%
+  filter(feat_mzmed%between%pmppm(118.0865)) %>%
+  ggplot() +
+  geom_rect(aes(xmin=rtmin/60, xmax=rtmax/60, ymin=mzmin, ymax=mzmax, color=feat_id),
+            linewidth=1, fill=NA)
+
+feature_data %>%
+  filter(feat_mzmed%between%pmppm(118.0865)) %>%
+  ggplot() +
+  geom_bar(aes(x=filename)) +
+  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
+feature_data %>%
+  filter(feat_mzmed%between%pmppm(118.0865)) %>%
+  ggplot() +
+  geom_bar(aes(x=filename)) +
+  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
+
 
 # Exporting ----
 write.csv(file_data, "made_data/file_data.csv", row.names = FALSE)
