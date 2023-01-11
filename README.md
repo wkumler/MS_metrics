@@ -22,3 +22,16 @@ Second: Using the above metrics to calculate the likelihood that an MS expert wo
   - Will require the use of machine learning methods like logistic ridge regression, random forests, and others to handle highly-correlated metrics
   
 Third: Building a package or code-sharing method that accepts input from commonly used peakpicking algorithms (e.g. [xcms](https://github.com/sneumann/xcms), [MzMine](http://mzmine.github.io/), and [MSDIAL](http://prime.psc.riken.jp/compms/msdial/main.html))
+
+## Repo structure
+
+R scripts:
+
+  - peakpicking_and_prep.R
+    - Takes in the mzML files in mzMLs/ and performs peakpicking and other xcms tasks on them, then writes out peak boundaries into made_data/feature_bounds.csv
+  - training_tool.R
+    - Takes in the peak boundaries from made_data/feature_bounds.csv and the raw mzML files again, then enables an interactive script using plot windows that lets the user categorize features as "good", "bad", and other categories.
+
+made_data:
+
+  - Contains output produced by scripts during the process
