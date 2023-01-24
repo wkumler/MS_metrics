@@ -56,7 +56,10 @@ while(TRUE){
   plotbounds <- c(min(rtbounds, min(rtbounds)-peakwidth/2), 
                   max(rtbounds, max(rtbounds)+peakwidth/2))
   eic <- msdata$EIC2[mz%between%mzbounds] %>%
-    filter(rt%between%(plotbounds))
+    right_join(rt_corrections, by=c(rt="new_rt", "filename")) %>%
+    mutate(int=ifelse(is.na(int), 0, int)) %>%
+    filter(rt%between%(plotbounds)) %>%
+    arrange(rt)
   if(nrow(eic)==0){
     train_vec[i] <- 0
   }
