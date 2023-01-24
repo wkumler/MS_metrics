@@ -93,7 +93,8 @@ while(TRUE){
     keyinput,
     "Right" = "Bad",
     "Left" = "Good",
-    "Up" = "Meh"
+    "Up" = "Meh",
+    "Down" = "Stans only"
   )
   cbind(row_data, feat_class) %>%
     write_csv("made_data/classified_feats.csv", append = TRUE)
