@@ -19,8 +19,10 @@ feature_df <- peak_bounds %>%
   summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
             min_rt=min(rtmin), max_rt=max(rtmax)) %>%
   mutate(mean_mz=(min_mz+max_mz)/2)
-msdata <- grabMSdata(file_data$filename, verbosity = 1, grab_what = "EIC",
-                     mz=feature_df$mean_mz, ppm = 50)
+msdata <- file_data$filename %>%
+  paste0("mzMLs/", .) %>%
+  grabMSdata(verbosity = 1, grab_what = "EIC",
+             mz=feature_df$mean_mz, ppm = 50)
 msdata$EIC2 <- msdata$EIC %>%
   left_join(rt_corrections, by=c("filename", "rt")) %>%
   select(rt=new_rt, mz, int, filename)
