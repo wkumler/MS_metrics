@@ -101,7 +101,10 @@ while(TRUE){
   feat_id <- feature_df$feature[which(feature_df$feature==feat_id)+1]
   if(is.na(feat_id)){
     print("Yay!")
+    break
   }
 }
 
 
+data_classified <- read_csv("made_data/classified_feats.csv", show_col_types = FALSE)
+table(data_classified$feat_class)
