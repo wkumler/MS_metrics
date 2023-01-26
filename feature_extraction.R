@@ -3,6 +3,7 @@
 library(xcms)
 library(tidyverse)
 library(RaMS)
+library(data.table)
 options(pillar.sigfig=7)
 
 file_data <- read_csv("made_data/file_data.csv") %>%
@@ -105,9 +106,59 @@ peakshape_mets %>%
   ggplot() +
   geom_bar(aes(x=med_cor, fill=feat_class), position = "fill")
 
-# scanmiss_mets
 
+scan_time_diff <- diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt)))
+hist(scan_time_diff)
+scan_time <- mean(scan_time_diff)
 
+n_scans <- eic_dt[, .N, .(filename, feature)]
+hist(n_scans$N, breaks = 100)
+med_missed_scans <- peak_bounds %>%
+  mutate(filename=basename(filename)) %>%
+  mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
+  mutate(expected_scans=round((rtmax-rtmin)/scan_time)) %>%
+  left_join(n_scans) %>%
+  # with(hist(expected_scans-N, breaks = 100))
+  group_by(feature) %>%
+  summarise(med_missed_scans=median(expected_scans-N)) %>%
+  # with(hist(med_missed_scans, breaks = 100))
+  ungroup()
+
+rt_dt <- rtime(msnexp_filled) %>%
+  as.data.frame() %>%
+  setNames("rt") %>%
+  rownames_to_column("filenum") %>%
+  mutate(filenum=as.numeric(str_extract(filenum, "(?<=F)\\d+"))) %>%
+  mutate(filename=basename(fileNames(msnexp_filled))[filenum]) %>%
+  mutate(rt=round(rt/60, digits = 7)) %>%
+  select(filename, rt) %>%
+  as.data.table()
+file_feat_n_missed <- eic_dt %>%
+  mutate(rt=round(rt, digits = 7)) %>%
+  group_by(filename, feature) %>%
+  group_split() %>%
+  pbapply::pblapply(function(eic){
+    fname_i <- eic$filename[1]
+    min_rt=min(eic$rt)
+    max_rt=max(eic$rt)
+    psb_rts <- rt_dt[rt%between%c(min_rt, max_rt)][filename==fname_i]
+    merged_dt <- merge(unique(eic), psb_rts, all.y=TRUE)
+    summarise(merged_dt, 
+              filename=unique(filename), 
+              feature=unique(feature),
+              n_missed=sum(is.na(merged_dt$int)),
+              n_scans=n()) %>%
+      na.omit()
+  }) %>%
+  bind_rows()
+med_missed_scans_2 <- file_feat_n_missed %>%
+  group_by(feature) %>%
+  summarise(med_missed_scans_2=median(n_missed, na.rm=TRUE))
+med_missed_scans_2 %>%
+  left_join(classified_feats) %>%
+  mutate(med_missed_scans_2=cut(med_missed_scans_2, breaks = c(0, 1, 3, 5, 10, 20, 80))) %>%
+  ggplot() +
+  geom_bar(aes(x=med_missed_scans_2, fill=feat_class), position = "fill")
 
 
 # Calculate presence/absence of isotope info ----
@@ -153,6 +204,7 @@ blank_diffs %>%
 # Join feature classes and write out ----
 features_extracted <- simple_feats %>%
   left_join(peakshape_mets, by=c(feat_id="feature")) %>%
+  left_join(med_missed_scans, by=c(feat_id="feature")) %>%
   left_join(depth_diffs) %>%
   left_join(blank_diffs) %>%
   left_join(classified_feats, by=c(feat_id="feature"))
@@ -179,5 +231,10 @@ plot_ly(features_extracted, x=~sd_rt, y=~log10(mean_area), z=~sd_mz, color=~feat
 plot_ly(features_extracted, x=~n_found, y=~samps_found, z=~blank_found, color=~feat_class,
         type = "scatter3d", mode="markers")
 features_extracted %>%
-  plot_ly(x=~med_SNR, y=~med_cor, color=~feat_class, text=~feat_id,
+  plot_ly(x=~med_SNR, y=~med_cor, z=~log10(mean_area), 
+          color=~feat_class, text=~feat_id,
+          type = "scatter3d", mode="markers")
+features_extracted %>%
+  plot_ly(x=~sqrt(med_SNR), y=~med_cor^4, 
+          color=~feat_class, text=~feat_id,
           type = "scatter", mode="markers")
