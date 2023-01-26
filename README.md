@@ -31,6 +31,8 @@ R scripts:
     - Takes in the mzML files in mzMLs/ and performs peakpicking and other xcms tasks on them, then writes out peak boundaries into made_data/feature_bounds.csv
   - training_tool.R
     - Takes in the peak boundaries from made_data/feature_bounds.csv and the raw mzML files again, then enables an interactive script using plot windows that lets the user categorize features as "good", "bad", and other categories.
+  - feature_extraction.R
+    - Extracts information about the peaks from the raw data and output for use in later ML/classification/regression things.
 
 made_data:
 
