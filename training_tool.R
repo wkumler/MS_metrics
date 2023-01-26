@@ -26,6 +26,7 @@ msdata <- file_data$filename %>%
 msdata$EIC2 <- msdata$EIC %>%
   left_join(rt_corrections, by=c("filename", "rt")) %>%
   select(rt=new_rt, mz, int, filename)
+saveRDS(msdata, file = "made_data/msdata.rds")
 
 
 
