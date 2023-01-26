@@ -33,8 +33,8 @@ classified_feats <- read_csv("made_data/classified_feats.csv") %>%
 # Simple feature extraction - those provided by XCMS directly ----
 simple_feats <- peak_data %>%
   group_by(feat_id) %>%
-  summarise(mean_mz=unique(feat_mzmed), sd_mz=sd(mz), range_mz=max(mz)-min(mz),
-            mean_rt=unique(feat_rtmed), sd_rt=sd(rt), range_rt=max(rt)-min(rt),
+  summarise(mean_mz=unique(feat_mzmed), sd_mz=sd(mz),
+            mean_rt=unique(feat_rtmed), sd_rt=sd(rt),
             mean_pw=mean(rtmax-rtmin), sd_pw=sd(rtmax-rtmin),
             mean_area=mean(into), med_area=median(into), IQR(into),
             log_mean_height=log10(mean(maxo)), log_sd_height=log10(sd(maxo)),
