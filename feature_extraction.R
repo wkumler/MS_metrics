@@ -33,16 +33,18 @@ classified_feats <- read_csv("made_data/classified_feats.csv") %>%
 # Simple feature extraction - those provided by XCMS directly ----
 simple_feats <- peak_data %>%
   group_by(feat_id) %>%
-  mutate(sn=log(sn)) %>%
-  summarise(mean_mz=unique(feat_mzmed), sd_ppm=sd(mz)/feat_mzmed,
+  mutate(sn=log10(sn)) %>%
+  summarise(mean_mz=unique(feat_mzmed), sd_ppm=sd(mz/feat_mzmed),
             mean_rt=unique(feat_rtmed), sd_rt=sd(rt),
             mean_pw=mean(rtmax-rtmin), sd_pw=sd(rtmax-rtmin),
             log_mean_height=log10(mean(maxo)), log_sd_height=log10(sd(maxo)),
             across(c(sn, f, scale, lmin), mean, na.rm=TRUE),
+            feat_npeaks=unique(feat_npeaks),
             n_found=41-sum(is.na(intb)), 
             samps_found=1-sum(is.na(intb) & str_detect(filename, "Smp"))/24,
             stans_found=1-sum(is.na(intb) & str_detect(filename, "Std"))/10,
-            blank_found=any(!is.na(intb) & str_detect(filename, "Blk")))
+            blank_found=any(!is.na(intb) & str_detect(filename, "Blk"))
+            )
 
 # Calculate peak shape metrics from EICs ----
 msdata <- readRDS("made_data/msdata.rds")
@@ -192,10 +194,11 @@ blank_diffs <- peak_data %>%
   summarise(mean_area=mean(into)) %>%
   pivot_wider(names_from = samp_type, values_from = mean_area) %>%
   mutate(smp_to_blk=Smp/Blk) %>%
-  select(feat_id, smp_to_blk)
+  select(feat_id, smp_to_blk) %>%
+  mutate(smp_to_blk=log10(smp_to_blk))
 blank_diffs %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(smp_to_blk=cut(log10(smp_to_blk), breaks = -1:4)) %>%
+  mutate(smp_to_blk=cut(smp_to_blk, breaks = -1:4)) %>%
   ggplot() +
   geom_bar(aes(x=smp_to_blk, fill=feat_class), position = "fill")
 
@@ -207,7 +210,8 @@ features_extracted <- simple_feats %>%
   left_join(med_missed_scans, by=c(feat_id="feature")) %>%
   left_join(depth_diffs) %>%
   left_join(blank_diffs) %>%
-  left_join(classified_feats, by=c(feat_id="feature"))
+  left_join(classified_feats, by=c(feat_id="feature")) %>%
+  drop_na()
 write.csv(features_extracted, "made_data/features_extracted.csv", row.names = FALSE)
 
 
@@ -226,8 +230,6 @@ write.csv(features_extracted, "made_data/features_extracted.csv", row.names = FA
 library(plotly)
 plot_ly(features_extracted, x=~mean_pw, y=~log10(sn), z=~n_found, color=~feat_class,
         type = "scatter3d", mode="markers")
-plot_ly(features_extracted, x=~sd_rt, y=~log10(mean_area), z=~sd_mz, color=~feat_class,
-        type = "scatter3d", mode="markers")
 plot_ly(features_extracted, x=~n_found, y=~samps_found, z=~blank_found, color=~feat_class,
         type = "scatter3d", mode="markers")
 features_extracted %>%
@@ -238,3 +240,11 @@ features_extracted %>%
   plot_ly(x=~sqrt(med_SNR), y=~med_cor^4, 
           color=~feat_class, text=~feat_id,
           type = "scatter", mode="markers")
+
+
+library(GGally)
+gp <- features_extracted %>%
+  select(-feat_id) %>%
+  ggpairs(aes(color=feat_class))
+ggsave(plot = gp, filename = "pairsplot.pdf", device = "pdf", width = 25, height = 25, 
+       units = "in", limitsize = FALSE)
