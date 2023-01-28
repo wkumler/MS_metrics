@@ -137,3 +137,28 @@ write.csv(file_data, "made_data/file_data.csv", row.names = FALSE)
 saveRDS(msnexp_filled, "made_data/msnexp_filled.rds")
 write.csv(rt_corrections, "made_data/rt_corrections.csv", row.names = FALSE)
 write.csv(peak_bounds, "made_data/peak_bounds.csv", row.names = FALSE)
+
+# Extract relevant msdata from each for export and use later ----
+feature_df <- peak_bounds %>%
+  group_by(feature) %>%
+  summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
+            min_rt=min(rtmin), max_rt=max(rtmax)) %>%
+  mutate(mean_mz=(min_mz+max_mz)/2)
+
+msdata <- file_data$filename %>%
+  paste0("mzMLs/", .) %>%
+  grabMSdata(verbosity = 1, grab_what = "EIC",
+             mz=feature_df$mean_mz, ppm = 50)
+msdata$EIC2 <- msdata$EIC %>%
+  left_join(rt_corrections, by=c("filename", "rt")) %>%
+  select(rt=new_rt, mz, int, filename)
+saveRDS(msdata, file = "made_data/msdata.rds")
+
+msdata_isoc <- file_data$filename %>%
+  paste0("mzMLs/", .) %>%
+  grabMSdata(verbosity = 1, grab_what = "EIC",
+             mz=feature_df$mean_mz+1.003355, ppm = 50)
+msdata_isoc$EIC2 <- msdata_isoc$EIC %>%
+  left_join(rt_corrections, by=c("filename", "rt")) %>%
+  select(rt=new_rt, mz, int, filename)
+saveRDS(msdata_isoc, file="made_data/msdata_isoc.rds")
