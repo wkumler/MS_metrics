@@ -6,6 +6,17 @@ library(RaMS)
 library(data.table)
 options(pillar.sigfig=7)
 
+trapz <- function(x, y) {
+  m <- length(x)
+  xp <- c(x, x[m:1])
+  yp <- c(numeric(m), y[m:1])
+  n <- 2*m
+  p1 <- sum(xp[1:(n-1)]*yp[2:n]) + xp[n]*yp[1]
+  p2 <- sum(xp[2:n]*yp[1:(n-1)]) + xp[1]*yp[n]
+  
+  return(0.5*(p1-p2))
+}
+
 file_data <- read_csv("made_data/file_data.csv") %>%
   mutate(filename=basename(filename))
 peak_bounds <- read_csv("made_data/peak_bounds.csv")
@@ -108,7 +119,6 @@ peakshape_mets %>%
   ggplot() +
   geom_bar(aes(x=med_cor, fill=feat_class), position = "fill")
 
-
 scan_time_diff <- diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt)))
 hist(scan_time_diff)
 scan_time <- mean(scan_time_diff)
@@ -163,9 +173,41 @@ med_missed_scans_2 %>%
   geom_bar(aes(x=med_missed_scans_2, fill=feat_class), position = "fill")
 
 
+
 # Calculate presence/absence of isotope info ----
-
-
+msdata <- readRDS("made_data/msdata.rds")
+msdata$EIC2 <- msdata$EIC2[order(filename, rt, int)]
+msdata_isoc <- readRDS("made_data/msdata.rds")
+msdata_isoc$EIC2 <- msdata_isoc$EIC2[order(filename, rt, int)]
+peak_isodata <- peak_bounds %>%
+  mutate(filename=basename(filename)) %>%
+  mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
+  # filter(filename=="190715_Poo_TruePooFK180310_Full1.mzML") %>%
+  # filter(feature=="FT002") %>%
+  pbapply::pbmapply(FUN = function(df, feature_i, filename_i, mzmin_i, mzmax_i, 
+                                    rtmin_i, rtmax_i){
+    init_eic <- msdata$EIC2[
+      mz%between%pmppm(sum(mzmin_i, mzmax_i)/2)][
+        rt%between%c(rtmin_i, rtmax_i)][
+          filename==filename_i, c("rt", "int")]
+    addiso_eic <- msdata_isoc$EIC2[
+      mz%between%pmppm(sum(mzmin_i, mzmax_i)/2+1.003355)][
+        rt%between%c(rtmin_i, rtmax_i)][
+          filename==filename_i, c("rt", "int")]
+    if(nrow(addiso_eic)<5){
+      iso_cor <- 0
+      init_area <- 0
+      iso_area <- 0
+    } else {
+      eic <- merge(init_eic, addiso_eic, by="rt", suffixes=c("_init", "_iso"))
+      iso_cor <- cor(eic$int_init, eic$int_iso, use="pairwise")
+      init_area <- trapz(eic$rt, eic$int_init)
+      iso_area <- trapz(eic$rt, eic$int_iso)
+    }
+    list(feature=feature_i, filename=filename_i, iso_cor=iso_cor, 
+      init_area=init_area, iso_area=iso_area)
+  }, .$feature, .$filename, .$mzmin, .$mzmax, .$rtmin, .$rtmax, SIMPLIFY = FALSE) %>%
+  bind_rows()
 
 # Calculate DOE metrics ----
 depth_diffs <- peak_data %>%
