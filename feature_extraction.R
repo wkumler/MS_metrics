@@ -246,7 +246,7 @@ feat_isodata %>%
   left_join(classified_feats) %>%
   mutate(shape_cor=cut(1-shape_cor, breaks=10^c(1:-4))) %>%
   ggplot() +
-  geom_bar(aes(x=shape_cor, fill=feat_class))
+  geom_bar(aes(x=shape_cor, fill=feat_class), position = "fill")
 
 # Calculate DOE metrics ----
 depth_diffs <- peak_data %>%
