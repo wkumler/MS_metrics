@@ -1,4 +1,11 @@
+# This script takes in the mzML files supplied in the mzMLs/ directory
+# and the output from the peakpicking_and_prep.R script (csv files with
+# peak boundaries, retention time correction, and file metadata)
+# and allows the user to interactively assess the quality of various peaks
+# and use keyboard hotkeys (up/down/left/right) to classify them. Classified
+# peaks are then exported into made_data/classified_feats.csv
 
+# This is the second script in the pipeline
 
 # Setup ----
 library(tidyverse)
