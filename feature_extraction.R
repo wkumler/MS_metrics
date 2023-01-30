@@ -1,3 +1,17 @@
+# This script extracts ML features from the peakpicking output and the
+# raw data itself. These features include peak-specific features such
+# as signal-to-noise, peak shape, etc. as well as isotope-specific
+# features such as the similarity in peak shape between the base peak and
+# the C13 peak as well as feature-specific features such as the difference
+# between sample types (via t-test) and the difference between sample area
+# and blank area
+
+# This script requires access to the raw files (in mzMLs/), the xcms output
+# (in made_data/, made by peakpicking_and_prep.R), and the classified 
+# features (in made_data/, made by training_tool.R (although only for
+# the very last step to make the output data frame look pretty)).
+
+# This is the third script in the pipeline
 
 # Setup ----
 library(xcms)
