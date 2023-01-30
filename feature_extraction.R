@@ -85,7 +85,7 @@ eic_dt <- peak_bounds %>%
 qscoreCalculator <- function(rt, int){
   #Check for bogus EICs
   if(length(rt)<5){
-    return(list(0, 0))
+    return(list(SNR=0, peak_cor=0))
   }
   #Calculate where each rt would fall on a beta dist (accounts for missed scans)
   scaled_rts <- (rt-min(rt))/(max(rt)-min(rt))
@@ -119,17 +119,17 @@ qscoreCalculator <- function(rt, int){
 peakshape_mets <- eic_dt %>%
   group_by(feature, filename) %>%
   summarise(qscores=list(qscoreCalculator(rt, int))) %>%
-  unnest_wider(qscores, names_repair = "minimal") %>%
+  unnest_wider(qscores) %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
             med_cor=median(peak_cor, na.rm=TRUE))
 peakshape_mets %>%
   left_join(classified_feats) %>%
-  mutate(med_SNR=cut(med_SNR, breaks = seq(0, 30, 6))) %>%
+  mutate(med_SNR=cut(med_SNR, breaks = seq(-6, 30, 3))) %>%
   ggplot() +
   geom_bar(aes(x=med_SNR, fill=feat_class), position = "fill")
 peakshape_mets %>%
   left_join(classified_feats) %>%
-  mutate(med_cor=cut(med_cor, breaks = seq(0, 1, 0.1))) %>%
+  mutate(med_cor=cut(med_cor, breaks = seq(-1, 1, 0.2))) %>%
   ggplot() +
   geom_bar(aes(x=med_cor, fill=feat_class), position = "fill")
 
