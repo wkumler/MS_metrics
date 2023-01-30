@@ -150,6 +150,7 @@ med_missed_scans <- peak_bounds %>%
   # with(hist(med_missed_scans, breaks = 100))
   ungroup()
 
+# Currently broken because NAs are included during RT correction
 rt_dt <- rtime(msnexp_filled) %>%
   as.data.frame() %>%
   setNames("rt") %>%
@@ -182,7 +183,7 @@ med_missed_scans_2 <- file_feat_n_missed %>%
   summarise(med_missed_scans_2=median(n_missed, na.rm=TRUE))
 med_missed_scans_2 %>%
   left_join(classified_feats) %>%
-  mutate(med_missed_scans_2=cut(med_missed_scans_2, breaks = c(0, 1, 3, 5, 10, 20, 80))) %>%
+  mutate(med_missed_scans_2=cut(med_missed_scans_2, breaks = c(0, 1, 3, 5, 10, 20, 50, 90), include.lowest = TRUE)) %>%
   ggplot() +
   geom_bar(aes(x=med_missed_scans_2, fill=feat_class), position = "fill")
 
