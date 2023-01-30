@@ -4,6 +4,8 @@
 
 # The full script takes a minute or two on my local machine
 
+# This is the first script in the pipeline
+
 # Setup ----
 library(tidyverse)
 library(xcms)
@@ -74,10 +76,17 @@ rt_corrections <- msnexp_filled %>%
   as.data.frame() %>%
   rownames_to_column() %>%
   set_names(c("scanid", "new_rt")) %>%
-  mutate(filename=mzML_files[as.numeric(str_extract(scanid, "\\d+"))]) %>%
-  left_join(init_rts, by="scanid") %>%
+  mutate(filename=basename(mzML_files[as.numeric(str_extract(scanid, "\\d+"))])) %>%
+  left_join(init_rts, by="scanid") %>% 
   mutate(new_rt=new_rt/60, rt=init_rt/60) %>%
   select(-init_rt, -scanid)
+# rt_corrections %>%
+#   distinct(rt, new_rt, filename) %>%
+#   mutate(diff=rt-new_rt) %>%
+#   left_join(file_data) %>%
+#   ggplot() +
+#   geom_line(aes(x=rt, y=diff, group=filename, color=col)) +
+#   scale_color_identity()
 
 # Organizing into useful format ----
 peak_data_long <- msnexp_filled %>%
