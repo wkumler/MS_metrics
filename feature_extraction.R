@@ -119,7 +119,7 @@ qscoreCalculator <- function(rt, int){
 peakshape_mets <- eic_dt %>%
   group_by(feature, filename) %>%
   summarise(qscores=list(qscoreCalculator(rt, int))) %>%
-  unnest_wider(qscores) %>%
+  unnest_wider(qscores, names_repair = "minimal") %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
             med_cor=median(peak_cor, na.rm=TRUE))
 peakshape_mets %>%
@@ -191,29 +191,36 @@ med_missed_scans_2 %>%
 # Calculate presence/absence of isotope info ----
 msdata <- readRDS("made_data/msdata.rds")
 msdata$EIC2 <- msdata$EIC2[order(filename, rt, int)]
-msdata_isoc <- readRDS("made_data/msdata.rds")
+msdata_isoc <- readRDS("made_data/msdata_isoc.rds")
 msdata_isoc$EIC2 <- msdata_isoc$EIC2[order(filename, rt, int)]
+filesplit_msdata_EIC <- split(msdata$EIC2, msdata$EIC2$filename)
+filesplit_msdata_isoc_EIC <- split(msdata_isoc$EIC2, msdata_isoc$EIC2$filename)
 peak_isodata <- peak_bounds %>%
   mutate(filename=basename(filename)) %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
+  # filter(feature=="FT023") %>%
   # filter(filename=="190715_Poo_TruePooFK180310_Full1.mzML") %>%
-  # filter(feature=="FT002") %>%
   pbapply::pbmapply(FUN = function(df, feature_i, filename_i, mzmin_i, mzmax_i, 
                                     rtmin_i, rtmax_i){
-    init_eic <- msdata$EIC2[
+    init_eic <- filesplit_msdata_EIC[[filename_i]][
       mz%between%pmppm(sum(mzmin_i, mzmax_i)/2)][
-        rt%between%c(rtmin_i, rtmax_i)][
-          filename==filename_i, c("rt", "int")]
-    addiso_eic <- msdata_isoc$EIC2[
+        rt%between%c(rtmin_i, rtmax_i), c("rt", "int")]
+    addiso_eic <- filesplit_msdata_isoc_EIC[[filename_i]][
       mz%between%pmppm(sum(mzmin_i, mzmax_i)/2+1.003355)][
-        rt%between%c(rtmin_i, rtmax_i)][
-          filename==filename_i, c("rt", "int")]
+        rt%between%c(rtmin_i, rtmax_i), c("rt", "int")]
     if(nrow(addiso_eic)<5){
       iso_cor <- 0
-      init_area <- 0
+      if(nrow(init_eic)>0){
+        init_area <- trapz(init_eic$rt, init_eic$int)
+      } else {
+        init_area <- 0
+      }
       iso_area <- 0
     } else {
       eic <- merge(init_eic, addiso_eic, by="rt", suffixes=c("_init", "_iso"))
+      # par(mfrow=c(2,1), mar=c(2.1, 2.1, 0.1, 0.1))
+      # plot(eic$rt, eic$int_init, xlab="", ylab="")
+      # plot(eic$rt, eic$int_iso, xlab="", ylab="")
       iso_cor <- cor(eic$int_init, eic$int_iso, use="pairwise")
       init_area <- trapz(eic$rt, eic$int_init)
       iso_area <- trapz(eic$rt, eic$int_iso)
@@ -222,6 +229,23 @@ peak_isodata <- peak_bounds %>%
       init_area=init_area, iso_area=iso_area)
   }, .$feature, .$filename, .$mzmin, .$mzmax, .$rtmin, .$rtmax, SIMPLIFY = FALSE) %>%
   bind_rows()
+write.csv(peak_isodata, file = "made_data/peak_isodata.csv", row.names = FALSE)
+peak_isodata <- read_csv("made_data/peak_isodata.csv")
+feat_isodata <- peak_isodata %>%
+  group_by(feature) %>%
+  summarise(shape_cor=median(iso_cor), area_cor=cor(init_area, iso_area)) %>%
+  mutate(area_cor=ifelse(is.na(area_cor), 0, area_cor))
+feat_isodata %>%
+  left_join(classified_feats) %>%
+  ggplot(aes(label=feature, fill=feat_class, color=feat_class)) +
+  # geom_point(aes(x=log10(1-shape_cor), y=log10(1-area_cor)))
+  # geom_density(aes(x=log10(1-area_cor)), alpha=0.2)
+  geom_density(aes(x=log10(1-shape_cor)), bw=0.3, alpha=0.2)
+feat_isodata %>%
+  left_join(classified_feats) %>%
+  mutate(shape_cor=cut(1-shape_cor, breaks=10^c(1:-4))) %>%
+  ggplot() +
+  geom_bar(aes(x=shape_cor, fill=feat_class))
 
 # Calculate DOE metrics ----
 depth_diffs <- peak_data %>%
@@ -266,6 +290,7 @@ features_extracted <- simple_feats %>%
   left_join(med_missed_scans, by=c(feat_id="feature")) %>%
   left_join(depth_diffs) %>%
   left_join(blank_diffs) %>%
+  left_join(feat_isodata, by=c(feat_id="feature")) %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
   drop_na()
 write.csv(features_extracted, "made_data/features_extracted.csv", row.names = FALSE)
