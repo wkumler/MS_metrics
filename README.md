@@ -37,3 +37,9 @@ R scripts:
 made_data:
 
   - Contains output produced by scripts during the process
+  - Allows each script to be rerun independently of the one before it
+  - Used to load files into memory during the "setup" chunk of each script
+
+figures:
+
+  - Contains figures produced by the scripts during the process
