@@ -15,8 +15,7 @@ options(pillar.sigfig=7)
 file_data <- read_csv("made_data/file_data.csv") %>%
   mutate(filename=basename(filename))
 peak_bounds <- read_csv("made_data/peak_bounds.csv")
-rt_corrections <- read_csv("made_data/rt_corrections.csv") %>%
-  mutate(filename=basename(filename))
+rt_corrections <- read_csv("made_data/rt_corrections.csv")
 
 
 
