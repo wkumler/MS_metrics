@@ -307,7 +307,7 @@ write.csv(features_extracted, "made_data/features_extracted.csv", row.names = FA
 
 
 
-
+# Visualization ----
 
 library(plotly)
 plot_ly(features_extracted, x=~mean_pw, y=~log10(sn), z=~n_found, color=~feat_class,
@@ -315,18 +315,19 @@ plot_ly(features_extracted, x=~mean_pw, y=~log10(sn), z=~n_found, color=~feat_cl
 plot_ly(features_extracted, x=~n_found, y=~samps_found, z=~blank_found, color=~feat_class,
         type = "scatter3d", mode="markers")
 features_extracted %>%
-  plot_ly(x=~med_SNR, y=~med_cor, z=~log10(mean_area), 
+  plot_ly(x=~med_SNR, y=~med_cor, z=~log_mean_height, 
           color=~feat_class, text=~feat_id,
           type = "scatter3d", mode="markers")
 features_extracted %>%
-  plot_ly(x=~sqrt(med_SNR), y=~med_cor^4, 
-          color=~feat_class, text=~feat_id,
-          type = "scatter", mode="markers")
+  plot_ly(x=~log10(1-shape_cor), y=~med_SNR, z=~log10(1-med_cor), color=~feat_class,
+          type = "scatter3d", mode="markers")
 
 
 library(GGally)
 gp <- features_extracted %>%
   select(-feat_id) %>%
-  ggpairs(aes(color=feat_class))
+  ggpairs(aes(color=feat_class), lower=list(
+    combo=wrap("facethist",  bins=30))
+    )
 ggsave(plot = gp, filename = "pairsplot.pdf", device = "pdf", width = 25, height = 25, 
-       units = "in", limitsize = FALSE)
+       units = "in", limitsize = FALSE, path = "figures")
