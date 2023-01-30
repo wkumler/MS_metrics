@@ -155,7 +155,6 @@ feature_df <- peak_bounds %>%
   mutate(mean_mz=(min_mz+max_mz)/2)
 
 msdata <- file_data$filename %>%
-  paste0("mzMLs/", .) %>%
   grabMSdata(verbosity = 1, grab_what = "EIC",
              mz=feature_df$mean_mz, ppm = 50)
 msdata$EIC2 <- msdata$EIC %>%
@@ -164,7 +163,6 @@ msdata$EIC2 <- msdata$EIC %>%
 saveRDS(msdata, file = "made_data/msdata.rds")
 
 msdata_isoc <- file_data$filename %>%
-  paste0("mzMLs/", .) %>%
   grabMSdata(verbosity = 1, grab_what = "EIC",
              mz=feature_df$mean_mz+1.003355, ppm = 50)
 msdata_isoc$EIC2 <- msdata_isoc$EIC %>%
