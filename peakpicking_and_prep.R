@@ -3,6 +3,7 @@
 # the peak/feature boundaries in a useful format into made_data/
 
 # The full script takes a minute or two on my local machine
+# Longer for the FT2040 - the msdata extraction alone takes ~20 mins each
 
 # This is the first script in the pipeline
 
