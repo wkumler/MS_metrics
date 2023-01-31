@@ -31,11 +31,16 @@ trapz <- function(x, y) {
   return(0.5*(p1-p2))
 }
 
-file_data <- read_csv("made_data/file_data.csv") %>%
-  mutate(filename=basename(filename))
-peak_bounds <- read_csv("made_data/peak_bounds.csv")
+# dataset_version <- "FT350"
+dataset_version <- "FT500"
+output_folder <- paste0("made_data_", dataset_version, "/")
 
-msnexp_filled <- readRDS("made_data/msnexp_filled.rds")
+
+file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
+  mutate(filename=basename(filename))
+peak_bounds <- read_csv(paste0(output_folder, "peak_bounds.csv"))
+
+msnexp_filled <- readRDS(paste0(output_folder, "msnexp_filled.rds"))
 peak_data_long <- msnexp_filled %>%
   chromPeaks() %>%
   as.data.frame() %>%
@@ -50,7 +55,7 @@ peak_data <- msnexp_filled %>%
   mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
   unnest_wider(peak_data) %>%
   mutate(filename=file_data$filename[sample])
-classified_feats <- read_csv("made_data/classified_feats.csv") %>%
+classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
   select(feature, feat_class)
 
 
@@ -72,7 +77,7 @@ simple_feats <- peak_data %>%
             )
 
 # Calculate peak shape metrics from EICs ----
-msdata <- readRDS("made_data/msdata.rds")
+msdata <- readRDS(paste0(output_folder, "msdata.rds"))
 eic_dt <- peak_bounds %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60, filename=basename(filename)) %>%
   pmap_dfr(function(...){
@@ -190,9 +195,9 @@ med_missed_scans_2 %>%
 
 
 # Calculate presence/absence of isotope info ----
-msdata <- readRDS("made_data/msdata.rds")
+msdata <- readRDS(paste0(output_folder, "msdata.rds"))
 msdata$EIC2 <- msdata$EIC2[order(filename, rt, int)]
-msdata_isoc <- readRDS("made_data/msdata_isoc.rds")
+msdata_isoc <- readRDS(paste0(output_folder, "msdata_isoc.rds"))
 msdata_isoc$EIC2 <- msdata_isoc$EIC2[order(filename, rt, int)]
 filesplit_msdata_EIC <- split(msdata$EIC2, msdata$EIC2$filename)
 filesplit_msdata_isoc_EIC <- split(msdata_isoc$EIC2, msdata_isoc$EIC2$filename)
@@ -230,8 +235,8 @@ peak_isodata <- peak_bounds %>%
       init_area=init_area, iso_area=iso_area)
   }, .$feature, .$filename, .$mzmin, .$mzmax, .$rtmin, .$rtmax, SIMPLIFY = FALSE) %>%
   bind_rows()
-write.csv(peak_isodata, file = "made_data/peak_isodata.csv", row.names = FALSE)
-peak_isodata <- read_csv("made_data/peak_isodata.csv")
+write.csv(peak_isodata, file = paste0(output_folder, "peak_isodata.csv"), row.names = FALSE)
+peak_isodata <- read_csv(paste0(output_folder, "peak_isodata.csv"))
 feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
   summarise(shape_cor=median(iso_cor), area_cor=cor(init_area, iso_area)) %>%
@@ -294,7 +299,8 @@ features_extracted <- simple_feats %>%
   left_join(feat_isodata, by=c(feat_id="feature")) %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
   drop_na()
-write.csv(features_extracted, "made_data/features_extracted.csv", row.names = FALSE)
+write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"), 
+          row.names = FALSE)
 
 
 

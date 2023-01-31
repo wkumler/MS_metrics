@@ -12,10 +12,14 @@ library(tidyverse)
 library(RaMS)
 options(pillar.sigfig=7)
 
-file_data <- read_csv("made_data/file_data.csv") %>%
+# dataset_version <- "FT350"
+dataset_version <- "FT500"
+output_folder <- paste0("made_data_", dataset_version, "/")
+
+file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
   mutate(filename=basename(filename))
-peak_bounds <- read_csv("made_data/peak_bounds.csv")
-rt_corrections <- read_csv("made_data/rt_corrections.csv")
+peak_bounds <- read_csv(paste0(output_folder, "peak_bounds.csv"))
+rt_corrections <- read_csv(paste0(output_folder, "rt_corrections.csv"))
 
 
 
@@ -25,13 +29,13 @@ feature_df <- peak_bounds %>%
   summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
             min_rt=min(rtmin), max_rt=max(rtmax)) %>%
   mutate(mean_mz=(min_mz+max_mz)/2)
-msdata <- readRDS("made_data/msdata.rds")
+msdata <- readRDS(paste0(output_folder, "msdata.rds"))
 
 
 
 # Read in existing classification doc and find last classified feature ----
-if(file.exists("made_data/classified_feats.csv")){
-  data_classified <- read_csv("made_data/classified_feats.csv")
+if(file.exists(paste0(output_folder, "classified_feats.csv"))){
+  data_classified <- read_csv(paste0(output_folder, "classified_feats.csv"))
   feat_id <- tail(data_classified$feature, 1)
 } else {
   data.frame(
@@ -43,7 +47,7 @@ if(file.exists("made_data/classified_feats.csv")){
     mean_mz=numeric(),
     feat_class=character()
   ) %>%
-    write.csv(file = "made_data/classified_feats.csv", row.names = FALSE)
+    write.csv(file = paste0(output_folder, "classified_feats.csv"), row.names = FALSE)
   feat_id <- feature_df$feature[1]
 }
 
@@ -83,10 +87,10 @@ while(TRUE){
   }
   if(keyinput=="ctrl-H"){
     # Open the file, remove the last row, write it back out
-    data_classified <- read_csv("made_data/classified_feats.csv", show_col_types = FALSE)
+    data_classified <- read_csv(paste0(output_folder, "classified_feats.csv"), show_col_types = FALSE)
     feat_id <- tail(data_classified$feature, 1)
     data_classified <- data_classified[1:(nrow(data_classified)-1),]
-    write_csv(data_classified, file = "made_data/classified_feats.csv")
+    write_csv(data_classified, file = paste0(output_folder, "classified_feats.csv"))
     next
   }
   feat_class <- switch(
@@ -97,7 +101,7 @@ while(TRUE){
     "Down" = "Stans only"
   )
   cbind(row_data, feat_class) %>%
-    write_csv("made_data/classified_feats.csv", append = TRUE)
+    write_csv(paste0(output_folder, "classified_feats.csv"), append = TRUE)
   feat_id <- feature_df$feature[which(feature_df$feature==feat_id)+1]
   if(is.na(feat_id)){
     print("Yay!")
@@ -106,5 +110,5 @@ while(TRUE){
 }
 
 
-data_classified <- read_csv("made_data/classified_feats.csv", show_col_types = FALSE)
+data_classified <- read_csv(paste0(output_folder, "classified_feats.csv", show_col_types = FALSE))
 table(data_classified$feat_class)

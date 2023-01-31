@@ -22,8 +22,18 @@ file_data <- data.frame(filename=mzML_files) %>%
   mutate(col=alpha(c("red", "blue", "green", "black", "#008080"), 0.8)[colid]) %>%
   mutate(lwd=c(2, 1, 1, 1, 2)[colid])
 
+# dataset_version <- "FT350"
+dataset_version <- "FT500"
+if(dataset_version=="FT350"){
+  prefilter_versioned <- c(5, 1e7)
+} else if(dataset_version=="FT500") {
+  prefilter_versioned <- c(3, 1e6)
+} else {
+  stop(paste("Version", dataset_version, "not yet supported!"))
+}
+output_folder <- paste0("made_data_", dataset_version, "/")
+
 # XCMS things ----
-register(BPPARAM = SnowParam(workers = 6, tasks = nrow(file_data), progressbar = TRUE))
 register(BPPARAM = SerialParam(progressbar = TRUE))
 msnexp <- readMSData(
   files = file_data$filename, 
@@ -31,10 +41,12 @@ msnexp <- readMSData(
   msLevel. = 1, 
   mode = "onDisk"
 )
+
+register(BPPARAM = SnowParam(workers = 6, tasks = nrow(file_data), progressbar = TRUE))
 cwp <- CentWaveParam(
   ppm = 5, 
   peakwidth = c(20, 80), 
-  prefilter = c(5, 1e7), 
+  prefilter = prefilter_versioned, 
   snthresh = 0, 
   verboseColumns = TRUE, 
   extendLengthMSW = TRUE, 
@@ -42,6 +54,7 @@ cwp <- CentWaveParam(
 )
 msnexp_withpeaks <- findChromPeaks(msnexp, cwp)
 
+register(BPPARAM = SerialParam(progressbar = TRUE))
 obp <- ObiwarpParam(
   binSize = 0.1, 
   centerSample = round(nrow(file_data)/2), 
@@ -142,10 +155,10 @@ peak_data %>%
 
 
 # Exporting ----
-write.csv(file_data, "made_data/file_data.csv", row.names = FALSE)
-saveRDS(msnexp_filled, "made_data/msnexp_filled.rds")
-write.csv(rt_corrections, "made_data/rt_corrections.csv", row.names = FALSE)
-write.csv(peak_bounds, "made_data/peak_bounds.csv", row.names = FALSE)
+write.csv(file_data, paste0(output_folder, "file_data.csv"), row.names = FALSE)
+saveRDS(msnexp_filled, paste0(output_folder, "msnexp_filled.rds"))
+write.csv(rt_corrections, paste0(output_folder, "rt_corrections.csv"), row.names = FALSE)
+write.csv(peak_bounds, paste0(output_folder, "peak_bounds.csv"), row.names = FALSE)
 
 # Extract relevant msdata from each for export and use later ----
 feature_df <- peak_bounds %>%
@@ -160,7 +173,7 @@ msdata <- file_data$filename %>%
 msdata$EIC2 <- msdata$EIC %>%
   left_join(rt_corrections, by=c("filename", "rt")) %>%
   select(rt=new_rt, mz, int, filename)
-saveRDS(msdata, file = "made_data/msdata.rds")
+saveRDS(msdata, file = paste0(output_folder, "msdata.rds"))
 
 msdata_isoc <- file_data$filename %>%
   grabMSdata(verbosity = 1, grab_what = "EIC",
@@ -168,4 +181,4 @@ msdata_isoc <- file_data$filename %>%
 msdata_isoc$EIC2 <- msdata_isoc$EIC %>%
   left_join(rt_corrections, by=c("filename", "rt")) %>%
   select(rt=new_rt, mz, int, filename)
-saveRDS(msdata_isoc, file="made_data/msdata_isoc.rds")
+saveRDS(msdata_isoc, file = paste0(output_folder, "msdata_isoc.rds"))
