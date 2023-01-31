@@ -23,15 +23,16 @@ file_data <- data.frame(filename=mzML_files) %>%
   mutate(lwd=c(2, 1, 1, 1, 2)[colid])
 
 # dataset_version <- "FT350"
-dataset_version <- "FT500"
+dataset_version <- "FT2040"
 if(dataset_version=="FT350"){
   prefilter_versioned <- c(5, 1e7)
-} else if(dataset_version=="FT500") {
+} else if(dataset_version=="FT2040") {
   prefilter_versioned <- c(3, 1e6)
 } else {
   stop(paste("Version", dataset_version, "not yet supported!"))
 }
 output_folder <- paste0("made_data_", dataset_version, "/")
+if(!dir.exists(output_folder))dir.create(output_folder)
 
 # XCMS things ----
 register(BPPARAM = SerialParam(progressbar = TRUE))
