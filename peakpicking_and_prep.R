@@ -93,7 +93,7 @@ rt_corrections <- msnexp_filled %>%
   set_names(c("scanid", "new_rt")) %>%
   mutate(filename=basename(mzML_files[as.numeric(str_extract(scanid, "\\d+"))])) %>%
   left_join(init_rts, by="scanid") %>% 
-  mutate(new_rt=new_rt/60, rt=init_rt/60) %>%
+  mutate(new_rt=round(new_rt/60, 10), rt=round(init_rt/60, 10)) %>%
   select(-init_rt, -scanid)
 # rt_corrections %>%
 #   distinct(rt, new_rt, filename) %>%
@@ -173,6 +173,7 @@ msdata <- file_data$filename %>%
   grabMSdata(verbosity = 1, grab_what = "EIC",
              mz=feature_df$mean_mz, ppm = 50)
 msdata$EIC2 <- msdata$EIC %>%
+  mutate(rt=round(rt, 10)) %>%
   left_join(rt_corrections, by=c("filename", "rt")) %>%
   select(rt=new_rt, mz, int, filename)
 saveRDS(msdata, file = paste0(output_folder, "msdata.rds"))
@@ -181,6 +182,7 @@ msdata_isoc <- file_data$filename %>%
   grabMSdata(verbosity = 1, grab_what = "EIC",
              mz=feature_df$mean_mz+1.003355, ppm = 50)
 msdata_isoc$EIC2 <- msdata_isoc$EIC %>%
+  mutate(rt=round(rt, 10)) %>%
   left_join(rt_corrections, by=c("filename", "rt")) %>%
   select(rt=new_rt, mz, int, filename)
 saveRDS(msdata_isoc, file = paste0(output_folder, "msdata_isoc.rds"))
