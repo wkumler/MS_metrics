@@ -26,7 +26,7 @@ rt_corrections <- read_csv(paste0(output_folder, "rt_corrections.csv"))
 # Extract feature data from raw mzML files ----
 feature_df <- peak_bounds %>%
   group_by(feature) %>%
-  summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
+  summarize(min_mz=min(mzmin), max_mz=max(mzmax), 
             min_rt=min(rtmin), max_rt=max(rtmax)) %>%
   mutate(mean_mz=(min_mz+max_mz)/2)
 msdata <- readRDS(paste0(output_folder, "msdata.rds"))
