@@ -124,7 +124,7 @@ peak_bounds <- peak_data %>%
 # Some visualization ----
 peak_data %>%
   group_by(feat_id) %>%
-  summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
+  summarize(min_mz=min(mzmin), max_mz=max(mzmax), 
             min_rt=min(rtmin), max_rt=max(rtmax),
             max_int=max(maxo), max_area=max(into)) %>%
   mutate(int_group=cut(max_int, breaks = 10^c(3:9))) %>%
