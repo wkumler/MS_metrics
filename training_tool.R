@@ -59,24 +59,21 @@ while(TRUE){
   peakwidth <- diff(rtbounds)
   plotbounds <- c(min(rtbounds, min(rtbounds)-peakwidth/2), 
                   max(rtbounds, max(rtbounds)+peakwidth/2))
-  eic <- msdata$EIC2[mz%between%mzbounds] %>%
-    right_join(rt_corrections, by=c(rt="new_rt", "filename")) %>%
-    mutate(int=ifelse(is.na(int), 0, int)) %>%
+  eic <- msdata$EIC2[mz%between%mzbounds] %>% 
+    # right_join(rt_corrections, by=c(rt="new_rt", "filename")) %>% 
+    # mutate(int=ifelse(is.na(int), 0, int)) %>%
     filter(rt%between%(plotbounds)) %>%
     arrange(rt)
-  if(nrow(eic)==0){
-    train_vec[i] <- 0
-  }
   dev.new(width=6, height=4)
   plot.new()
   plot.window(xlim=plotbounds, ylim=c(0, max(eic$int)), mar=c(1.1, 0.1, 0.1, 0.1))
   for(j in unique(eic$filename)){
-    lines(eic[eic$filename==j, c("rt", "int")], 
+    lines(eic[eic$filename==j, c("rt", "int")],
           col=file_data$col[file_data$filename==j],
           lwd=file_data$lwd[file_data$filename==j])
   }
   axis(1)
-  title(feat_id)
+  title(paste(feat_id, round(mzbounds[1], 7)))
   abline(v=rtbounds, col="red")
   keyinput <- getGraphicsEvent(prompt = "", onKeybd = function(x){
     return(x)
@@ -110,5 +107,5 @@ while(TRUE){
 }
 
 
-data_classified <- read_csv(paste0(output_folder, "classified_feats.csv", show_col_types = FALSE))
+data_classified <- read_csv(paste0(output_folder, "classified_feats.csv"), show_col_types = FALSE)
 table(data_classified$feat_class)
