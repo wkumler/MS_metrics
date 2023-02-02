@@ -137,6 +137,10 @@ peakshape_mets %>%
   mutate(med_cor=cut(med_cor, breaks = seq(-1, 1, 0.2))) %>%
   ggplot() +
   geom_bar(aes(x=med_cor, fill=feat_class), position = "fill")
+peakshape_mets %>%
+  left_join(classified_feats) %>%
+  ggplot() +
+  geom_point(aes(x=med_cor, y=med_SNR, color=feat_class))
 
 scan_time_diff <- diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt)))
 hist(scan_time_diff)
@@ -204,16 +208,19 @@ filesplit_msdata_isoc_EIC <- split(msdata_isoc$EIC2, msdata_isoc$EIC2$filename)
 peak_isodata <- peak_bounds %>%
   mutate(filename=basename(filename)) %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
-  # filter(feature=="FT023") %>%
-  # filter(filename=="190715_Poo_TruePooFK180310_Full1.mzML") %>%
+  # filter(feature=="FT0356") %>%
+  # filter(filename=="190715_Std_4uMStdsMix2InH2O_2.mzML") %>%
   pbapply::pbmapply(FUN = function(df, feature_i, filename_i, mzmin_i, mzmax_i, 
                                     rtmin_i, rtmax_i){
+    # print(filename_i)
     init_eic <- filesplit_msdata_EIC[[filename_i]][
       mz%between%pmppm(sum(mzmin_i, mzmax_i)/2)][
-        rt%between%c(rtmin_i, rtmax_i), c("rt", "int")]
+        rt%between%c(rtmin_i, rtmax_i), c("rt", "int")][
+          , rt:=round(rt, 5)]
     addiso_eic <- filesplit_msdata_isoc_EIC[[filename_i]][
       mz%between%pmppm(sum(mzmin_i, mzmax_i)/2+1.003355)][
-        rt%between%c(rtmin_i, rtmax_i), c("rt", "int")]
+        rt%between%c(rtmin_i, rtmax_i), c("rt", "int")][
+          , rt:=round(rt, 5)]
     if(nrow(addiso_eic)<5){
       iso_cor <- 0
       if(nrow(init_eic)>0){
@@ -224,12 +231,18 @@ peak_isodata <- peak_bounds %>%
       iso_area <- 0
     } else {
       eic <- merge(init_eic, addiso_eic, by="rt", suffixes=c("_init", "_iso"))
-      # par(mfrow=c(2,1), mar=c(2.1, 2.1, 0.1, 0.1))
-      # plot(eic$rt, eic$int_init, xlab="", ylab="")
-      # plot(eic$rt, eic$int_iso, xlab="", ylab="")
-      iso_cor <- cor(eic$int_init, eic$int_iso, use="pairwise")
-      init_area <- trapz(eic$rt, eic$int_init)
-      iso_area <- trapz(eic$rt, eic$int_iso)
+      if(nrow(eic)==0){
+        iso_cor <- 0
+        init_area <- 0
+        iso_area <- 0
+      } else {
+        # par(mfrow=c(2,1), mar=c(2.1, 2.1, 0.1, 0.1))
+        # plot(eic$rt, eic$int_init, xlab="", ylab="")
+        # plot(eic$rt, eic$int_iso, xlab="", ylab="")
+        iso_cor <- cor(eic$int_init, eic$int_iso, use="pairwise")
+        init_area <- trapz(eic$rt, eic$int_init)
+        iso_area <- trapz(eic$rt, eic$int_iso)
+      }
     }
     list(feature=feature_i, filename=filename_i, iso_cor=iso_cor, 
       init_area=init_area, iso_area=iso_area)
@@ -251,7 +264,7 @@ feat_isodata %>%
   left_join(classified_feats) %>%
   mutate(shape_cor=cut(1-shape_cor, breaks=10^c(1:-4))) %>%
   ggplot() +
-  geom_bar(aes(x=shape_cor, fill=feat_class), position = "fill")
+  geom_bar(aes(x=shape_cor, fill=feat_class))
 
 # Calculate DOE metrics ----
 depth_diffs <- peak_data %>%
@@ -260,14 +273,15 @@ depth_diffs <- peak_data %>%
   filter(samp_type=="Smp") %>%
   nest(data=-feat_id) %>%
   mutate(t_pval=map_dbl(data, function(x){
-    if(any(table(x$depth)<2))return(1)
+    depthtab <- table(x$depth)
+    if(any(depthtab<2))return(1)
+    if(length(depthtab)<2)return(0.001)
     broom::tidy(t.test(x$into~x$depth))$p.value
   })) %>%
   select(feat_id, t_pval)
 depth_diffs %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
-  # mutate(t_pval=cut(log10(t_pval), breaks = seq(-5, 0, 1))) %>%
-  mutate(t_pval=cut(t_pval, breaks = seq(0, 1, 0.1))) %>%
+  mutate(t_pval=cut(log10(t_pval), breaks = c(-Inf, seq(-5, 0, 1)))) %>%
   ggplot() +
   geom_bar(aes(x=t_pval, fill=feat_class), position = "fill")
 
@@ -280,11 +294,12 @@ blank_diffs <- peak_data %>%
   summarise(mean_area=mean(into)) %>%
   pivot_wider(names_from = samp_type, values_from = mean_area) %>%
   mutate(smp_to_blk=Smp/Blk) %>%
+  mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 10000, smp_to_blk)) %>%
   select(feat_id, smp_to_blk) %>%
   mutate(smp_to_blk=log10(smp_to_blk))
 blank_diffs %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(smp_to_blk=cut(smp_to_blk, breaks = -1:4)) %>%
+  mutate(smp_to_blk=cut(smp_to_blk, breaks = -2:5)) %>%
   ggplot() +
   geom_bar(aes(x=smp_to_blk, fill=feat_class), position = "fill")
 
