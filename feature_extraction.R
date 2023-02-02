@@ -303,6 +303,24 @@ blank_diffs %>%
   ggplot() +
   geom_bar(aes(x=smp_to_blk, fill=feat_class), position = "fill")
 
+stan_diffs <- peak_data %>%
+  select(feat_id, filename, into) %>%
+  left_join(file_data) %>%
+  filter(samp_type%in%c("Smp", "Std")) %>%
+  select(feat_id, samp_type, into) %>%
+  group_by(feat_id, samp_type) %>%
+  summarise(mean_area=mean(into)) %>%
+  pivot_wider(names_from = samp_type, values_from = mean_area) %>%
+  mutate(smp_to_std=Smp/Std) %>%
+  mutate(smp_to_std=ifelse(is.na(smp_to_std), 10, smp_to_std)) %>%
+  select(feat_id, smp_to_std) %>%
+  mutate(smp_to_std=log10(smp_to_std))
+stan_diffs %>%
+  left_join(classified_feats, by=c(feat_id="feature")) %>%
+  mutate(smp_to_std=cut(smp_to_std, breaks = -5:2)) %>%
+  ggplot() +
+  geom_bar(aes(x=smp_to_std, fill=feat_class), position = "fill")
+
 
 
 # Join feature classes and write out ----
@@ -311,6 +329,7 @@ features_extracted <- simple_feats %>%
   left_join(med_missed_scans, by=c(feat_id="feature")) %>%
   left_join(depth_diffs) %>%
   left_join(blank_diffs) %>%
+  left_join(stan_diffs) %>%
   left_join(feat_isodata, by=c(feat_id="feature")) %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
   drop_na()
