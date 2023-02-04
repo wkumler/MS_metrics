@@ -38,3 +38,13 @@ features_xcms <- features_extracted %>%
 rfmodel <- randomForest(features_xcms, y=factor(features_extracted$feat_class), importance=TRUE)
 rfmodel
 varImpPlot(rfmodel)
+
+# Using and plotting the best 3 ----
+rfmodel <- features_extracted %>%
+  select(med_cor, med_SNR, shape_cor) %>%
+  randomForest(y=factor(features_extracted$feat_class), importance=TRUE)
+rfmodel
+varImpPlot(rfmodel)
+features_extracted %>%
+  plotly::plot_ly(x=~log10(1-med_cor), y=~med_SNR, z=~shape_cor, color=~feat_class,
+                  mode="markers", type= "scatter3d")
