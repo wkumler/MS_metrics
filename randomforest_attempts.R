@@ -48,3 +48,17 @@ varImpPlot(rfmodel)
 features_extracted %>%
   plotly::plot_ly(x=~log10(1-med_cor), y=~med_SNR, z=~shape_cor, color=~feat_class,
                   mode="markers", type= "scatter3d")
+
+
+
+# rpart?
+library(rpart)
+fit <- features_extracted %>% 
+  select(-feat_id) %>%
+  select(mean_mz, sd_ppm, mean_rt, sd_rt, mean_pw, log_mean_height, 
+         sn, f, lmin, scale, feat_npeaks, sd_pw, feat_class) %>%
+  rpart(formula = feat_class~.)
+library(rpart.plot)
+pdf("rpartplot.pdf", width=6, height = 6)
+rpart.plot(fit)
+dev.off()
