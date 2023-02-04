@@ -84,3 +84,29 @@ features_extracted %>%
   geom_point(aes(x=PC1, y=PC2, color=feat_class))
 # plotly::plot_ly(x=~PC1, y=~PC2, z=~PC3, color=~feat_class,
 #                 mode="markers", type="scatter3d")
+
+
+
+
+# Proper test/train set ----
+set.seed(123)
+traintestlist <- features_extracted %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  slice_sample(n = nrow(.)) %>%
+  split(rbernoulli(nrow(.), 0.2)) %>%
+  setNames(c("train", "test"))
+rfmodel <- traintestlist$train %>%
+  select(-feat_id, -feat_class) %>%
+  data.matrix() %>%
+  randomForest(y=factor(traintestlist$train$feat_class))
+rfmodel
+varImpPlot(rfmodel)
+
+traintestlist$test %>%
+  select(-feat_id, -feat_class) %>%
+  data.matrix() %>%
+  predict(object=rfmodel) %>%
+  as.data.frame() %>%
+  setNames("pred_class") %>%
+  cbind(traintestlist$test) %>%
+  with(table(pred_class, feat_class))
