@@ -28,3 +28,13 @@ rf.mds$points %>%
 #   select(-feat_id, -feat_class) %>%
 #   data.matrix() %>%
 #   partialPlot(x = rfmodel, x.var="med_SNR")
+
+
+# Using the xcms defaults ----
+features_xcms <- features_extracted %>%
+  select(mean_mz, sd_ppm, mean_rt, sd_rt, mean_pw, log_mean_height, 
+         sn, f, scale, lmin, feat_npeaks, sd_pw) %>%
+  data.matrix()
+rfmodel <- randomForest(features_xcms, y=factor(features_extracted$feat_class), importance=TRUE)
+rfmodel
+varImpPlot(rfmodel)
