@@ -62,3 +62,25 @@ library(rpart.plot)
 pdf("rpartplot.pdf", width=6, height = 6)
 rpart.plot(fit)
 dev.off()
+
+
+# Normal dimensionality reductions
+features_extracted %>%
+  column_to_rownames("feat_id") %>%
+  select(-feat_class) %>%
+  data.matrix() %>%
+  scale() %>%
+  prcomp() %>%
+  biplot()
+features_extracted %>%
+  select(-feat_id, -feat_class) %>%
+  data.matrix() %>%
+  scale() %>%
+  prcomp() %>%
+  `$`("x") %>%
+  as.data.frame() %>%
+  cbind(feat_class=features_extracted$feat_class) %>%
+  ggplot() +
+  geom_point(aes(x=PC1, y=PC2, color=feat_class))
+# plotly::plot_ly(x=~PC1, y=~PC2, z=~PC3, color=~feat_class,
+#                 mode="markers", type="scatter3d")
