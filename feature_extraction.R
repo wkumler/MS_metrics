@@ -349,6 +349,25 @@ write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"),
 
 # Visualization ----
 
+metric_plots <- features_extracted %>%
+  names() %>%
+  setdiff(c("feat_id", "blank_found", "feat_class")) %>%
+  lapply(function(col_name){
+    features_extracted %>%
+      mutate(col_to_plot=cut(get(col_name), pretty(get(col_name), n = 10))) %>%
+      ggplot() +
+      geom_bar(aes(x=col_to_plot, fill=feat_class)) +
+      labs(x=col_name) +
+      theme(legend.position = "none")
+  })
+
+fullplot <- do.call(gridExtra::arrangeGrob, c(metric_plots, ncol=1))
+ggsave("all_metrics.pdf", plot = fullplot, device = "pdf", path = "figures",
+       width=5, height = 50, units = "in", limitsize = FALSE)
+
+
+
+
 library(plotly)
 plot_ly(features_extracted, x=~mean_pw, y=~log10(sn), z=~n_found, color=~feat_class,
         type = "scatter3d", mode="markers")
@@ -371,3 +390,4 @@ gp <- features_extracted %>%
     )
 ggsave(plot = gp, filename = "pairsplot.pdf", device = "pdf", width = 25, height = 25, 
        units = "in", limitsize = FALSE, path = "figures")
+
