@@ -20,6 +20,7 @@ First: Estimating the relative strength of various peakpicking metrics (e.g. pea
 Second: Using the above metrics to calculate the likelihood that an MS expert would flag a given peak as noise
   - Answers the question "What is the probability this peak is just noise and should be removed from the analysis?"
   - Will require the use of machine learning methods like logistic ridge regression, random forests, and others to handle highly-correlated metrics
+  - This has become more of a specific request after some discussion about regression models, answering the question of "what thresholds (and metrics?) do I need to choose to ensure that no more than 5% of the peaks identified as 'good' are actually noise?" aka a strict control of the false discovery rate (ratio of false positive to true+false positives < 0.05).
   
 Third: Building a package or code-sharing method that accepts input from commonly used peakpicking algorithms (e.g. [xcms](https://github.com/sneumann/xcms), [MzMine](http://mzmine.github.io/), and [MSDIAL](http://prime.psc.riken.jp/compms/msdial/main.html))
 
