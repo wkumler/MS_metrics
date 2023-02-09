@@ -67,6 +67,30 @@ traintestlist$test %>%
   # caret::confusionMatrix() %>%
   print()
 
+
+init_gp <- traintestlist$test %>%
+  cbind(pred_prob=predict(full_model, ., type="response")) %>%
+  mutate(pred_prob=cut(pred_prob, pretty(pred_prob, n=15), include.lowest=TRUE)) %>%
+  mutate(feat_class=factor(feat_class, labels = c("Bad", "Good"), levels=c(FALSE, TRUE))) %>%
+  ggplot(aes(x=pred_prob, fill=feat_class)) +
+  theme_bw() +
+  theme(axis.title.x = element_blank()) +
+  labs(fill="Classification") +
+  scale_x_discrete(drop=FALSE)
+bar_gp <- init_gp + 
+  geom_bar() + 
+  labs(y="Count") + 
+  theme(axis.text.x = element_blank()) +
+  ggtitle("Full multiple regression model predictions on test set")
+filled_gp <- init_gp + 
+  geom_bar(position = "fill") + 
+  labs(y="Proportion") +
+  theme(axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5))
+cowplot::plot_grid(bar_gp, filled_gp, ncol = 1)
+ggsave("fullmodel_test.png", plot = last_plot(), path = "figures", 
+       width = 8, height = 5, units = "in", device = "png")
+
+
 # Just-best regression
 custom_model <- traintestlist$train %>% 
   select(feat_class, med_cor, med_SNR) %>%
