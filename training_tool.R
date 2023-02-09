@@ -106,6 +106,16 @@ while(TRUE){
   }
 }
 
-
+# Visualization ----
 data_classified <- read_csv(paste0(output_folder, "classified_feats.csv"), show_col_types = FALSE)
 table(data_classified$feat_class)
+
+ggplot(data_classified) +
+  geom_rect(aes(xmin=min_rt, xmax=max_rt, ymin=min_mz, ymax=max_mz, color=feat_class),
+            fill=NA) +
+  theme_bw() +
+  labs(x="Retention time (in seconds)", y="m/z ratio", color="Classification")
+ggsave("class_distribution_mz_rt.png", plot = last_plot(), path = "figures", 
+       width = 8, height = 5, units = "in", device = "png")
+plotly::ggplotly()
+
