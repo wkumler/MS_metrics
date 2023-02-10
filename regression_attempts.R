@@ -20,7 +20,7 @@ traintestlist <- features_extracted %>%
 
 
 # Single-(ML)-feature regression ----
-pred_feat <- "f"
+pred_feat <- "sd_rt"
 init_gp <- traintestlist$train %>%
   mutate(pred_cut=cut(get(pred_feat), pretty(get(pred_feat), n=15), include.lowest=TRUE)) %>%
   mutate(feat_class=factor(feat_class, labels = c("Bad", "Good"), levels=c(FALSE, TRUE))) %>%
@@ -93,7 +93,7 @@ ggsave("fullmodel_test.png", plot = last_plot(), path = "figures",
 
 # Just-best regression
 custom_model <- traintestlist$train %>% 
-  select(feat_class, med_cor, med_SNR) %>%
+  select(feat_class, med_cor, med_SNR, ) %>%
   glm(formula=feat_class~., family = binomial)
 summary(custom_model)
 traintestlist$test %>%
@@ -111,6 +111,30 @@ xcms_model <- traintestlist$train %>%
 summary(xcms_model)
 traintestlist$test %>%
   mutate(pred_class=predict(xcms_model, ., type="response")>=0.5) %>%
+  mutate(pred_class=ifelse(pred_class, "Good", "Bad")) %>%
+  mutate(feat_class=ifelse(feat_class, "Good", "Bad")) %>%
   with(table(feat_class, pred_class)) %>%
   # caret::confusionMatrix() %>%
   print()
+
+init_gp <- traintestlist$test %>%
+  cbind(pred_prob=predict(xcms_model, ., type="response")) %>%
+  mutate(pred_prob=cut(pred_prob, pretty(pred_prob, n=15), include.lowest=TRUE)) %>%
+  mutate(feat_class=factor(feat_class, labels = c("Bad", "Good"), levels=c(FALSE, TRUE))) %>%
+  ggplot(aes(x=pred_prob, fill=feat_class)) +
+  theme_bw() +
+  theme(axis.title.x = element_blank()) +
+  labs(fill="Classification") +
+  scale_x_discrete(drop=FALSE)
+bar_gp <- init_gp + 
+  geom_bar() + 
+  labs(y="Count") + 
+  theme(axis.text.x = element_blank()) +
+  ggtitle("XCMS multiple regression model predictions on test set")
+filled_gp <- init_gp + 
+  geom_bar(position = "fill") + 
+  labs(y="Proportion") +
+  theme(axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5))
+cowplot::plot_grid(bar_gp, filled_gp, ncol = 1)
+ggsave("xcmsmodel_test.png", plot = last_plot(), path = "figures", 
+       width = 8, height = 5, units = "in", device = "png")
