@@ -4,5 +4,6 @@
 .Ruserdata
 
 mzMLs/*
+MS_mzMLs/*
 */*.rds
 msdial/*
