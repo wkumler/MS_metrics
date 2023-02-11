@@ -13,25 +13,29 @@ library(xcms)
 library(RaMS)
 options(pillar.sigfig=7)
 
-mzML_files <- list.files("mzMLs/", full.names=TRUE)
-
-file_data <- data.frame(filename=mzML_files) %>%
-  mutate(samp_type=str_extract(filename, "Blk|Smp|Std|Poo")) %>%
-  mutate(depth=str_extract(filename, "25m|DCM")) %>%
-  mutate(depth=ifelse(is.na(depth), "", depth)) %>%
-  mutate(colid=factor(paste0(depth, samp_type), levels=c("Blk", "25mSmp", "DCMSmp", "Std", "Poo"))) %>%
-  mutate(col=alpha(c("red", "blue", "green", "black", "#008080"), 0.8)[colid]) %>%
-  mutate(lwd=c(2, 1, 1, 1, 2)[colid])
-
 # dataset_version <- "FT350"
 dataset_version <- "FT2040"
+dataset_version <- "MS3000"
 if(dataset_version=="FT350"){
+  mzML_files <- list.files("mzMLs/", full.names=TRUE)
   prefilter_versioned <- c(5, 1e7)
 } else if(dataset_version=="FT2040") {
+  mzML_files <- list.files("mzMLs/", full.names=TRUE)
+  prefilter_versioned <- c(3, 1e6)
+} else if (dataset_version=="MS3000"){
+  mzML_files <- list.files("MS_mzMLs/", full.names=TRUE)
   prefilter_versioned <- c(3, 1e6)
 } else {
   stop(paste("Version", dataset_version, "not yet supported!"))
 }
+
+file_data <- data.frame(filename=mzML_files) %>%
+  mutate(samp_type=str_extract(filename, "Blk|Smp|Std|Poo")) %>%
+  mutate(depth=str_extract(filename, "25m|DCM|175m")) %>%
+  mutate(depth=ifelse(is.na(depth), "", depth)) %>%
+  mutate(colid=factor(paste0(depth, samp_type), levels=c("Blk", "25mSmp", "DCMSmp", "175mSmp", "Std", "Poo"))) %>%
+  mutate(col=alpha(c("red", "blue", "green", "purple", "black", "#008080"), 0.8)[colid]) %>%
+  mutate(lwd=c(2, 1, 1, 1, 1, 2)[colid])
 output_folder <- paste0("made_data_", dataset_version, "/")
 if(!dir.exists(output_folder))dir.create(output_folder)
 
