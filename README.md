@@ -34,13 +34,27 @@ R scripts:
     - Takes in the peak boundaries from made_data/feature_bounds.csv and the raw mzML files again, then enables an interactive script using plot windows that lets the user categorize features as "good", "bad", and other categories.
   - feature_extraction.R
     - Extracts information about the peaks from the raw data and output for use in later ML/classification/regression things.
+  - *_attempts.R
+    - Scripts that run various ML attempts - clustering, random forests, logistic regressions, etc.
+    - Takes in the features_extracted.csv and outputs figures, mostly.
+  - msdial_prep_script.R
+    - (In progress) Runs MSDIAL on the same set of files for comparison with XCMS
+    - The goal is to fiddle with peakpicking parameters to get ~the same set of peaks and see if peaks that are "good" are most likely to be found in both XCMS and MSDIAL
+    - Constructs the entire msdial folder (not shared with GitHub because of large file sizes)
 
-made_data:
+made_data_FT350:
 
   - Contains output produced by scripts during the process
   - Allows each script to be rerun independently of the one before it
   - Used to load files into memory during the "setup" chunk of each script
 
+made_data_FT2040:
+
+  - Same as 350 but run with slightly different parameters to include additional peaks
+  - See commit 17df98e for details
+
 figures:
 
   - Contains figures produced by the scripts during the process
+  - Also contains the presentation 2923 given to Dave on Feb 9th, 2023
+
