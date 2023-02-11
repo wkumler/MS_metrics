@@ -1,0 +1,86 @@
+MS-DIAL ver. 4.9.221218
+
+#Project
+MS1 Data type	Centroid
+MS2 Data type	Centroid
+Ion mode	Positive
+Target	Metablomics
+Mode	ddMSMS
+
+#Data collection parameters
+Retention time begin	0
+Retention time end	100
+Mass range begin	0
+Mass range end	2000
+MS2 mass range begin	0
+MS2 mass range end	2000
+
+#Centroid parameters
+MS1 tolerance	0.01
+MS2 tolerance	0.025
+
+#Isotope recognition
+Maximum charged number	2
+
+#Data processing
+Number of threads	3
+
+#Peak detection parameters
+Smoothing method	LinearWeightedMovingAverage
+Smoothing level	3
+Minimum peak width	10
+Minimum peak height	100000
+
+#Peak spotting parameters
+Mass slice width	0.01
+Exclusion mass list (mass & tolerance)
+
+#Deconvolution parameters
+Sigma window value	0.5
+MS2Dec amplitude cut off	0
+Exclude after precursor	True
+Keep isotope until	0.5
+Keep original precursor isotopes	False
+
+#MSP file and MS/MS identification setting
+MSP file	
+Retention time tolerance	100
+Accurate mass tolerance (MS1)	0.01
+Accurate mass tolerance (MS2)	0.05
+Identification score cut off	80
+Using retention time for scoring	False
+Using retention time for filtering	False
+
+#Text file and post identification (retention time and accurate mass based) setting
+Text file	
+Retention time tolerance	0.1
+Accurate mass tolerance	0.01
+Identification score cut off	85
+
+#Advanced setting for identification
+Relative abundance cut off	0
+Top candidate report	False
+
+#Adduct ion setting
+[M+H]+
+
+#Alignment parameters setting
+Reference file	G:\My Drive\GithubReady\MS_metrics\msdial\190715_Smp_FK180310S77C1-25m_A.mzML
+Retention time tolerance	0.5
+MS1 tolerance	0.015
+Retention time factor	0.5
+MS1 factor	0.5
+Peak count filter	0
+N% detected in at least one group	0
+Remove feature based on peak height fold-change	False
+Sample max / blank average	5
+Sample average / blank average	5
+Keep identified and annotated metabolites	True
+Keep removable features and assign the tag for checking	True
+Gap filling by compulsion	True
+
+#Tracking of isotope labels
+Tracking of isotopic labels	FALSE
+
+#Ion mobility
+Ion mobility data	FALSE
