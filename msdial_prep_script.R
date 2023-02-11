@@ -6,8 +6,10 @@ if(dir.exists(msdial_dir)){
 } else {
   dir.create(msdial_dir)
 }
-file.copy(from = "mzMLs", to = msdial_dir, recursive = TRUE)
-file.copy("msdialparams.txt", paste0(msdial_dir, "/msdialparams.txt"))
+
+mzMLs <- list.files("mzMLs", pattern = "mzML", full.names = TRUE)
+file.copy(from = mzMLs, to = msdial_dir, recursive = TRUE)
+file.copy("msdialparams.txt", paste0(msdial_dir, "/msdialparams.txt"), overwrite = TRUE)
 
 msdial_cmd <- paste(
   r"("C:\Program Files\MSDIAL ver.4.9.221218 Windowsx64\MsdialConsoleApp.exe" lcmsdda)",
