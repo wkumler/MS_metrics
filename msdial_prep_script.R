@@ -3,12 +3,9 @@ msdial_dir <- "msdial"
 
 if(dir.exists(msdial_dir)){
   unlink(msdial_dir, recursive = TRUE, force = TRUE)
-} else {
-  dir.create(msdial_dir)
 }
 
-mzMLs <- list.files("mzMLs", pattern = "mzML", full.names = TRUE)
-file.copy(from = mzMLs, to = msdial_dir, recursive = TRUE)
+R.utils::copyDirectory("mzMLs", msdial_dir)
 file.copy("msdialparams.txt", paste0(msdial_dir, "/msdialparams.txt"), overwrite = TRUE)
 
 msdial_cmd <- paste(

@@ -29,7 +29,7 @@ Number of threads	3
 Smoothing method	LinearWeightedMovingAverage
 Smoothing level	3
 Minimum peak width	10
-Minimum peak height	100000
+Minimum peak height	1000000
 
 #Peak spotting parameters
 Mass slice width	0.01
@@ -66,8 +66,8 @@ Top candidate report	False
 
 #Alignment parameters setting
 Reference file	G:\My Drive\GithubReady\MS_metrics\msdial\190715_Smp_FK180310S77C1-25m_A.mzML
-Retention time tolerance	0.5
-MS1 tolerance	0.015
+Retention time tolerance	1
+MS1 tolerance	0.001
 Retention time factor	0.5
 MS1 factor	0.5
 Peak count filter	0
