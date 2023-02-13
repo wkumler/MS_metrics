@@ -29,7 +29,7 @@ Number of threads	3
 Smoothing method	LinearWeightedMovingAverage
 Smoothing level	3
 Minimum peak width	10
-Minimum peak height	1000000
+Minimum peak height	10000000
 
 #Peak spotting parameters
 Mass slice width	0.01
