@@ -280,8 +280,9 @@ depth_diffs <- peak_data %>%
   })) %>%
   select(feat_id, t_pval)
 depth_diffs %>%
+  ungroup() %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(t_pval=cut(log10(t_pval), breaks = c(-Inf, seq(-5, 0, 1)))) %>%
+  mutate(t_pval=cut(log10(t_pval), breaks = pretty(log10(t_pval), n = 10))) %>%
   ggplot() +
   geom_bar(aes(x=t_pval, fill=feat_class), position = "fill")
 
@@ -298,8 +299,9 @@ blank_diffs <- peak_data %>%
   select(feat_id, smp_to_blk) %>%
   mutate(smp_to_blk=log10(smp_to_blk))
 blank_diffs %>%
+  ungroup() %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(smp_to_blk=cut(smp_to_blk, breaks = -2:5)) %>%
+  mutate(smp_to_blk=cut(smp_to_blk, breaks = pretty(smp_to_blk, n = 10))) %>%
   ggplot() +
   geom_bar(aes(x=smp_to_blk, fill=feat_class), position = "fill")
 
@@ -316,8 +318,9 @@ stan_diffs <- peak_data %>%
   select(feat_id, smp_to_std) %>%
   mutate(smp_to_std=log10(smp_to_std))
 stan_diffs %>%
+  ungroup() %>%
   left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(smp_to_std=cut(smp_to_std, breaks = -5:2)) %>%
+  mutate(smp_to_std=cut(smp_to_std, breaks = pretty(smp_to_std, n = 10))) %>%
   ggplot() +
   geom_bar(aes(x=smp_to_std, fill=feat_class), position = "fill")
 
