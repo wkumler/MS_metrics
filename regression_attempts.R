@@ -93,7 +93,7 @@ ggsave("fullmodel_test.png", plot = last_plot(), path = "figures",
 
 # Just-best regression
 custom_model <- traintestlist$train %>% 
-  select(feat_class, med_cor, med_SNR, ) %>%
+  select(feat_class, med_cor, med_SNR) %>%
   glm(formula=feat_class~., family = binomial)
 summary(custom_model)
 traintestlist$test %>%
@@ -138,3 +138,65 @@ filled_gp <- init_gp +
 cowplot::plot_grid(bar_gp, filled_gp, ncol = 1)
 ggsave("xcmsmodel_test.png", plot = last_plot(), path = "figures", 
        width = 8, height = 5, units = "in", device = "png")
+
+
+# How does the full model predict "Meh" and "Stans only") ----
+full_model <- traintestlist$train %>% 
+  select(-feat_id, -blank_found) %>%
+  glm(formula=feat_class~., family = binomial)
+pred_prob_vec <- features_extracted %>%
+  select(-blank_found, -feat_id) %>%
+  predict(object=full_model, type = "response")
+
+features_extracted %>%
+  mutate(pred_prob=cut(pred_prob_vec, pretty(pred_prob_vec, n = 10))) %>%
+  ggplot() +
+  geom_bar(aes(x=pred_prob, fill=feat_class)) +
+  facet_wrap(~feat_class, ncol = 1, scales = "free_y") +
+  theme(axis.text.x = element_text(angle=90, hjust=1, vjust=0.5))
+
+features_extracted %>%
+  mutate(pred_prob) %>%
+  ggplot() +
+  aes(x=mean_rt, y=mean_mz, color=pred_prob) +
+  geom_point() +
+  scale_color_viridis_c() +
+  labs(x="Retention time", y="Mean m/z", color="Predicted\nprobability")
+
+file_data <- read.csv(paste0(output_folder, "file_data.csv"))
+msnexp_filled <- readRDS(paste0(output_folder, "msnexp_filled.rds"))
+peak_data_long <- msnexp_filled %>%
+  chromPeaks() %>%
+  as.data.frame() %>%
+  rownames_to_column()
+peak_data <- msnexp_filled %>%
+  featureDefinitions() %>%
+  as.data.frame() %>%
+  select(mzmed, rtmed, npeaks, peakidx) %>%
+  rownames_to_column("id") %>%
+  unnest_longer(peakidx) %>%
+  rename_with(~paste0("feat_", .x)) %>%
+  mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
+  unnest_wider(peak_data) %>%
+  mutate(filename=file_data$filename[sample])
+
+stan_ts <- peak_data %>%
+  select(feat_id, filename, into) %>%
+  left_join(file_data) %>%
+  filter(samp_type%in%c("Smp", "Std")) %>%
+  tidyr::complete(feat_id, filename, fill=list(into=0)) %>%
+  select(feat_id, filename, into) %>%
+  left_join(file_data) %>%
+  mutate(test_type=str_extract(filename, "Mix1|Mix2")) %>%
+  mutate(test_type=ifelse(is.na(test_type), "Smp", test_type)) %>%
+  nest(data=-feat_id) %>%
+  # slice(1) %>%
+  # unnest() %>%
+  # print(n=Inf)
+  mutate(pval=map_dbl(data, ~broom::tidy(aov(.x$into~.x$samp_type))$p.value[1])) %>%
+  left_join(features_extracted %>% select(feat_id, feat_class))
+stan_ts %>%
+  mutate(pval=log10(pval)) %>%
+  mutate(pval=cut(pval, pretty(pval, 10), include.lowest = TRUE)) %>%
+  ggplot() +
+  geom_bar(aes(x=pval, fill=feat_class), position = "fill")
