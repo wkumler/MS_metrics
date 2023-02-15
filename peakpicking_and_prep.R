@@ -4,6 +4,7 @@
 
 # The full script takes a minute or two on my local machine
 # Longer for the FT2040 - the msdata extraction alone takes ~20 mins each
+# Even longer for MS3000 - msdata takes ~45 mins each.
 
 # This is the first script in the pipeline
 
@@ -31,10 +32,10 @@ if(dataset_version=="FT350"){
 
 file_data <- data.frame(filename=mzML_files) %>%
   mutate(samp_type=str_extract(filename, "Blk|Smp|Std|Poo")) %>%
-  mutate(depth=str_extract(filename, "25m|DCM|175m")) %>%
+  mutate(depth=str_extract(filename, "25m|DCM|175m|15m")) %>%
   mutate(depth=ifelse(is.na(depth), "", depth)) %>%
-  mutate(colid=factor(paste0(depth, samp_type), levels=c("Blk", "25mSmp", "DCMSmp", "175mSmp", "Std", "Poo"))) %>%
-  mutate(col=alpha(c("red", "blue", "green", "purple", "black", "#008080"), 0.8)[colid]) %>%
+  mutate(colid=factor(paste0(depth, samp_type), levels=c("Blk", "25mSmp", "DCMSmp", "175mSmp", "15mSmp", "Std", "Poo"))) %>%
+  mutate(col=alpha(c("red", "blue", "green", "purple", "blue", "black", "#008080"), 0.8)[colid]) %>%
   mutate(lwd=c(2, 1, 1, 1, 1, 2)[colid])
 output_folder <- paste0("made_data_", dataset_version, "/")
 if(!dir.exists(output_folder))dir.create(output_folder)
