@@ -15,7 +15,7 @@ library(RaMS)
 options(pillar.sigfig=7)
 
 # dataset_version <- "FT350"
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
 dataset_version <- "MS3000"
 if(dataset_version=="FT350"){
   mzML_files <- list.files("mzMLs/", full.names=TRUE)
@@ -49,7 +49,7 @@ msnexp <- readMSData(
   mode = "onDisk"
 )
 
-register(BPPARAM = SnowParam(workers = 6, tasks = nrow(file_data), progressbar = TRUE))
+register(BPPARAM = SnowParam(workers = 3, tasks = nrow(file_data), progressbar = TRUE))
 cwp <- CentWaveParam(
   ppm = 5, 
   peakwidth = c(20, 80), 
