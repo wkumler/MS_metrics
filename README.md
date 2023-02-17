@@ -24,6 +24,90 @@ Second: Using the above metrics to calculate the likelihood that an MS expert wo
   
 Third: Building a package or code-sharing method that accepts input from commonly used peakpicking algorithms (e.g. [xcms](https://github.com/sneumann/xcms), [MzMine](http://mzmine.github.io/), and [MSDIAL](http://prime.psc.riken.jp/compms/msdial/main.html))
 
+## Metrics of interest
+
+Although part of the project is developing new metrics that will help separate good and bad peaks, I'm coming into it with some intuition about which parameters will be the most helpful. I've divided these into a few different categories I'm calling per-peak, per-file, and per-feature. Per-peak parameters are things estimated from the raw data, the mz/rt/int data points. Per-file parameters are things estimated within a given file like isotope presence/absence. Per-feature parameters are things estimated across multiple files after peak alignment and correspondence ("feature" in MS often refers to a chemical signal showing up in multiple files).
+
+#### Per-peak metrics
+Anything from XCMS directly, averaged across the different files
+
+  - mean_mz: Average mass to charge ratio
+  - sd_ppm: Average m/z deviation across multiple files in PPM space
+    - Using PPM accuracy instead of absolute deviation accounts for the fact that heavier molecules tend to have larger mass errors
+  - mean_rt: Average retention time
+  - sd_rt: Standard deviation of retention times
+  - mean_pw: Average peakwidth (in seconds)
+  - sd_pw: Standard deviation of the peakwidths
+  - sn: XCMS's default signal-to-noise estimate
+    - Has known problems, especially for "spiky" HILIC data
+  - f: Unclear parameter relating to the ROI number
+  - scale: Unclear parameter relating to the Centwave peak detector
+  - log_mean_height: The average of the log-scaled peak heights
+  - log_sd_height: The standard deviation of the log-scaled peak heights
+
+Custom parameters:
+
+  - med_cor: Custom calculation estimating the correlation between the points in a perfectly smooth peak and the actual data
+    - Designed to measure the "Gaussian-ness" or "peak shape"
+  - med_SNR: Custom calculation estimating the Signal-to-Noise Ratio of a peak
+    - Uses the residuals from the smooth peak fit in the med_cor step as an estimate of the noise *within* a peak
+    - This is different from other peakpicking algorithms which require points outside of the peak to estimate the noise background - which doesn't always exist in spiky HILIC data
+  - int_vs_ppm: high-intensity points tend to be more accurate, so we should expect a correlation between the intensity of a point and its deviation from the "center" of the peak
+    - Currently unimplemented
+  - med_missed_scans: The total number (maybe better as percentage?) of "missed" scans within a peak. Good looking peaks have data points at every retention time, while poor-quality ones often have missing data
+
+#### Per-file metrics
+Really just limited to ^13^C isotope information at this point but could eventually include anything estimated from other peaks in the same file
+
+  - shape_cor: The correlation between the intensity values of the base peak and the intensity values of the ^13^C peak
+  - area_cor: The correlation between the peak area of the base peak and the peak area of the ^13^C peak across multiple files
+
+#### Per-feature metrics
+Here's where we include some more "heuristic" metrics - usually I see these used as thresholds to remove bad peaks later on with rules like "average area has to be 3x the blank" and of course it's unlikely that noise has a significant trend with sample type.
+
+  - smp_to_blk: Ratio of average sample area to average blank area
+  - t_pval: The p-value for a statistical test measuring differences between sample types (e.g. surface samples vs deep samples)
+    - Was t-tests with Falkor data, now expanded to ANOVAs for MESOSCOPE
+  - smp_to_std: Ratio of average sample area to average standard area
+    - Tends to be good at identifying peaks that are only found in the standard mixes which are otherwise hard to classify - a good looking peak in the standards is still worth noticing but is not a great peak in the samples
+  - feat_npeaks: Total number of peaks included in the feature
+  - n_found: Number of files (now % of files) in which the peak was found
+  - samps_found: Number of samples (now % of samples) in which the peak was found
+  - stans_found: Number of standards (% of stans) in which the peak was found
+  - blank_found: Boolean. Whether or not a peak was found in the blank
+
+#### Metric expectations
+I expect a "good" peak to have
+
+  - Large log_mean_height
+  - Low sd_ppm
+  - Low sd_rt
+  - Middling mean_pw
+  - Low sd_pw
+  - High med_cor
+  - High med_SNR
+  - High int_vs_ppm
+  - Low med_missed_scans
+  - High shape_cor
+  - High area_cor
+  - High smp_to_blk
+  - Low t_pval
+  - Middling feat_npeaks
+  - High n_found
+  - High samps_found
+
+Expected unimportant metrics:
+
+  - log_sd_height
+  - mean_mz
+  - mean_rt
+  - sn
+  - f
+  - scale
+  - smp_to_std
+  - stans_found
+  - blank_found
+
 ## Repo structure
 
 R scripts:
