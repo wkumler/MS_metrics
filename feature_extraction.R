@@ -32,8 +32,8 @@ trapz <- function(x, y) {
 }
 
 # dataset_version <- "FT350"
-# dataset_version <- "FT2040"
-dataset_version <- "MS3000"
+dataset_version <- "FT2040"
+# dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 
@@ -56,8 +56,8 @@ peak_data <- msnexp_filled %>%
   mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
   unnest_wider(peak_data) %>%
   mutate(filename=file_data$filename[sample])
-# classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
-#   select(feature, feat_class)
+classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
+  select(feature, feat_class)
 
 
 
@@ -72,9 +72,9 @@ simple_feats <- peak_data %>%
             mean_rt=unique(feat_rtmed), sd_rt=sd(rt),
             mean_pw=mean(rtmax-rtmin), sd_pw=sd(rtmax-rtmin),
             log_mean_height=log10(mean(maxo)), log_sd_height=log10(sd(maxo)),
-            across(c(sn, f, scale, lmin), mean, na.rm=TRUE),
-            feat_npeaks=unique(feat_npeaks),
-            n_found=n_files-sum(is.na(intb)), 
+            across(c(sn, f, scale, lmin), function(x)mean(x, na.rm=TRUE)),
+            feat_npeaks=unique(feat_npeaks)/n_files,
+            n_found=(sum(is.na(intb))-n_files)/n_files,
             samps_found=1-sum(is.na(intb) & str_detect(filename, "Smp"))/n_samps,
             stans_found=1-sum(is.na(intb) & str_detect(filename, "Std"))/n_stans,
             blank_found=any(!is.na(intb) & str_detect(filename, "Blk"))
@@ -130,25 +130,25 @@ peakshape_mets <- eic_dt %>%
   summarise(qscores=list(qscoreCalculator(rt, int))) %>%
   unnest_wider(qscores) %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
-            med_cor=median(peak_cor, na.rm=TRUE))
-# peakshape_mets %>%
-#   left_join(classified_feats) %>%
-#   mutate(med_SNR=cut(med_SNR, breaks = seq(-6, 30, 3))) %>%
-#   ggplot() +
-#   geom_bar(aes(x=med_SNR, fill=feat_class), position = "fill")
-# peakshape_mets %>%
-#   left_join(classified_feats) %>%
-#   mutate(med_cor=cut(med_cor, breaks = seq(-1, 1, 0.2))) %>%
-#   ggplot() +
-#   geom_bar(aes(x=med_cor, fill=feat_class), position = "fill")
-# peakshape_mets %>%
-#   left_join(classified_feats) %>%
-#   ggplot() +
-#   geom_point(aes(x=med_cor, y=med_SNR, color=feat_class))
-# peakshape_mets %>%
-#   mutate(med_cor=cut(med_cor, breaks = pretty(med_cor, n=10), include.lowest = TRUE)) %>%
-#   ggplot() +
-#   geom_bar(aes(x=med_cor))
+            med_cor=log10(1-median(peak_cor, na.rm=TRUE)))
+peakshape_mets %>%
+  left_join(classified_feats) %>%
+  mutate(med_SNR=cut(med_SNR, breaks = seq(-6, 30, 3))) %>%
+  ggplot() +
+  geom_bar(aes(x=med_SNR, fill=feat_class), position = "fill")
+peakshape_mets %>%
+  left_join(classified_feats) %>%
+  mutate(med_cor=cut(med_cor, breaks = seq(-1, 1, 0.2))) %>%
+  ggplot() +
+  geom_bar(aes(x=med_cor, fill=feat_class), position = "fill")
+peakshape_mets %>%
+  left_join(classified_feats) %>%
+  ggplot() +
+  geom_point(aes(x=med_cor, y=med_SNR, color=feat_class))
+peakshape_mets %>%
+  mutate(med_cor=cut(med_cor, breaks = pretty(med_cor, n=10), include.lowest = TRUE)) %>%
+  ggplot() +
+  geom_bar(aes(x=med_cor))
 
 scan_time_diff <- diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt)))
 hist(scan_time_diff)
@@ -259,19 +259,19 @@ write.csv(peak_isodata, file = paste0(output_folder, "peak_isodata.csv"), row.na
 peak_isodata <- read_csv(paste0(output_folder, "peak_isodata.csv"))
 feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
-  summarise(shape_cor=median(iso_cor), area_cor=cor(init_area, iso_area)) %>%
+  summarise(shape_cor=log10(1-median(iso_cor)), area_cor=log10(1-cor(init_area, iso_area))) %>%
   mutate(area_cor=ifelse(is.na(area_cor), 0, area_cor))
-# feat_isodata %>%
-#   left_join(classified_feats) %>%
-#   ggplot(aes(label=feature, fill=feat_class, color=feat_class)) +
-#   # geom_point(aes(x=log10(1-shape_cor), y=log10(1-area_cor)))
-#   # geom_density(aes(x=log10(1-area_cor)), alpha=0.2)
-#   geom_density(aes(x=log10(1-shape_cor)), bw=0.3, alpha=0.2)
-# feat_isodata %>%
-#   left_join(classified_feats) %>%
-#   mutate(shape_cor=cut(1-shape_cor, breaks=10^c(1:-4))) %>%
-#   ggplot() +
-#   geom_bar(aes(x=shape_cor, fill=feat_class))
+feat_isodata %>%
+  left_join(classified_feats) %>%
+  ggplot(aes(label=feature, fill=feat_class, color=feat_class)) +
+  # geom_point(aes(x=log10(1-shape_cor), y=log10(1-area_cor)))
+  # geom_density(aes(x=log10(1-area_cor)), alpha=0.2)
+  geom_density(aes(x=log10(1-shape_cor)), bw=0.3, alpha=0.2)
+feat_isodata %>%
+  left_join(classified_feats) %>%
+  mutate(shape_cor=cut(1-shape_cor, breaks=10^c(1:-4))) %>%
+  ggplot() +
+  geom_bar(aes(x=shape_cor, fill=feat_class))
 
 # Calculate DOE metrics ----
 depth_diffs <- peak_data %>%
@@ -285,6 +285,7 @@ depth_diffs <- peak_data %>%
     if(length(depthtab)<2)return(0.001)
     broom::tidy(aov(x$into~x$depth))$p.value[1]
   })) %>%
+  mutate(t_pval=log10(t_pval)) %>%
   select(feat_id, t_pval)
 # depth_diffs %>%
 #   ungroup() %>%
@@ -294,7 +295,7 @@ depth_diffs <- peak_data %>%
 #   geom_bar(aes(x=t_pval, fill=feat_class), position = "fill")
 depth_diffs %>%
   ungroup() %>%
-  mutate(t_pval=cut(log10(t_pval), breaks = pretty(log10(t_pval), n = 10))) %>%
+  mutate(t_pval=cut(t_pval, breaks = pretty(t_pval, n = 10))) %>%
   ggplot() +
   geom_bar(aes(x=t_pval))
 
@@ -310,12 +311,12 @@ blank_diffs <- peak_data %>%
   mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 10000, smp_to_blk)) %>%
   select(feat_id, smp_to_blk) %>%
   mutate(smp_to_blk=log10(smp_to_blk))
-# blank_diffs %>%
-#   ungroup() %>%
-#   left_join(classified_feats, by=c(feat_id="feature")) %>%
-#   mutate(smp_to_blk=cut(smp_to_blk, breaks = pretty(smp_to_blk, n = 10))) %>%
-#   ggplot() +
-#   geom_bar(aes(x=smp_to_blk, fill=feat_class), position = "fill")
+blank_diffs %>%
+  ungroup() %>%
+  left_join(classified_feats, by=c(feat_id="feature")) %>%
+  mutate(smp_to_blk=cut(smp_to_blk, breaks = pretty(smp_to_blk, n = 10))) %>%
+  ggplot() +
+  geom_bar(aes(x=smp_to_blk, fill=feat_class), position = "fill")
 
 stan_diffs <- peak_data %>%
   select(feat_id, filename, into) %>%
@@ -329,12 +330,12 @@ stan_diffs <- peak_data %>%
   mutate(smp_to_std=ifelse(is.na(smp_to_std), 10, smp_to_std)) %>%
   select(feat_id, smp_to_std) %>%
   mutate(smp_to_std=log10(smp_to_std))
-# stan_diffs %>%
-#   ungroup() %>%
-#   left_join(classified_feats, by=c(feat_id="feature")) %>%
-#   mutate(smp_to_std=cut(smp_to_std, breaks = pretty(smp_to_std, n = 10))) %>%
-#   ggplot() +
-#   geom_bar(aes(x=smp_to_std, fill=feat_class), position = "fill")
+stan_diffs %>%
+  ungroup() %>%
+  left_join(classified_feats, by=c(feat_id="feature")) %>%
+  mutate(smp_to_std=cut(smp_to_std, breaks = pretty(smp_to_std, n = 10))) %>%
+  ggplot() +
+  geom_bar(aes(x=smp_to_std, fill=feat_class), position = "fill")
 
 
 
@@ -346,8 +347,8 @@ features_extracted <- simple_feats %>%
   left_join(blank_diffs) %>%
   left_join(stan_diffs) %>%
   left_join(feat_isodata, by=c(feat_id="feature")) %>%
-  # left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(feat_id="Unclassified") %>%
+  left_join(classified_feats, by=c(feat_id="feature")) %>%
+  # mutate(feat_id="Unclassified") %>%
   drop_na()
 write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"), 
           row.names = FALSE)
