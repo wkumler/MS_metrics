@@ -4,6 +4,7 @@ library(tidyverse)
 
 # dataset_version <- "FT350"
 dataset_version <- "FT2040"
+dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv")) %>%
@@ -33,7 +34,6 @@ traintestlist$test %>%
 full_model <- traintestlist$train %>% 
   select(-feat_id, -blank_found) %>%
   glm(formula=feat_class~., family = binomial)
-xcms_model <- 
 
 summary(full_model)
 traintestlist$test %>%
