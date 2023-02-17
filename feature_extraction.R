@@ -32,8 +32,8 @@ trapz <- function(x, y) {
 }
 
 # dataset_version <- "FT350"
-dataset_version <- "FT2040"
-# dataset_version <- "MS3000"
+# dataset_version <- "FT2040"
+dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 
@@ -56,8 +56,15 @@ peak_data <- msnexp_filled %>%
   mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
   unnest_wider(peak_data) %>%
   mutate(filename=file_data$filename[sample])
-classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
-  select(feature, feat_class)
+if(dataset_version=="FT2040"){
+  classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
+    select(feature, feat_class)
+} else if(dataset_version=="MS3000"){
+  classified_feats <- data.frame(feature=unique(peak_bounds$feature), 
+                                 feat_class="Unclassified")
+} else {
+  stop("Unable to find classified feats for this dataset version")
+}
 
 
 
@@ -130,7 +137,8 @@ peakshape_mets <- eic_dt %>%
   summarise(qscores=list(qscoreCalculator(rt, int))) %>%
   unnest_wider(qscores) %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
-            med_cor=log10(1-median(peak_cor, na.rm=TRUE)))
+            med_cor=median(peak_cor, na.rm=TRUE)) %>%
+  mutate(log_med_cor=log10(1-med_cor))
 peakshape_mets %>%
   left_join(classified_feats) %>%
   mutate(med_SNR=cut(med_SNR, breaks = seq(-6, 30, 3))) %>%
