@@ -13,7 +13,8 @@ library(RaMS)
 options(pillar.sigfig=7)
 
 # dataset_version <- "FT350"
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
+dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
