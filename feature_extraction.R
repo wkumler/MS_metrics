@@ -76,6 +76,7 @@ simple_feats <- peak_data %>%
             stans_found=1-sum(is.na(intb) & str_detect(filename, "Std"))/n_stans,
             blank_found=any(!is.na(intb) & str_detect(filename, "Blk"))
             )
+write.csv(simple_feats, paste0(output_folder, "simple_feats.csv"), row.names = FALSE)
 
 # Calculate peak shape metrics from EICs ----
 msdata <- readRDS(paste0(output_folder, "msdata.rds"))
@@ -129,24 +130,8 @@ peakshape_mets <- eic_dt %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
             med_cor=median(peak_cor, na.rm=TRUE)) %>%
   mutate(log_med_cor=log10(1-med_cor))
-peakshape_mets %>%
-  left_join(classified_feats) %>%
-  mutate(med_SNR=cut(med_SNR, breaks = seq(-6, 30, 3))) %>%
-  ggplot() +
-  geom_bar(aes(x=med_SNR, fill=feat_class), position = "fill")
-peakshape_mets %>%
-  left_join(classified_feats) %>%
-  mutate(med_cor=cut(med_cor, breaks = seq(-1, 1, 0.2))) %>%
-  ggplot() +
-  geom_bar(aes(x=med_cor, fill=feat_class), position = "fill")
-peakshape_mets %>%
-  left_join(classified_feats) %>%
-  ggplot() +
-  geom_point(aes(x=med_cor, y=med_SNR, color=feat_class))
-peakshape_mets %>%
-  mutate(med_cor=cut(med_cor, breaks = pretty(med_cor, n=10), include.lowest = TRUE)) %>%
-  ggplot() +
-  geom_bar(aes(x=med_cor))
+write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), row.names = FALSE)
+
 
 scan_time_diff <- diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt)))
 hist(scan_time_diff)
@@ -163,6 +148,8 @@ med_missed_scans <- peak_bounds %>%
   summarise(med_missed_scans=median(expected_scans-N)) %>%
   # with(hist(med_missed_scans, breaks = 100))
   ungroup()
+write.csv(med_missed_scans, paste0(output_folder, "med_missed_scans.csv"), row.names = FALSE)
+
 
 # Currently broken because NAs are included during RT correction
 # rt_dt <- rtime(msnexp_filled) %>%
@@ -195,12 +182,6 @@ med_missed_scans <- peak_bounds %>%
 # med_missed_scans_2 <- file_feat_n_missed %>%
 #   group_by(feature) %>%
 #   summarise(med_missed_scans_2=median(n_missed, na.rm=TRUE))
-# # med_missed_scans_2 %>%
-# #   left_join(classified_feats) %>%
-# #   mutate(med_missed_scans_2=cut(med_missed_scans_2, breaks = c(0, 1, 3, 5, 10, 20, 50, 90), include.lowest = TRUE)) %>%
-# #   ggplot() +
-# #   geom_bar(aes(x=med_missed_scans_2, fill=feat_class), position = "fill")
-
 
 
 # Calculate presence/absence of isotope info ----
@@ -259,17 +240,7 @@ feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
   summarise(shape_cor=log10(1-median(iso_cor)), area_cor=log10(1-cor(init_area, iso_area))) %>%
   mutate(area_cor=ifelse(is.na(area_cor), 0, area_cor))
-feat_isodata %>%
-  left_join(classified_feats) %>%
-  ggplot(aes(label=feature, fill=feat_class, color=feat_class)) +
-  # geom_point(aes(x=log10(1-shape_cor), y=log10(1-area_cor)))
-  # geom_density(aes(x=log10(1-area_cor)), alpha=0.2)
-  geom_density(aes(x=log10(1-shape_cor)), bw=0.3, alpha=0.2)
-feat_isodata %>%
-  left_join(classified_feats) %>%
-  mutate(shape_cor=cut(1-shape_cor, breaks=10^c(1:-4))) %>%
-  ggplot() +
-  geom_bar(aes(x=shape_cor, fill=feat_class))
+write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
 
 # Calculate DOE metrics ----
 depth_diffs <- peak_data %>%
@@ -285,17 +256,7 @@ depth_diffs <- peak_data %>%
   })) %>%
   mutate(t_pval=log10(t_pval)) %>%
   select(feat_id, t_pval)
-# depth_diffs %>%
-#   ungroup() %>%
-#   left_join(classified_feats, by=c(feat_id="feature")) %>%
-#   mutate(t_pval=cut(log10(t_pval), breaks = pretty(log10(t_pval), n = 10))) %>%
-#   ggplot() +
-#   geom_bar(aes(x=t_pval, fill=feat_class), position = "fill")
-depth_diffs %>%
-  ungroup() %>%
-  mutate(t_pval=cut(t_pval, breaks = pretty(t_pval, n = 10))) %>%
-  ggplot() +
-  geom_bar(aes(x=t_pval))
+write.csv(depth_diffs, paste0(output_folder, "depth_diffs.csv"), row.names = FALSE)
 
 blank_diffs <- peak_data %>%
   select(feat_id, filename, into) %>%
@@ -309,12 +270,7 @@ blank_diffs <- peak_data %>%
   mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 10000, smp_to_blk)) %>%
   select(feat_id, smp_to_blk) %>%
   mutate(smp_to_blk=log10(smp_to_blk))
-blank_diffs %>%
-  ungroup() %>%
-  left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(smp_to_blk=cut(smp_to_blk, breaks = pretty(smp_to_blk, n = 10))) %>%
-  ggplot() +
-  geom_bar(aes(x=smp_to_blk, fill=feat_class), position = "fill")
+write.csv(blank_diffs, paste0(output_folder, "blank_diffs.csv"), row.names = FALSE)
 
 stan_diffs <- peak_data %>%
   select(feat_id, filename, into) %>%
@@ -328,38 +284,32 @@ stan_diffs <- peak_data %>%
   mutate(smp_to_std=ifelse(is.na(smp_to_std), 10, smp_to_std)) %>%
   select(feat_id, smp_to_std) %>%
   mutate(smp_to_std=log10(smp_to_std))
-stan_diffs %>%
-  ungroup() %>%
-  left_join(classified_feats, by=c(feat_id="feature")) %>%
-  mutate(smp_to_std=cut(smp_to_std, breaks = pretty(smp_to_std, n = 10))) %>%
-  ggplot() +
-  geom_bar(aes(x=smp_to_std, fill=feat_class), position = "fill")
-
+write.csv(stan_diffs, paste0(output_folder, "stan_diffs.csv"), row.names = FALSE)
 
 
 # Join feature classes and write out ----
+simple_feats <- read_csv(paste0(output_folder, "simple_feats.csv"))
+peakshape_mets <- read_csv(paste0(output_folder, "peakshape_mets.csv"))
+med_missed_scans <- read_csv(paste0(output_folder, "med_missed_scans.csv"))
+depth_diffs <- read_csv(paste0(output_folder, "depth_diffs.csv"))
+blank_diffs <- read_csv(paste0(output_folder, "blank_diffs.csv"))
+stan_diffs <- read_csv(paste0(output_folder, "stan_diffs.csv"))
+feat_isodata <- read_csv(paste0(output_folder, "feat_isodata.csv"))
+classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
+  select(feature, feat_class)
+
+
 features_extracted <- simple_feats %>%
   left_join(peakshape_mets, by=c(feat_id="feature")) %>%
   left_join(med_missed_scans, by=c(feat_id="feature")) %>%
   left_join(depth_diffs) %>%
   left_join(blank_diffs) %>%
   left_join(stan_diffs) %>%
-  left_join(feat_isodata, by=c(feat_id="feature")) %>%
+  left_join(feat_isodata, by=c(feat_id="feature")) %>% 
   left_join(classified_feats, by=c(feat_id="feature")) %>%
-  # mutate(feat_id="Unclassified") %>%
   drop_na()
 write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"), 
           row.names = FALSE)
-
-
-
-
-
-
-
-
-
-
 
 
 # Visualization ----
