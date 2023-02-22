@@ -243,6 +243,7 @@ feat_isodata <- peak_isodata %>%
 write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
 
 # Calculate DOE metrics ----
+library(lmPerm)
 depth_diffs <- peak_data %>%
   select(feat_id, filename, into) %>%
   left_join(file_data) %>%
@@ -252,9 +253,11 @@ depth_diffs <- peak_data %>%
     depthtab <- table(x$depth)
     if(any(depthtab<2))return(1)
     if(length(depthtab)<2)return(0.001)
-    broom::tidy(aov(x$into~x$depth))$p.value[1]
+    # broom::tidy(aov(x$into~x$depth))$p.value[1]
+    broom::tidy(aovp(x$into~x$depth, settings=FALSE, perm = "Prob",
+                     maxIter=1000))$`Pr(Prob)`[1]
   })) %>%
-  mutate(t_pval=log10(t_pval)) %>%
+  mutate(t_pval=log10(t_pval+0.001)) %>%
   select(feat_id, t_pval)
 write.csv(depth_diffs, paste0(output_folder, "depth_diffs.csv"), row.names = FALSE)
 
