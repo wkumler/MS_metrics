@@ -93,7 +93,7 @@ eic_dt <- peak_bounds %>%
 qscoreCalculator <- function(rt, int){
   #Check for bogus EICs
   if(length(rt)<5){
-    return(list(SNR=0, peak_cor=0))
+    return(list(SNR=NA, peak_cor=NA))
   }
   #Calculate where each rt would fall on a beta dist (accounts for missed scans)
   scaled_rts <- (rt-min(rt))/(max(rt)-min(rt))
@@ -129,7 +129,9 @@ peakshape_mets <- eic_dt %>%
   summarise(qscores=list(qscoreCalculator(rt, int))) %>%
   unnest_wider(qscores) %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
-            med_cor=median(peak_cor, na.rm=TRUE)) %>%
+            med_cor=median(peak_cor, na.rm=TRUE),
+            max_SNR=max(SNR, na.rm = TRUE),
+            max_cor=max(peak_cor, na.rm = TRUE)) %>%
   mutate(log_med_cor=log10(1-med_cor))
 write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), row.names = FALSE)
 
@@ -209,19 +211,19 @@ peak_isodata <- peak_bounds %>%
         rt%between%c(rtmin_i, rtmax_i), c("rt", "int")][
           , rt:=round(rt, 5)]
     if(nrow(addiso_eic)<5){
-      iso_cor <- 0
+      iso_cor <- NA
       if(nrow(init_eic)>0){
         init_area <- trapz(init_eic$rt, init_eic$int)
       } else {
-        init_area <- 0
+        init_area <- NA
       }
-      iso_area <- 0
+      iso_area <- NA
     } else {
       eic <- merge(init_eic, addiso_eic, by="rt", suffixes=c("_init", "_iso"))
       if(nrow(eic)==0){
-        iso_cor <- 0
-        init_area <- 0
-        iso_area <- 0
+        iso_cor <- NA
+        init_area <- NA
+        iso_area <- NA
       } else {
         # par(mfrow=c(2,1), mar=c(2.1, 2.1, 0.1, 0.1))
         # plot(eic$rt, eic$int_init, xlab="", ylab="")
@@ -239,8 +241,8 @@ write.csv(peak_isodata, file = paste0(output_folder, "peak_isodata.csv"), row.na
 peak_isodata <- read_csv(paste0(output_folder, "peak_isodata.csv"))
 feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
-  summarise(shape_cor=log10(1-median(iso_cor)), area_cor=log10(1-cor(init_area, iso_area))) %>%
-  mutate(area_cor=ifelse(is.na(area_cor), 0, area_cor))
+  summarise(shape_cor=log10(1-median(iso_cor, na.rm=TRUE)), 
+            area_cor=log10(1-cor(init_area, iso_area, use="complete.obs")))
 write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
 
 # Calculate DOE metrics ----
