@@ -56,16 +56,6 @@ peak_data <- msnexp_filled %>%
   mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
   unnest_wider(peak_data) %>%
   mutate(filename=file_data$filename[sample])
-if(dataset_version=="FT2040"){
-  classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
-    select(feature, feat_class)
-} else if(dataset_version=="MS3000"){
-  classified_feats <- data.frame(feature=unique(peak_bounds$feature), 
-                                 feat_class="Unclassified")
-} else {
-  stop("Unable to find classified feats for this dataset version")
-}
-
 
 
 # Simple feature extraction - those provided by XCMS directly ----
