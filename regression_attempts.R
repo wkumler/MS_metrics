@@ -4,7 +4,7 @@ library(tidyverse)
 
 # dataset_version <- "FT350"
 dataset_version <- "FT2040"
-dataset_version <- "MS3000"
+# dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv")) %>%
@@ -20,7 +20,7 @@ traintestlist <- features_extracted %>%
   setNames(c("train", "test"))
 
 # Single-(ML)-feature regression ----
-single_model <- glm(feat_class~sd_rt, family = binomial, data=traintestlist$train)
+single_model <- glm(feat_class~med_cor, family = binomial, data=traintestlist$train)
 summary(single_model)
 traintestlist$test %>%
   cbind(pred_class=predict(single_model, ., type="response")>0.5) %>%
@@ -37,7 +37,7 @@ full_model <- traintestlist$train %>%
 
 summary(full_model)
 traintestlist$test %>%
-  cbind(pred_class=predict(full_model, ., type="response")>0.9) %>%
+  cbind(pred_class=predict(full_model, ., type="response")>0.5) %>%
   with(table(feat_class, pred_class)) %>%
   # caret::confusionMatrix() %>%
   print()
@@ -54,7 +54,7 @@ setdiff(names(all_model_feats), broom::tidy(step_model)$term)
 
 
 # Visualization (Single-metric, includes ggplot fit) ----
-pred_feat <- "sd_rt"
+pred_feat <- "med_cor"
 init_gp <- traintestlist$train %>%
   mutate(pred_cut=cut(get(pred_feat), pretty(get(pred_feat), n=15), include.lowest=TRUE)) %>%
   mutate(feat_class=factor(feat_class, labels = c("Bad", "Good"), levels=c(FALSE, TRUE))) %>%
@@ -106,3 +106,4 @@ filled_gp <- init_gp +
 cowplot::plot_grid(bar_gp, filled_gp, ncol = 1)
 ggsave("fullmodel_test.png", plot = last_plot(), path = "figures", 
        width = 8, height = 5, units = "in", device = "png")
+
