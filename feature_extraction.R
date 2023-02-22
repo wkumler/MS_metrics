@@ -45,17 +45,18 @@ msnexp_filled <- readRDS(paste0(output_folder, "msnexp_filled.rds"))
 peak_data_long <- msnexp_filled %>%
   chromPeaks() %>%
   as.data.frame() %>%
-  rownames_to_column()
+  rownames_to_column() %>%
+  mutate(peakidx=row_number())
 peak_data <- msnexp_filled %>%
   featureDefinitions() %>%
   as.data.frame() %>%
   select(mzmed, rtmed, npeaks, peakidx) %>%
   rownames_to_column("id") %>%
   unnest_longer(peakidx) %>%
-  rename_with(~paste0("feat_", .x)) %>%
-  mutate(peak_data=peak_data_long[feat_peakidx,]) %>%
-  unnest_wider(peak_data) %>%
+  rename_with(~paste0("feat_", .x), .cols = -peakidx) %>%
+  left_join(peak_data_long) %>%
   mutate(filename=file_data$filename[sample])
+
 
 
 # Simple feature extraction - those provided by XCMS directly ----
