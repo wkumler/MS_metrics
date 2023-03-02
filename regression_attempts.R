@@ -16,30 +16,30 @@ traintestlist <- features_extracted %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=ifelse(feat_class=="Good", TRUE, FALSE)) %>%
   slice_sample(n = nrow(.)) %>%
-  split(rbernoulli(nrow(.), 0.2)) %>%
+  split(runif(nrow(.))<0.2) %>%
   setNames(c("train", "test"))
 
 # Single-(ML)-feature regression ----
-single_model <- glm(feat_class~med_cor, family = binomial, data=traintestlist$train)
+single_model <- glm(feat_class~log_mean_height, family = binomial, data=traintestlist$train)
 summary(single_model)
 traintestlist$test %>%
   cbind(pred_class=predict(single_model, ., type="response")>0.5) %>%
-  with(table(feat_class, pred_class)) %>%
-  # caret::confusionMatrix() %>%
+  with(table(c(feat_class, FALSE), c(pred_class, TRUE))) %>%
+  caret::confusionMatrix() %>%
   print()
 
 
 
 # All-feature regression ----
 full_model <- traintestlist$train %>% 
-  select(-feat_id, -blank_found) %>%
+  select(-feat_id, -blank_found, -shape_cor, -area_cor) %>%
   glm(formula=feat_class~., family = binomial)
 
 summary(full_model)
 traintestlist$test %>%
   cbind(pred_class=predict(full_model, ., type="response")>0.5) %>%
   with(table(feat_class, pred_class)) %>%
-  # caret::confusionMatrix() %>%
+  caret::confusionMatrix() %>%
   print()
 
 
@@ -54,7 +54,7 @@ setdiff(names(all_model_feats), broom::tidy(step_model)$term)
 
 
 # Visualization (Single-metric, includes ggplot fit) ----
-pred_feat <- "med_cor"
+pred_feat <- "mean_mz"
 init_gp <- traintestlist$train %>%
   mutate(pred_cut=cut(get(pred_feat), pretty(get(pred_feat), n=15), include.lowest=TRUE)) %>%
   mutate(feat_class=factor(feat_class, labels = c("Bad", "Good"), levels=c(FALSE, TRUE))) %>%
@@ -81,10 +81,50 @@ cowplot::plot_grid(bar_gp, filled_gp, reg_gp, ncol = 1)
 ggsave(paste0(pred_feat, ".png"), plot = last_plot(), path = "figures", 
        width = 5, height = 6, units = "in", device = "png")
 
+# Visualization (Two-metric with plotly viz) ----
+dual_model <- traintestlist$train %>% 
+  select(feat_class, med_SNR, med_cor) %>%
+  glm(formula=feat_class~., family = binomial)
+broom::tidy(dual_model)
+
+model <- glm(formula = feat_class~med_cor+med_SNR, 
+             data = traintestlist$train, 
+             family = binomial)
+b0 <- model$coefficients[1]
+b1 <- model$coefficients[2]
+b2 <- model$coefficients[3]
+
+SNR_range <- seq(-5, 30, 1)
+cor_range <- seq(-0.5, 1, 0.1)
+log_curve_data <- expand_grid(med_SNR=SNR_range, med_cor=cor_range) %>%
+  mutate(feat_class=1/(1+exp(-(b0+b1*med_cor+b2*med_SNR)))) %>%
+  pivot_wider(names_from = med_cor, values_from = feat_class) %>%
+  column_to_rownames("med_SNR") %>%
+  data.matrix()
+raw_curve_data <- traintestlist$train %>% 
+  mutate(feat_class=as.numeric(feat_class)) %>%
+  mutate(med_SNR=((med_SNR-min(med_SNR))/(max(med_SNR)-min(med_SNR)))) %>%
+  mutate(med_SNR=med_SNR*length(SNR_range)) %>%
+  mutate(med_cor=((med_cor-min(med_cor))/(max(med_cor)-min(med_cor)))) %>%
+  mutate(med_cor=med_cor*length(cor_range))
+plot_ly() %>%
+  add_trace(x=~med_cor, y=~med_SNR, z=~feat_class, opacity=0.5,
+            mode="markers", type="scatter3d", 
+            data=raw_curve_data, marker=list(color="black")) %>%
+  add_surface(z=log_curve_data)
+
+traintestlist$test %>%
+  cbind(pred_class=predict(dual_model, ., type="response")>0.5) %>%
+  with(table(feat_class, pred_class)) %>%
+  caret::confusionMatrix() %>%
+  print()
+
+
+
 # Visualization (Full model, excludes ggplot fit) ----
 full_model <- traintestlist$train %>% 
   select(-feat_id, -blank_found) %>%
-  glm(formula=feat_class~., family = binomial)
+  glm(formula=feat_class~log_peak_height, family = binomial)
 init_gp <- traintestlist$test %>%
   cbind(pred_prob=predict(full_model, ., type="response")) %>%
   mutate(pred_prob=cut(pred_prob, pretty(pred_prob, n=15), include.lowest=TRUE)) %>%
