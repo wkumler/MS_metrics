@@ -13,8 +13,8 @@ library(RaMS)
 options(pillar.sigfig=7)
 
 # dataset_version <- "FT350"
-# dataset_version <- "FT2040"
-dataset_version <- "MS3000"
+dataset_version <- "FT2040"
+# dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -112,10 +112,10 @@ data_classified <- read_csv(paste0(output_folder, "classified_feats.csv"), show_
 table(data_classified$feat_class)
 
 ggplot(data_classified) +
-  geom_rect(aes(xmin=min_rt, xmax=max_rt, ymin=min_mz, ymax=max_mz, color=feat_class),
-            fill=NA) +
+  geom_rect(aes(xmin=min_rt/60, xmax=max_rt/60, ymin=min_mz, ymax=max_mz, color=feat_class),
+            fill=NA, linewidth=1) +
   theme_bw() +
-  labs(x="Retention time (in seconds)", y="m/z ratio", color="Classification")
+  labs(x="Retention time (in minutes)", y="m/z ratio", color="Classification")
 ggsave("class_distribution_mz_rt.png", plot = last_plot(), path = "figures", 
        width = 8, height = 5, units = "in", device = "png")
 plotly::ggplotly()
