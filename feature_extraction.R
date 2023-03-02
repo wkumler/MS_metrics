@@ -242,11 +242,11 @@ peak_isodata <- read_csv(paste0(output_folder, "peak_isodata.csv"))
 feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
   summarise(shape_cor=log10(1-median(iso_cor, na.rm=TRUE)), 
-            area_cor=log10(1-cor(init_area, iso_area, use="complete.obs")))
+            area_cor=log10(1-cor(init_area, iso_area, use="pairwise")))
 write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
 
 # Calculate DOE metrics ----
-library(lmPerm)
+# library(lmPerm)
 depth_diffs <- peak_data %>%
   select(feat_id, filename, into) %>%
   left_join(file_data) %>%
@@ -254,14 +254,21 @@ depth_diffs <- peak_data %>%
   nest(data=-feat_id) %>%
   mutate(t_pval=map_dbl(data, function(x){
     depthtab <- table(x$depth)
-    if(any(depthtab<2))return(1)
-    if(length(depthtab)<2)return(0.001)
-    # broom::tidy(aov(x$into~x$depth))$p.value[1]
-    broom::tidy(aovp(x$into~x$depth, settings=FALSE, perm = "Prob",
-                     maxIter=1000))$`Pr(Prob)`[1]
+    if(any(depthtab<2))return(99)
+    if(length(depthtab)<2)return(999)
+    broom::tidy(aov(x$into~x$depth))$p.value[1]
+    # broom::tidy(aovp(x$into~x$depth, settings=FALSE, perm = "Prob",
+    #                  maxIter=1000))$`Pr(Prob)`[1]
   })) %>%
-  mutate(t_pval=log10(t_pval+0.001)) %>%
-  select(feat_id, t_pval)
+  mutate(t_pval=ifelse(t_pval==99, (max(t_pval[t_pval<1])+9)/10, t_pval)) %>%
+  mutate(t_pval=ifelse(t_pval==999, min(t_pval[t_pval<1])/10, t_pval)) %>%
+  mutate(t_pval=log10(t_pval)) %>%
+  mutate(t_pval=log10(t_pval*-1)*-1) %>%
+  select(feat_id, t_pval) %>%
+  # Cover cases where there's zero data in samples OR blank
+  # 0.9 p-value is high enough to be ignored but not 1 to cause problems
+  right_join(distinct(peak_data, feat_id)) %>%
+  mutate(smp_to_blk=ifelse(is.na(t_pval), 0.9, t_pval))
 write.csv(depth_diffs, paste0(output_folder, "depth_diffs.csv"), row.names = FALSE)
 
 blank_diffs <- peak_data %>%
@@ -272,10 +279,20 @@ blank_diffs <- peak_data %>%
   group_by(feat_id, samp_type) %>%
   summarise(mean_area=mean(into)) %>%
   pivot_wider(names_from = samp_type, values_from = mean_area) %>%
+  ungroup() %>%
   mutate(smp_to_blk=Smp/Blk) %>%
-  mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 10000, smp_to_blk)) %>%
+  # Cover cases where no data was found in the samples (therefore -Inf when logged)
+  # Replace with 1/10th the lowest global value
+  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Smp), min(smp_to_blk, na.rm = TRUE)/10, smp_to_blk)) %>%
+  # Cover cases where no data was found in the blank (therefore Inf)
+  # Replace with 10x the largest global value
+  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Blk), max(smp_to_blk, na.rm = TRUE)*10, smp_to_blk)) %>%
   select(feat_id, smp_to_blk) %>%
-  mutate(smp_to_blk=log10(smp_to_blk))
+  mutate(smp_to_blk=log10(smp_to_blk)) %>%
+  # Cover cases where there's zero data in standards OR blank
+  # Ratio of 1 feels about right
+  right_join(distinct(peak_data, feat_id)) %>%
+  mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 1, smp_to_blk))
 write.csv(blank_diffs, paste0(output_folder, "blank_diffs.csv"), row.names = FALSE)
 
 stan_diffs <- peak_data %>%
@@ -287,7 +304,9 @@ stan_diffs <- peak_data %>%
   summarise(mean_area=mean(into)) %>%
   pivot_wider(names_from = samp_type, values_from = mean_area) %>%
   mutate(smp_to_std=Smp/Std) %>%
-  mutate(smp_to_std=ifelse(is.na(smp_to_std), 10, smp_to_std)) %>%
+  ungroup() %>%
+  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Smp), min(smp_to_std, na.rm = TRUE)/10, smp_to_std)) %>%
+  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Std), max(smp_to_std, na.rm = TRUE)*10, smp_to_std)) %>%
   select(feat_id, smp_to_std) %>%
   mutate(smp_to_std=log10(smp_to_std))
 write.csv(stan_diffs, paste0(output_folder, "stan_diffs.csv"), row.names = FALSE)
@@ -306,14 +325,13 @@ classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
 
 
 features_extracted <- simple_feats %>%
-  left_join(peakshape_mets, by=c(feat_id="feature")) %>%
-  left_join(med_missed_scans, by=c(feat_id="feature")) %>%
-  left_join(depth_diffs) %>%
-  left_join(blank_diffs) %>%
-  left_join(stan_diffs) %>%
+  left_join(peakshape_mets, by=c(feat_id="feature")) %>% 
+  left_join(med_missed_scans, by=c(feat_id="feature")) %>% 
+  left_join(depth_diffs) %>% 
+  left_join(blank_diffs) %>% 
+  left_join(stan_diffs) %>% 
   left_join(feat_isodata, by=c(feat_id="feature")) %>% 
-  left_join(classified_feats, by=c(feat_id="feature")) %>%
-  drop_na()
+  left_join(classified_feats, by=c(feat_id="feature"))
 write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"), 
           row.names = FALSE)
 
