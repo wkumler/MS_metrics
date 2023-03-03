@@ -55,8 +55,9 @@ abline(v=cut_point$x_space, col="red", lwd=2)
 
 table(pred_class=ifelse(FT2040_features$med_cor>cut_point$x_space, "Good", "Bad"),
       real_class=FT2040_features$feat_class)
-FT2040_features %>%
-  ggplot() +
+
+library(ggplot2)
+ggplot(FT2040_features) +
   geom_histogram(aes(x=med_cor, fill=feat_class), bins=50) +
   geom_vline(xintercept = cut_point$x_space, color="red", linewidth=1) +
   facet_wrap(~feat_class, ncol=1)
