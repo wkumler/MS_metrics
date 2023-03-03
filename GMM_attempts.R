@@ -1,4 +1,9 @@
+
+# Setup ----
 library(ClusterR)
+FT2040_features <- read.csv("made_data_FT2040/features_extracted.csv")
+
+# Demo data (synthetic) ----
 vals <- c(rnorm(10000), rnorm(1000, mean = 8, sd = 1))
 n_centers <- 2
 modelout <- GMM(matrix(vals, ncol = 1), gaussian_comps = n_centers)
@@ -13,8 +18,7 @@ for(i in 1:nrow(gauss)){
 cluster_assignments <- ifelse(modelout$Log_likelihood[,1]>modelout$Log_likelihood[,2], "C1", "C2")
 table(cluster_assignments)
 
-FT2040_features <- read.csv("made_data_FT2040/features_extracted.csv")
-
+# Using real data ----
 vals <- c(FT2040_features$med_cor, 2+FT2040_features$med_cor*-1)
 n_centers <- 3
 modelout <- GMM(matrix(vals, ncol = 1), gaussian_comps = n_centers)
@@ -27,10 +31,6 @@ for(i in 1:nrow(gauss)){
   lines(x_space, scaled_curve, lwd=2)
 }
 
-vals <- c(FT2040_features$med_cor, 2+FT2040_features$med_cor*-1)
-hist(vals, breaks = 100)
-n_centers <- 3
-modelout <- GMM(matrix(vals, ncol = 1), gaussian_comps = n_centers)
 gauss <- data.frame(centers=modelout$centroids, cov=modelout$covariance_matrices)
 gauss$name <- c("C1", "C2", "C3")
 gauss[order(gauss$centers),]
@@ -56,8 +56,13 @@ abline(v=cut_point$x_space, col="red", lwd=2)
 table(pred_class=ifelse(FT2040_features$med_cor>cut_point$x_space, "Good", "Bad"),
       real_class=FT2040_features$feat_class)
 
+# Visualizations ----
+
 library(ggplot2)
 ggplot(FT2040_features) +
   geom_histogram(aes(x=med_cor, fill=feat_class), bins=50) +
-  geom_vline(xintercept = cut_point$x_space, color="red", linewidth=1) +
-  facet_wrap(~feat_class, ncol=1)
+  # geom_vline(xintercept = cut_point$x_space, color="red", linewidth=1) +
+  facet_wrap(~feat_class)
+ggplot(FT2040_features) +
+  geom_histogram(aes(x=med_cor, fill=feat_class), bins=50) +
+  theme(legend.position = "top")
