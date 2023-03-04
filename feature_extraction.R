@@ -148,6 +148,7 @@ med_missed_scans <- peak_bounds %>%
   left_join(n_scans) %>%
   # with(hist(expected_scans-N, breaks = 100))
   summarise(med_missed_scans=median(expected_scans-N)) %>%
+  summarise(med_missed_scans=median(med_missed_scans, na.rm=TRUE)) %>%
   # with(hist(med_missed_scans, breaks = 100))
   ungroup() %>%
   mutate(med_missed_scans=ifelse(is.na(med_missed_scans), 0, med_missed_scans))
@@ -249,15 +250,6 @@ feat_isodata <- peak_isodata %>%
   mutate(area_cor=ifelse(is.infinite(area_cor), 0, area_cor))
 write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
 
-
-row_data <- features_extracted %>% filter(feat_id=="FT0046")
-msdata$EIC2[mz%between%pmppm(row_data$mean_mz)][rt%between%(row_data$mean_rt/60+c(-1, 1))] %>%
-  ggplot() +
-  geom_line(aes(x=rt,y=int, group=filename))
-msdata_isoc$EIC2[mz%between%pmppm(row_data$mean_mz+1.003355)][
-  rt%between%(row_data$mean_rt/60+c(-1, 1))] %>%
-  ggplot() +
-  geom_line(aes(x=rt,y=int, group=filename))
 
 # Calculate DOE metrics ----
 # library(lmPerm)
