@@ -76,7 +76,8 @@ simple_feats <- peak_data %>%
             samps_found=1-sum(is.na(intb) & str_detect(filename, "Smp"))/n_samps,
             stans_found=1-sum(is.na(intb) & str_detect(filename, "Std"))/n_stans,
             blank_found=any(!is.na(intb) & str_detect(filename, "Blk"))
-            )
+            ) %>%
+  mutate(sn=ifelse(is.infinite(sn), 0, sn))
 write.csv(simple_feats, paste0(output_folder, "simple_feats.csv"), row.names = FALSE)
 
 # Calculate peak shape metrics from EICs ----
@@ -136,21 +137,20 @@ peakshape_mets <- eic_dt %>%
 write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), row.names = FALSE)
 
 
-scan_time_diff <- diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt)))
-hist(scan_time_diff)
-scan_time <- mean(scan_time_diff)
+scan_time <- mean(diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt))))
 
 n_scans <- eic_dt[, .N, .(filename, feature)]
 med_missed_scans <- peak_bounds %>%
   mutate(filename=basename(filename)) %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
+  group_by(feature, filename) %>%
   mutate(expected_scans=round((rtmax-rtmin)/scan_time)) %>%
   left_join(n_scans) %>%
   # with(hist(expected_scans-N, breaks = 100))
-  group_by(feature) %>%
   summarise(med_missed_scans=median(expected_scans-N)) %>%
   # with(hist(med_missed_scans, breaks = 100))
-  ungroup()
+  ungroup() %>%
+  mutate(med_missed_scans=ifelse(is.na(med_missed_scans), 0, med_missed_scans))
 write.csv(med_missed_scans, paste0(output_folder, "med_missed_scans.csv"), row.names = FALSE)
 
 
@@ -197,7 +197,7 @@ filesplit_msdata_isoc_EIC <- split(msdata_isoc$EIC2, msdata_isoc$EIC2$filename)
 peak_isodata <- peak_bounds %>%
   mutate(filename=basename(filename)) %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
-  # filter(feature=="FT0356") %>%
+  # filter(feature=="FT0002") %>%
   # filter(filename=="190715_Std_4uMStdsMix2InH2O_2.mzML") %>%
   pbapply::pbmapply(FUN = function(df, feature_i, filename_i, mzmin_i, mzmax_i, 
                                     rtmin_i, rtmax_i){
@@ -242,8 +242,22 @@ peak_isodata <- read_csv(paste0(output_folder, "peak_isodata.csv"))
 feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
   summarise(shape_cor=log10(1-median(iso_cor, na.rm=TRUE)), 
-            area_cor=log10(1-cor(init_area, iso_area, use="pairwise")))
+            area_cor=log10(1-cor(init_area, iso_area, use="pairwise"))) %>%
+  mutate(shape_cor=ifelse(is.na(shape_cor), 0, shape_cor)) %>%
+  mutate(area_cor=ifelse(is.na(area_cor), 0, area_cor)) %>%
+  mutate(shape_cor=ifelse(is.infinite(shape_cor), 0, shape_cor)) %>%
+  mutate(area_cor=ifelse(is.infinite(area_cor), 0, area_cor))
 write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
+
+
+row_data <- features_extracted %>% filter(feat_id=="FT0046")
+msdata$EIC2[mz%between%pmppm(row_data$mean_mz)][rt%between%(row_data$mean_rt/60+c(-1, 1))] %>%
+  ggplot() +
+  geom_line(aes(x=rt,y=int, group=filename))
+msdata_isoc$EIC2[mz%between%pmppm(row_data$mean_mz+1.003355)][
+  rt%between%(row_data$mean_rt/60+c(-1, 1))] %>%
+  ggplot() +
+  geom_line(aes(x=rt,y=int, group=filename))
 
 # Calculate DOE metrics ----
 # library(lmPerm)
@@ -327,7 +341,7 @@ classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
 features_extracted <- simple_feats %>%
   left_join(peakshape_mets, by=c(feat_id="feature")) %>% 
   left_join(med_missed_scans, by=c(feat_id="feature")) %>% 
-  left_join(depth_diffs) %>% 
+  # left_join(depth_diffs) %>% 
   left_join(blank_diffs) %>% 
   left_join(stan_diffs) %>% 
   left_join(feat_isodata, by=c(feat_id="feature")) %>% 
@@ -337,6 +351,8 @@ write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"),
 
 
 # Visualization ----
+
+features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv"))
 
 metric_plots <- features_extracted %>%
   names() %>%
