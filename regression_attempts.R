@@ -53,6 +53,17 @@ setdiff(names(all_model_feats), broom::tidy(step_model)$term)
 
 
 
+# Minimal model that still has good performance ----
+min_model_feats <- traintestlist$train %>%
+  select(feat_class, max_cor, max_SNR, sd_rt)
+min_model <- glm(formula=feat_class~., family = binomial, data = min_model_feats)
+traintestlist$test %>%
+  mutate(pred_prob=predict(object=min_model, newdata = ., type = "response")) %>%
+  mutate(pred_class=round(pred_prob)) %>%
+  with(table(pred_class, feat_class))
+
+
+
 # Visualization (Single-metric, includes ggplot fit) ----
 pred_feat <- "mean_mz"
 init_gp <- traintestlist$train %>%

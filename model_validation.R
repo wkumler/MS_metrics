@@ -8,11 +8,11 @@ FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv") %>%
 MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv") %>%
   mutate(sn=ifelse(is.infinite(sn), 0, sn)) %>%
   select(-blank_found)
-# Visualize a single feature across both datasets
+# Visualize a single metric across both datasets
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
   drop_na(-shape_cor, -area_cor) %>%
   ggplot() + 
-  geom_histogram(aes(x=med_SNR, fill=feat_class), bins=40) +
+  geom_histogram(aes(x=max_SNR, fill=feat_class), bins=40) +
   facet_wrap(~cruise, ncol = 1, scales = "free_y")
 library(ggh4x)
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
@@ -20,7 +20,7 @@ bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise
   geom_histogram(aes(x=t_pval, fill=feat_class), bins=40) +
   facet_grid2(cruise~feat_class, scales = "free_y", independent = "y")
 
-# Testing Falkor model fit on MESOSCOPE data ----
+# Testing Falkor full model fit on MESOSCOPE data ----
 falkor_full_model <- FT2040_features %>% 
   select(-feat_id, -area_cor, -shape_cor) %>%
   drop_na() %>%
@@ -51,6 +51,18 @@ MS3000_preds %>%
   geom_histogram(aes(x=pred_prob, fill=feat_class))
 
 
+# Testing Falkor minimal model on MESOSCOPE ----
+falkor_min_model <- FT2040_features %>% 
+  select(feat_class, med_cor, med_SNR, sd_rt) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+MS3000_features %>%
+  mutate(pred_prob=predict(object=falkor_min_model, newdata = ., type = "response")) %>%
+  mutate(pred_class=round(pred_prob)) %>%
+  with(table(pred_class, feat_class))
+
+
 # Modeling MESOSCOPE alone and comparing parameter differences ----
 falkor_full_model <- FT2040_features %>% 
   select(-feat_id, -area_cor, -shape_cor) %>%
@@ -79,48 +91,7 @@ ggsave("model_comparison.pdf", device = "pdf", path = "figures",
        width = 9, height = 6)
 
 
-# Subsetting to figure out max performance ----
-meso_sub_model <- MS3000_features %>% 
-  select(-feat_id, -t_pval) %>%
-  filter(feat_class%in%c("Good", "Bad")) %>%
-  mutate(feat_class=feat_class=="Good") %>%
-  glm(formula=feat_class~., family = binomial)
-falkor_sub_model <- FT2040_features %>% 
-  select(-feat_id, -t_pval) %>%
-  filter(feat_class%in%c("Good", "Bad")) %>%
-  mutate(feat_class=feat_class=="Good") %>%
-  glm(formula=feat_class~., family = binomial)
-bind_rows(
-  list(
-    falkor=broom::tidy(falkor_sub_model),
-    meso=broom::tidy(meso_sub_model)
-  ), .id="cruise"
-) %>%
-  ggplot(aes(y=term, color=cruise)) +
-  geom_point(aes(x=estimate)) +
-  geom_errorbar(aes(xmin=estimate-2*std.error, xmax=estimate+2*std.error)) +
-  facet_wrap(~term, ncol=5, scales = "free") +
-  theme(axis.text.y = element_blank())
-
-# What's the best confusion matrix we can make?
-falkor_sub_model <- FT2040_features %>% 
-  select(feat_class, med_cor) %>%
-  # select(-feat_id) %>%
-  # select(feat_class, mean_mz, sd_ppm, mean_rt, sd_rt, mean_pw, sd_pw,
-  #        log_mean_height, log_sd_height, sn, f, scale, lmin, feat_npeaks,
-  #        n_found, samps_found, stans_found, med_cor, med_SNR) %>%
-  filter(feat_class%in%c("Good", "Bad")) %>%
-  mutate(feat_class=feat_class=="Good") %>%
-  glm(formula=feat_class~., family = binomial)
-MS3000_preds <- MS3000_features %>%
-  filter(feat_class%in%c("Good", "Bad")) %>%
-  mutate(pred_prob=predict(object=falkor_sub_model,newdata = ., type = "response")) %>%
-  mutate(pred_class=pred_prob>0.5) %>%
-  mutate(pred_class=ifelse(pred_class, "Good", "Bad"))
-table(predicted=MS3000_preds$pred_class, actual=MS3000_preds$feat_class)
-MS3000_preds %>% ggplot() + geom_histogram(aes(x=pred_prob, fill=feat_class))
-
-# Investigating specific peaks
+# Investigating specific peaks ----
 library(RaMS)
 msdata <- readRDS("made_data_MS3000/msdata.rds")
 file_types <- c("Blk", "15m", "DCM", "175m", "Poo", "Std")
