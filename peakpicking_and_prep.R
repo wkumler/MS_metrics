@@ -14,21 +14,12 @@ library(xcms)
 library(RaMS)
 options(pillar.sigfig=7)
 
-# dataset_version <- "FT350"
-# dataset_version <- "FT2040"
-dataset_version <- "MS3000"
-if(dataset_version=="FT350"){
-  mzML_files <- list.files("mzMLs/", full.names=TRUE)
-  prefilter_versioned <- c(5, 1e7)
-} else if(dataset_version=="FT2040") {
-  mzML_files <- list.files("mzMLs/", full.names=TRUE)
-  prefilter_versioned <- c(3, 1e6)
-} else if (dataset_version=="MS3000"){
-  mzML_files <- list.files("MS_mzMLs/", full.names=TRUE)
-  prefilter_versioned <- c(3, 1e6)
-} else {
-  stop(paste("Version", dataset_version, "not yet supported!"))
-}
+dataset_version <- "FT2040"
+# dataset_version <- "MS3000"
+
+output_folder <- paste0("made_data_", dataset_version, "/")
+mzML_files <- list.files(paste0(output_folder, "mzMLs/"), full.names=TRUE)
+prefilter_versioned <- c(3, 1e6)
 
 file_data <- data.frame(filename=mzML_files) %>%
   mutate(samp_type=str_extract(filename, "Blk|Smp|Std|Poo")) %>%
@@ -37,7 +28,6 @@ file_data <- data.frame(filename=mzML_files) %>%
   mutate(colid=factor(paste0(depth, samp_type), levels=c("Blk", "25mSmp", "DCMSmp", "175mSmp", "15mSmp", "Std", "Poo"))) %>%
   mutate(col=alpha(c("red", "blue", "green", "purple", "blue", "black", "#008080"), 0.8)[colid]) %>%
   mutate(lwd=c(2, 1, 1, 1, 1, 2)[colid])
-output_folder <- paste0("made_data_", dataset_version, "/")
 if(!dir.exists(output_folder))dir.create(output_folder)
 
 # XCMS things ----

@@ -31,11 +31,9 @@ trapz <- function(x, y) {
   return(0.5*(p1-p2))
 }
 
-# dataset_version <- "FT350"
 # dataset_version <- "FT2040"
 dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
-
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
   mutate(filename=basename(filename))
@@ -320,9 +318,12 @@ depth_diffs <- read_csv(paste0(output_folder, "depth_diffs.csv"))
 blank_diffs <- read_csv(paste0(output_folder, "blank_diffs.csv"))
 stan_diffs <- read_csv(paste0(output_folder, "stan_diffs.csv"))
 feat_isodata <- read_csv(paste0(output_folder, "feat_isodata.csv"))
-classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
-  select(feature, feat_class)
-
+if(file.exists(paste0(output_folder, "classified_feats.csv"))){
+  classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
+    select(feature, feat_class)
+} else {
+  classified_feats <- data.frame(feature=simple_feats$feat_id, feat_class="Unclassified")
+}
 
 features_extracted <- simple_feats %>%
   left_join(peakshape_mets, by=c(feat_id="feature")) %>% 
