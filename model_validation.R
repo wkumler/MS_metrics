@@ -10,26 +10,23 @@ MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv") %>%
   select(-blank_found)
 # Visualize a single metric across both datasets
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
-  drop_na(-shape_cor, -area_cor) %>%
   ggplot() + 
-  geom_histogram(aes(x=max_SNR, fill=feat_class), bins=40) +
+  geom_histogram(aes(x=sd_rt, fill=feat_class), bins=40) +
   facet_wrap(~cruise, ncol = 1, scales = "free_y")
 library(ggh4x)
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
   ggplot() + 
-  geom_histogram(aes(x=t_pval, fill=feat_class), bins=40) +
+  geom_histogram(aes(x=med_SNR, fill=feat_class), bins=40) +
   facet_grid2(cruise~feat_class, scales = "free_y", independent = "y")
 
 # Testing Falkor full model fit on MESOSCOPE data ----
 falkor_full_model <- FT2040_features %>% 
-  select(-feat_id, -area_cor, -shape_cor) %>%
-  drop_na() %>%
+  select(-feat_id) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 FT2040_preds <- FT2040_features %>%
-  select(-feat_id, -area_cor, -shape_cor) %>%
-  drop_na() %>%
+  select(-feat_id) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(pred_prob=predict(object=falkor_full_model,newdata = ., type = "response")) %>%
   mutate(pred_class=pred_prob>0.5) %>%
@@ -46,7 +43,6 @@ MS3000_preds <- MS3000_features %>%
   mutate(pred_class=ifelse(pred_class, "Good", "Bad"))
 table(predicted=MS3000_preds$pred_class, actual=MS3000_preds$feat_class)
 MS3000_preds %>% 
-  drop_na(pred_prob) %>%
   ggplot() + 
   geom_histogram(aes(x=pred_prob, fill=feat_class))
 
@@ -65,12 +61,12 @@ MS3000_features %>%
 
 # Modeling MESOSCOPE alone and comparing parameter differences ----
 falkor_full_model <- FT2040_features %>% 
-  select(-feat_id, -area_cor, -shape_cor) %>%
+  select(-feat_id) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 meso_full_model <- MS3000_features %>% 
-  select(-feat_id, -area_cor, -shape_cor) %>%
+  select(-feat_id) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
@@ -116,3 +112,45 @@ msdata$EIC2[mz%between%pmppm(row_data$mean_mz, 5)][
   geom_line(aes(x=rt, y=int, group=filename, color=line_color)) +
   # facet_wrap(~filename) +
   scale_y_continuous()
+
+# Constructing a model from BOTH datasets for comparison to each ----
+# using only the minimal model of med_cor, med_SNR, and sd_rt
+falkor_min_model <- FT2040_features %>% 
+  select(feat_class, med_cor, med_SNR, sd_rt) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+FT2040_preds <- FT2040_features %>%
+  select(-feat_id) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(pred_prob=predict(object=falkor_min_model,newdata = ., type = "response"))
+meso_min_model <- MS3000_features %>% 
+  select(feat_class, med_cor, med_SNR, sd_rt) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+MS3000_preds <- MS3000_features %>%
+  select(-feat_id) %>%
+  mutate(pred_prob=predict(object=meso_min_model,newdata = ., type = "response"))
+
+FM_min_model <- bind_rows(MS3000_features, FT2040_features) %>%
+  select(feat_class, med_cor, med_SNR, sd_rt) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+FM_preds <- bind_rows(MS3000_features, FT2040_features) %>%
+  select(-feat_id) %>%
+  mutate(pred_prob=predict(object=FM_min_model,newdata = ., type = "response")) %>%
+  mutate(pred_class=pred_prob>0.5) %>%
+  mutate(pred_class=ifelse(pred_class, "Good", "Bad"))
+with(FM_preds, table(pred_class, feat_class))
+
+list(falkor=falkor_min_model, meso=meso_min_model, both=FM_min_model) %>%
+  sapply(broom::tidy, simplify = FALSE) %>%
+  bind_rows(.id="model") %>%
+  ggplot() +
+  geom_point(aes(x=estimate, y=model, color=model)) +
+  geom_linerange(aes(xmin=estimate-2*std.error, xmax=estimate+2*std.error, 
+                     y=model, color=model)) +
+  facet_wrap(~term, ncol=1, scales = "free")
+
