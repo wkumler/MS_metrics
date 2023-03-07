@@ -353,8 +353,6 @@ metric_plots <- features_extracted %>%
   })
 
 fullplot <- do.call(gridExtra::arrangeGrob, c(metric_plots, ncol=1))
-ggsave("all_metrics.pdf", plot = fullplot, device = "pdf", path = "figures",
-       width=5, height = 50, units = "in", limitsize = FALSE)
 
 
 
@@ -379,6 +377,4 @@ gp <- features_extracted %>%
   ggpairs(aes(color=feat_class), lower=list(
     combo=wrap("facethist",  bins=30))
     )
-ggsave(plot = gp, filename = "pairsplot.pdf", device = "pdf", width = 25, height = 25, 
-       units = "in", limitsize = FALSE, path = "figures")
 

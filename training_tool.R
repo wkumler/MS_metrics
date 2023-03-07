@@ -115,7 +115,5 @@ ggplot(data_classified) +
             fill=NA, linewidth=1) +
   theme_bw() +
   labs(x="Retention time (in minutes)", y="m/z ratio", color="Classification")
-ggsave("class_distribution_mz_rt.png", plot = last_plot(), path = "figures", 
-       width = 8, height = 5, units = "in", device = "png")
 plotly::ggplotly()
 

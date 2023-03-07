@@ -59,9 +59,7 @@ fit <- features_extracted %>%
          sn, f, lmin, scale, feat_npeaks, sd_pw, feat_class) %>%
   rpart(formula = feat_class~.)
 library(rpart.plot)
-pdf("rpartplot.pdf", width=6, height = 6)
 rpart.plot(fit)
-dev.off()
 
 
 # Normal dimensionality reductions

@@ -89,8 +89,6 @@ reg_gp <- traintestlist$train %>%
   theme_bw() +
   labs(x=pred_feat, y="Logistic likelihood", color="Classification")
 cowplot::plot_grid(bar_gp, filled_gp, reg_gp, ncol = 1)
-ggsave(paste0(pred_feat, ".png"), plot = last_plot(), path = "figures", 
-       width = 5, height = 6, units = "in", device = "png")
 
 # Visualization (Two-metric with plotly viz) ----
 dual_model <- traintestlist$train %>% 
@@ -155,6 +153,4 @@ filled_gp <- init_gp +
   labs(y="Proportion") +
   theme(axis.text.x = element_text(angle=90, hjust = 1, vjust=0.5))
 cowplot::plot_grid(bar_gp, filled_gp, ncol = 1)
-ggsave("fullmodel_test.png", plot = last_plot(), path = "figures", 
-       width = 8, height = 5, units = "in", device = "png")
 
