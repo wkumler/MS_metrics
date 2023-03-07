@@ -14,21 +14,47 @@ library(xcms)
 library(RaMS)
 options(pillar.sigfig=7)
 
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
+dataset_version <- "CultureData"
 
 output_folder <- paste0("made_data_", dataset_version, "/")
 mzML_files <- list.files(paste0(output_folder, "mzMLs/"), full.names=TRUE)
 prefilter_versioned <- c(3, 1e6)
 
-file_data <- data.frame(filename=mzML_files) %>%
-  mutate(samp_type=str_extract(filename, "Blk|Smp|Std|Poo")) %>%
-  mutate(depth=str_extract(filename, "25m|DCM|175m|15m")) %>%
-  mutate(depth=ifelse(is.na(depth), "", depth)) %>%
-  mutate(colid=factor(paste0(depth, samp_type), levels=c("Blk", "25mSmp", "DCMSmp", "175mSmp", "15mSmp", "Std", "Poo"))) %>%
-  mutate(col=alpha(c("red", "blue", "green", "purple", "blue", "black", "#008080"), 0.8)[colid]) %>%
-  mutate(lwd=c(2, 1, 1, 1, 1, 2)[colid])
-if(!dir.exists(output_folder))dir.create(output_folder)
+if(dataset_version%in%c("FT2040", "MS3000")){
+  file_data <- data.frame(filename=mzML_files) %>%
+    mutate(samp_type=str_extract(filename, "Blk|Smp|Std|Poo")) %>%
+    mutate(depth=str_extract(filename, "25m|DCM|175m|15m")) %>%
+    mutate(depth=ifelse(is.na(depth), "", depth)) %>%
+    mutate(samp_group=factor(paste0(depth, samp_type), levels=c("Blk", "25mSmp", "DCMSmp", "175mSmp", "15mSmp", "Std", "Poo"))) %>%
+    mutate(col=alpha(c("red", "blue", "green", "purple", "blue", "black", "#008080"), 0.8)[samp_group]) %>%
+    mutate(lwd=c(2, 1, 1, 1, 1, 2)[samp_group])
+} else if(dataset_version=="CultureData"){
+  organism_vec <- c("Cy", "Fc", "Np", "Pc55x", "Pt", "To", "Tp", "1314", "1545", 
+                    "1771", "2021", "3430", "449", "1314P", "7803", "8102", "8501", 
+                    "As9601", "MED4", "Nat", "116-1", "2090", "371", "Ca", "Cr", 
+                    "Cs", "P3", "P5-5", "DSS3", "Och", "SA11", "SA16", "SA36", "SA44", "SA42", 
+                    "SA48", "SA53", "SA55", "SA59", "SA60", "SA7", "SAR11", "SCM1"
+  )
+  file_data <- data.frame(filename=mzML_files) %>%
+    mutate(samp_type=str_extract(filename, "Blk|Smp|Std|Poo")) %>%
+    mutate(organism=str_extract(filename, paste(organism_vec, collapse = "|"))) %>%
+    mutate(organism=ifelse(organism=="SA42", "SA44", organism)) %>%
+    mutate(organism=ifelse(samp_type=="Smp", organism, NA)) %>%
+    mutate(org_class=case_when(
+      samp_type%in%c("Blk", "Std") ~ NA,
+      samp_type=="Poo" ~ str_extract(filename, "Diatom|DinosGreens|Cyanos|Bacteria|Haptophytes"),
+      organism%in%c("Cy", "Fc", "Np", "Pc55x", "Pt", "To", "Tp") ~ "Diatom",
+      organism%in%c("1314", "1545", "1771", "2021", "449", "3430") ~ "DinosGreens",
+      organism%in%c("DSS3", "Och", paste0("SA", c(7, 11, 16, 36, 44, 48, 53, 55, 59, 60, 67)),
+                    "SAR11", "SCM1") ~ "Bacteria",
+      organism%in%c("1314P", "7803", "8102", "8501", "As9601", "MED4", "Nat") ~ "Cyanos",
+      organism%in%c("116-1", "2090", "371", "Ca", "Cr", "Cs", "P3", "P5-5") ~ "Haptos",
+      TRUE~"UNKNOWN"
+    )) %>%
+    mutate(samp_group=str_remove(basename(filename), "_?(St[1-4]_pos|Exp[1-3]_pos|MediaBlk.*|[A-I]{1,2}_pos|\\d)\\.mzML$"))
+}
 
 # XCMS things ----
 register(BPPARAM = SerialParam(progressbar = TRUE))
@@ -39,7 +65,8 @@ msnexp <- readMSData(
   mode = "onDisk"
 )
 
-register(BPPARAM = SnowParam(workers = 3, tasks = nrow(file_data), progressbar = TRUE))
+register(BPPARAM = SnowParam(workers = parallel::detectCores()-1, 
+                             tasks = nrow(file_data), progressbar = TRUE))
 cwp <- CentWaveParam(
   ppm = 5, 
   peakwidth = c(20, 80), 
@@ -60,13 +87,23 @@ obp <- ObiwarpParam(
 )
 msnexp_rtcor <- adjustRtime(msnexp_withpeaks, obp)
 
-pdp <- PeakDensityParam(
-  sampleGroups = file_data$colid, 
-  bw = 12, 
-  minFraction = 0.1, 
-  binSize = 0.001, 
-  minSamples = 2
-)
+if(dataset_version%in%c("FT2040", "MS3000")){
+  pdp <- PeakDensityParam(
+    sampleGroups = file_data$samp_group, 
+    bw = 12, 
+    minFraction = 0.1, 
+    binSize = 0.001, 
+    minSamples = 2
+  )
+} else if(dataset_version=="CultureData"){
+  pdp <- PeakDensityParam(
+    sampleGroups = file_data$samp_group, 
+    bw = 12, 
+    minFraction = 0.4, 
+    binSize = 0.001, 
+    minSamples = 3
+  )
+}
 msnexp_grouped <- groupChromPeaks(msnexp_rtcor, pdp)
 
 fpp <- FillChromPeaksParam(ppm = 2.5)
