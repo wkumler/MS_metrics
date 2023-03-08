@@ -31,8 +31,9 @@ trapz <- function(x, y) {
   return(0.5*(p1-p2))
 }
 
-# dataset_version <- "FT2040"
-dataset_version <- "MS3000"
+dataset_version <- "FT2040"
+# dataset_version <- "MS3000"
+# dataset_version <- "CultureData"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -72,19 +73,20 @@ simple_feats <- peak_data %>%
             feat_npeaks=unique(feat_npeaks)/n_files,
             n_found=(sum(is.na(intb))-n_files)/n_files,
             samps_found=1-sum(is.na(intb) & str_detect(filename, "Smp"))/n_samps,
-            stans_found=1-sum(is.na(intb) & str_detect(filename, "Std"))/n_stans,
-            blank_found=any(!is.na(intb) & str_detect(filename, "Blk"))
-            )
+            stans_found=1-sum(is.na(intb) & str_detect(filename, "Std"))/n_stans
+            ) %>%
+  mutate(sn=ifelse(is.infinite(sn), 0, sn))
 write.csv(simple_feats, paste0(output_folder, "simple_feats.csv"), row.names = FALSE)
 
 # Calculate peak shape metrics from EICs ----
 msdata <- readRDS(paste0(output_folder, "msdata.rds"))
+msdata_EIClist <- split(msdata$EIC2, msdata$EIC2$filename)
 eic_dt <- peak_bounds %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60, filename=basename(filename)) %>%
   pmap_dfr(function(...){
     row_data <- list(...)
-    msdata$EIC2[filename==row_data$filename
-                ][mz%between%c(row_data$mzmin, row_data$mzmax)
+    msdata_EIClist[[row_data$filename
+                ]][mz%between%c(row_data$mzmin, row_data$mzmax)
                   ][rt%between%c(row_data$rtmin, row_data$rtmax)][
                     , feature:=row_data$feature][]
   })
@@ -130,12 +132,18 @@ peakshape_mets <- eic_dt %>%
             med_cor=median(peak_cor, na.rm=TRUE),
             max_SNR=max(SNR, na.rm = TRUE),
             max_cor=max(peak_cor, na.rm = TRUE)) %>%
-  mutate(log_med_cor=log10(1-med_cor))
+  mutate(log_med_cor=log10(1-med_cor)) %>%
+  select(feature, med_cor, med_SNR)
 write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), row.names = FALSE)
 
 
-scan_time <- mean(diff(sort(unique(msdata$EIC2[filename==filename[1]]$rt))))
-
+scan_time <- msdata$EIC2 %>%
+  distinct(filename, rt) %>%
+  arrange(filename, rt) %>%
+  group_by(filename) %>%
+  summarise(mean_diff=mean(diff(rt))) %>%
+  summarise(grand_mean_diff=mean(mean_diff)) %>%
+  pull(grand_mean_diff)
 n_scans <- eic_dt[, .N, .(filename, feature)]
 med_missed_scans <- peak_bounds %>%
   mutate(filename=basename(filename)) %>%
@@ -144,7 +152,7 @@ med_missed_scans <- peak_bounds %>%
   left_join(n_scans) %>%
   # with(hist(expected_scans-N, breaks = 100))
   group_by(feature) %>%
-  summarise(med_missed_scans=median(expected_scans-N)) %>%
+  summarise(med_missed_scans=median(expected_scans-N, na.rm=TRUE)) %>%
   # with(hist(med_missed_scans, breaks = 100))
   ungroup()
 write.csv(med_missed_scans, paste0(output_folder, "med_missed_scans.csv"), row.names = FALSE)
@@ -238,7 +246,11 @@ peak_isodata <- read_csv(paste0(output_folder, "peak_isodata.csv"))
 feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
   summarise(shape_cor=log10(1-median(iso_cor, na.rm=TRUE)), 
-            area_cor=log10(1-cor(init_area, iso_area, use="pairwise")))
+            area_cor=log10(1-cor(init_area, iso_area, use="pairwise"))) %>%
+  mutate(shape_cor=ifelse(is.na(shape_cor), 1, shape_cor)) %>%
+  mutate(area_cor=ifelse(is.na(area_cor), 1, area_cor)) %>%
+  mutate(shape_cor=ifelse(is.infinite(shape_cor), 1, shape_cor)) %>%
+  mutate(area_cor=ifelse(is.infinite(area_cor), 1, area_cor))
 write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
 
 # Calculate DOE metrics ----
