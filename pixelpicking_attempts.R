@@ -41,11 +41,8 @@ interp_dt <- pbapply::pbmapply(function(mzmed_i, rtmed_i, feat_id_i){
   as.data.table()
 
 # Perform the PCA and check variance explained ----
-pcaoutput <- interp_dt %>%
-  group_by(feature, filename) %>%
-  mutate(rt=rank(rt)) %>%
-  # filter(feature%in%sprintf("FT%04d", 440:450)) %>%
-  ungroup() %>%
+pcaoutput <- interp_dt[, .(rt=rank(rt)), by=c("feature", "filename")] %>%
+  # complete(feature, filename, rt, fill=list(int=0)) %>%
   pivot_wider(names_from=feature, values_from = int) %>%
   select(which(colSums(is.na(.))==0)) %>%
   arrange(filename, rt) %>%
@@ -76,7 +73,7 @@ pcaoutput$rotation %>%
 
 
 # Fact-check a single feature ----
-row_data <- feature_centers %>% filter(feat_id=="FT0818")
+row_data <- feature_centers %>% filter(feat_id=="FT0001")
 msdata_gp <- msdata$EIC2[mz%between%pmppm(row_data$mzmed, 5)] %>%
   filter(rt%between%(row_data$rtmed+c(-1, 1))) %>%
   ggplot() +
