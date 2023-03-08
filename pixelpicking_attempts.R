@@ -2,8 +2,10 @@
 # Setup ----
 library(tidyverse)
 library(RaMS)
-# dataset_version <- "FT2040"
-dataset_version <- "MS3000"
+library(xcms)
+library(data.table)
+dataset_version <- "FT2040"
+# dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
 output_folder <- paste0("made_data_", dataset_version, "/")
 classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
@@ -17,13 +19,10 @@ feature_centers <- featureDefinitions(msnexp_filled) %>%
 
 # Extract the raw data and coerce to pixel matrix ----
 msdata <- readRDS(paste0(output_folder, "msdata.rds"))
-interp_df <- feature_centers %>%
-  # slice(300:400) %>%
-  pmap_dfr(function(...){
-    row_data <- list(...)
-    interp_range <- row_data$rtmed+c(-0.5, 0.5)
+interp_dt <- pbapply::pbmapply(function(mzmed_i, rtmed_i, feat_id_i){
+    interp_range <- rtmed_i+c(-0.5, 0.5)
     interp_points <- seq(interp_range[1], interp_range[2], length.out=50)
-    msdata$EIC2[mz%between%pmppm(row_data$mzmed)] %>%
+    msdata$EIC2[mz%between%pmppm(mzmed_i)] %>%
       split(.$filename) %>%
       lapply(function(eic_file){
         if(nrow(eic_file)>2){
@@ -33,14 +32,16 @@ interp_df <- feature_centers %>%
         }
       }) %>%
       bind_rows(.id="filename") %>%
-      mutate(feature=row_data$feat_id)
-  }) %>%
+      mutate(feature=feat_id_i)
+  }, feature_centers$mzmed, feature_centers$rtmed, feature_centers$feat_id, 
+  SIMPLIFY = FALSE) %>%
+  bind_rows() %>%
   group_by(feature, filename) %>%
-  mutate(int=int/max(int))
-interp_dt <- as.data.table(interp_df)
+  mutate(int=int/max(int)) %>%
+  as.data.table()
 
 # Perform the PCA and check variance explained ----
-pcaoutput <- interp_df %>%
+pcaoutput <- interp_dt %>%
   group_by(feature, filename) %>%
   mutate(rt=rank(rt)) %>%
   # filter(feature%in%sprintf("FT%04d", 440:450)) %>%
