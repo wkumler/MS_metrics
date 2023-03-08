@@ -4,8 +4,8 @@ library(tidyverse)
 library(RaMS)
 library(xcms)
 library(data.table)
-dataset_version <- "FT2040"
-# dataset_version <- "MS3000"
+# dataset_version <- "FT2040"
+dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
 output_folder <- paste0("made_data_", dataset_version, "/")
 classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
@@ -66,6 +66,7 @@ pcaoutput$rotation %>%
   ggplot() +
   geom_text(aes(x=PC1, y=PC2, label=feature, color=feat_class))
 
+library(plotly)
 pcaoutput$rotation %>%
   as.data.frame() %>%
   rownames_to_column("feature") %>%
@@ -75,34 +76,38 @@ pcaoutput$rotation %>%
 
 
 # Fact-check a single feature ----
-row_data <- feature_centers %>% filter(feat_id=="FT1213")
+row_data <- feature_centers %>% filter(feat_id=="FT0818")
 msdata_gp <- msdata$EIC2[mz%between%pmppm(row_data$mzmed, 5)] %>%
   filter(rt%between%(row_data$rtmed+c(-1, 1))) %>%
   ggplot() +
   geom_line(aes(x=rt, y=int, group=filename)) +
   ggtitle(row_data$feat_id)
-pixel_gp <- interp_df %>%
+pixel_gp <- interp_dt %>%
   filter(feature==row_data$feat_id) %>%
   mutate(samp_type=str_extract(filename, "Smp|Std|Blk|Poo")) %>%
   ggplot() +
   geom_tile(aes(x=rt, y=filename, fill=int)) +
   facet_wrap(~samp_type, ncol=1, strip.position = "left", scales = "free_y") +
   theme(axis.text.y=element_blank())
-plot(gridExtra::arrangeGrob(msdata_gp, pixel_gp, layout_matrix = matrix(c(
-  1,2,2), ncol = 1)))
+lmat <- matrix(c(1,2,2), ncol = 1)
+plot(gridExtra::arrangeGrob(msdata_gp, pixel_gp, layout_matrix = lmat))
 
-# Write a shiny app to choose features ----
+# Write a small shiny app to choose features ----
 library(shiny)
-library(data.table)
+library(shinyjs)
 ui <- fluidPage(
+  useShinyjs(),
+  extendShinyjs(text = "shinyjs.closeWindow = function() { window.close(); }", 
+                functions = c("closeWindow")),
   sidebarLayout(
     sidebarPanel(
       h3("Circle a group to see an average peak from the group"),
       numericInput("n_init_groups", label="Number of initial groups",
-                   value = 2, min = 1, max = 10, step = 1),
+                   value = 3, min = 1, max = 10, step = 1),
       numericInput("n_kmeans_dims", label="How many dimensions to use for k-means?",
                    value = 3, min = 2, max = 10, step = 1),
-      actionButton("chosen_good", label = "Click to choose selection as Good")
+      actionButton("chosen_good", label = "Click to choose selection as Good\n
+                   and return to R")
     ),
     mainPanel(
       plotlyOutput(outputId = "plotly_pca"),
@@ -131,5 +136,20 @@ server <- function(input, output, session){
     with(plot_dt, lines(rt, int+iqr_int))
     with(plot_dt, lines(rt, int-iqr_int))
   })
+  observeEvent(input$chosen_good, {
+    chosen_feats <<- event_data(source = "plotlypca", event = "plotly_selected")$key
+    message(paste("Number of selected features:", length(chosen_feats)))
+    message("Find them in the `chosen_feats` object")
+    js$closeWindow()
+    stopApp()
+  })
+  session$onSessionEnded(function() {
+    stopApp()
+  })
 }
 shinyApp(ui=ui, server = server, options = c(launch.browser=TRUE))
+
+classified_feats %>%
+  filter(feature%in%rownames(pcaoutput$rotation)) %>%
+  mutate(pred_class=ifelse(feature%in%chosen_feats, "Good", "Bad")) %>%
+  with(table(pred_class, feat_class))
