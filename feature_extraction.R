@@ -372,8 +372,6 @@ fullplot <- do.call(gridExtra::arrangeGrob, c(metric_plots, ncol=1))
 library(plotly)
 plot_ly(features_extracted, x=~mean_pw, y=~log10(sn), z=~n_found, color=~feat_class,
         type = "scatter3d", mode="markers")
-plot_ly(features_extracted, x=~n_found, y=~samps_found, z=~blank_found, color=~feat_class,
-        type = "scatter3d", mode="markers")
 features_extracted %>%
   plot_ly(x=~med_SNR, y=~med_cor, z=~log_mean_height, 
           color=~feat_class, text=~feat_id,
