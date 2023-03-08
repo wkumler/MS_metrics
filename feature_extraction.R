@@ -31,9 +31,10 @@ trapz <- function(x, y) {
   return(0.5*(p1-p2))
 }
 
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
+dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
