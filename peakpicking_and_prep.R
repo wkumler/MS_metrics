@@ -54,6 +54,8 @@ if(dataset_version%in%c("FT2040", "MS3000")){
       TRUE~"UNKNOWN"
     )) %>%
     mutate(samp_group=str_remove(basename(filename), "_?(St[1-4]_pos|Exp[1-3]_pos|MediaBlk.*|[A-I]{1,2}_pos|\\d)\\.mzML$"))
+} else {
+  stop("Dataset not recognized!")
 }
 
 # XCMS things ----
@@ -79,12 +81,21 @@ cwp <- CentWaveParam(
 msnexp_withpeaks <- findChromPeaks(msnexp, cwp)
 
 register(BPPARAM = SerialParam(progressbar = TRUE))
-obp <- ObiwarpParam(
-  binSize = 0.1, 
-  centerSample = round(nrow(file_data)/2), 
-  response = 1, 
-  distFun = "cor_opt"
-)
+if(dataset_version%in%c("FT2040", "MS3000")){
+  obp <- ObiwarpParam(
+    binSize = 0.1, 
+    centerSample = round(nrow(file_data)/2), 
+    response = 1, 
+    distFun = "cor_opt"
+  )
+} else if(dataset_version=="CultureData"){
+  obp <- ObiwarpParam(
+    binSize = 0.1, 
+    response = 1, 
+    distFun = "cor_opt",
+    subset = grep("Smp", fileNames(msnexp_withpeaks))
+  )
+}
 msnexp_rtcor <- adjustRtime(msnexp_withpeaks, obp)
 
 if(dataset_version%in%c("FT2040", "MS3000")){
