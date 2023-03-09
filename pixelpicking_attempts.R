@@ -4,9 +4,10 @@ library(tidyverse)
 library(RaMS)
 library(xcms)
 library(data.table)
-# dataset_version <- "FT2040"
-dataset_version <- "MS3000"
+dataset_version <- "FT2040"
+# dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
+# dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
   select(feature, feat_class)
@@ -22,7 +23,7 @@ msdata <- readRDS(paste0(output_folder, "msdata.rds"))
 interp_dt <- pbapply::pbmapply(function(mzmed_i, rtmed_i, feat_id_i){
     interp_range <- rtmed_i+c(-0.5, 0.5)
     interp_points <- seq(interp_range[1], interp_range[2], length.out=50)
-    msdata$EIC2[mz%between%pmppm(mzmed_i)] %>%
+    msdata$EIC[mz%between%pmppm(mzmed_i)] %>%
       split(.$filename) %>%
       lapply(function(eic_file){
         if(nrow(eic_file)>2){
@@ -41,7 +42,7 @@ interp_dt <- pbapply::pbmapply(function(mzmed_i, rtmed_i, feat_id_i){
   as.data.table()
 
 # Perform the PCA and check variance explained ----
-pcaoutput <- interp_dt[, .(rt=rank(rt)), by=c("feature", "filename")] %>%
+pcaoutput <- interp_dt[, .(rt=rank(rt), int), by=c("feature", "filename")] %>%
   # complete(feature, filename, rt, fill=list(int=0)) %>%
   pivot_wider(names_from=feature, values_from = int) %>%
   select(which(colSums(is.na(.))==0)) %>%
@@ -49,11 +50,6 @@ pcaoutput <- interp_dt[, .(rt=rank(rt)), by=c("feature", "filename")] %>%
   select(-rt, -filename) %>%
   data.matrix() %>%
   prcomp()
-
-plot(pcaoutput)
-barplot(head(pcaoutput$sdev^2, 30))
-round(sum(head(pcaoutput$sdev^2, 3))/sum(pcaoutput$sdev^2)*100)
-
 
 # Visualize in two and three dimensions ----
 pcaoutput$rotation %>%
@@ -73,7 +69,7 @@ pcaoutput$rotation %>%
 
 
 # Fact-check a single feature ----
-row_data <- feature_centers %>% filter(feat_id=="FT0001")
+row_data <- feature_centers %>% filter(feat_id=="FT0004")
 msdata_gp <- msdata$EIC2[mz%between%pmppm(row_data$mzmed, 5)] %>%
   filter(rt%between%(row_data$rtmed+c(-1, 1))) %>%
   ggplot() +
@@ -92,46 +88,102 @@ plot(gridExtra::arrangeGrob(msdata_gp, pixel_gp, layout_matrix = lmat))
 # Write a small shiny app to choose features ----
 library(shiny)
 library(shinyjs)
-ui <- fluidPage(
+ui <- function(){fluidPage(
   useShinyjs(),
   extendShinyjs(text = "shinyjs.closeWindow = function() { window.close(); }", 
                 functions = c("closeWindow")),
   sidebarLayout(
     sidebarPanel(
-      h3("Circle a group to see an average peak from the group"),
-      numericInput("n_init_groups", label="Number of initial groups",
+      h3("Group peakpicker"),
+      h4("Settings"),
+      numericInput("n_kmeans_groups", label="Number of k-means groups",
                    value = 3, min = 1, max = 10, step = 1),
-      numericInput("n_kmeans_dims", label="How many dimensions to use for k-means?",
-                   value = 3, min = 2, max = 10, step = 1),
-      actionButton("chosen_good", label = "Click to choose selection as Good\n
-                   and return to R")
+      numericInput("n_kmeans_dims", label="Number of PCs to use for k-means",
+                   value = 3, min = 1, max = 10, step = 1),
+      actionButton("chosen_good", label = HTML("Click here to choose selection<br>as 
+                   Good and return to R")),
+      p(" "),
+      plotOutput(outputId = "pcaprops", height = "200px"), 
+      width = 3
     ),
     mainPanel(
-      plotlyOutput(outputId = "plotly_pca"),
-      plotOutput(outputId = "avg_selected_peak")
+      fluidRow(
+        column(width=7, plotlyOutput(outputId = "plotlypca")),
+        column(width=5, plotOutput(outputId = "kmeans_avgpeak"))
+      ),
+      fluidRow(
+        column(width = 6, plotOutput(outputId = "live_peak", height = "200px")),
+        column(width = 6, plotOutput(outputId = "avg_selected_peak", height = "200px"))
+      )
     )
   )
-)
+)}
+plotpeak <- function(feat_ids){
+  plot_dt <- interp_dt[feature%chin%feat_ids][order(rt)][
+    , .(rt=1:.N, int), by=c("feature", "filename")][
+      , .(int=mean(int, na.rm=TRUE), iqr_int=IQR(int, na.rm=TRUE)), by=rt]
+  plot_dt$rt <- rank(plot_dt$rt)
+  plot_title <- ifelse(length(feat_ids)==1, feat_ids, "")
+  par(mar=c(0.1, 0.1, 0.1, 0.1))
+  with(plot_dt, plot(rt, int, type="l", lwd=2, ylim=c(0, 1), 
+                     xlab="", ylab="", title=plot_title))
+  with(plot_dt, lines(rt, int+iqr_int))
+  with(plot_dt, lines(rt, int-iqr_int))
+}
 server <- function(input, output, session){
-  output$plotly_pca <- renderPlotly({
-    gp <- pcaoutput$rotation[,1:input$n_kmeans_dims] %>%
+  init_par <- par(no.readonly = TRUE)
+  on.exit(par(init_par))
+  output$pcaprops <- renderPlot({
+    par(mar=c(2.1, 4.1, 0.1, 0.1))
+    perc_exp <- pcaoutput$sdev^2/sum(pcaoutput$sdev^2)
+    barplot(head(perc_exp*100, 10), 
+            ylab = "% variance explained", names.arg = paste0("PC", 1:10))
+    exp_thresholds <- c(0.2, 0.5, 0.8)
+    PCs_to_explain_perc <- sapply(exp_thresholds, function(exp_threshold){
+      which(cumsum(perc_exp)>exp_threshold)[1]
+    })
+    legend_text <- paste(paste0(exp_thresholds*100, "%: "), PCs_to_explain_perc, "PCs")
+    legend("topright", legend = legend_text, bty='n', bg="transparent")
+  })
+  kmeaned_df <- reactive({
+    pcaoutput$rotation[,1:input$n_kmeans_dims] %>%
       as.data.frame() %>%
-      mutate(cluster=factor(kmeans(., centers=input$n_init_groups)$cluster)) %>%
-      rownames_to_column("feature") %>%
+      mutate(cluster=factor(kmeans(., centers=input$n_kmeans_groups)$cluster)) %>%
+      rownames_to_column("feature")
+  })
+  output$plotlypca <- renderPlotly({
+    gp <- kmeaned_df() %>%
       ggplot(aes(x=PC1, y=PC2, label=feature, color=cluster, key=feature)) +
       geom_text()
     ggplotly(gp, source = "plotlypca") %>% layout(dragmode="lasso")
   })
+  output$kmeans_avgpeak <- renderPlot({
+    clustergroups <- kmeaned_df() %>% 
+      split(.$cluster) %>%
+      lapply(`[[`, "feature")
+    plot_dt <- merge(interp_dt, kmeaned_df())[order(rt)][
+      , .(rt=1:.N, int), by=c("cluster", "feature", "filename")][
+        , .(int=mean(int, na.rm=TRUE), iqr_int=IQR(int, na.rm=TRUE)), 
+        by=c("rt", "cluster")]
+    plot_dt %>%
+      ggplot(aes(x=rt, color=cluster)) +
+      geom_line(aes(y=int), linewidth=1) +
+      geom_line(aes(y=int+iqr_int)) +
+      geom_line(aes(y=int-iqr_int)) +
+      facet_wrap(~cluster) +
+      coord_cartesian(ylim=c(0, 1), clip="on") +
+      theme_bw() +
+      theme(legend.position = "none")
+  })
+  output$live_peak <- renderPlot({
+    ed_hover <- event_data(source = "plotlypca", event = c("plotly_hover"))
+    req(ed_hover)
+    plotpeak(ed_hover$key)
+  })
   output$avg_selected_peak <- renderPlot({
-    ed <- event_data(source = "plotlypca", event = "plotly_selected")
-    req(ed)
-    plot_dt <- interp_dt[
-      feature%chin%ed$key, .(rt=rank(rt, ties.method = "min"), int), by=feature][
-        , .(int=mean(int), iqr_int=IQR(int)), by=rt]
-    plot_dt$rt <- rank(plot_dt$rt)
-    with(plot_dt, plot(rt, int, type="l", lwd=2, ylim=c(0, 1)))
-    with(plot_dt, lines(rt, int+iqr_int))
-    with(plot_dt, lines(rt, int-iqr_int))
+    ed_selected <- event_data(source = "plotlypca", event = c("plotly_selected"))
+    req(ed_selected)
+    plotpeak(ed_selected$key)
   })
   observeEvent(input$chosen_good, {
     chosen_feats <<- event_data(source = "plotlypca", event = "plotly_selected")$key
@@ -146,6 +198,7 @@ server <- function(input, output, session){
 }
 shinyApp(ui=ui, server = server, options = c(launch.browser=TRUE))
 
+# Check performance against classified dataset ----
 classified_feats %>%
   filter(feature%in%rownames(pcaoutput$rotation)) %>%
   mutate(pred_class=ifelse(feature%in%chosen_feats, "Good", "Bad")) %>%
