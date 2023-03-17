@@ -33,8 +33,8 @@ trapz <- function(x, y) {
 
 # dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
-# dataset_version <- "CultureData"
-dataset_version <- "Pttime"
+dataset_version <- "CultureData"
+# dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -84,6 +84,8 @@ msdata <- readRDS(paste0(output_folder, "msdata.rds"))
 msdata_EIClist <- split(msdata$EIC2, msdata$EIC2$filename)
 eic_dt <- peak_bounds %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60, filename=basename(filename)) %>%
+  left_join(file_data) %>%
+  # filter(samp_type=="Smp") %>%
   pmap_dfr(function(...){
     row_data <- list(...)
     msdata_EIClist[[row_data$filename
@@ -125,16 +127,24 @@ qscoreCalculator <- function(rt, int){
   #Return the quality score
   return(list(SNR=SNR, peak_cor=peak_cor))
 }
-peakshape_mets <- eic_dt %>%
+second_largest <- function(x){
+  max(x[-which.max(x)], na.rm = TRUE)
+}
+peakshape_rawdata <- eic_dt %>%
+  unique() %>%
   group_by(feature, filename) %>%
   summarise(qscores=list(qscoreCalculator(rt, int))) %>%
-  unnest_wider(qscores) %>%
+  unnest_wider(qscores)
+peakshape_mets <- peakshape_rawdata %>%
+  right_join(file_data %>% select(filename))
+  complete(filename, feature) %>%
+  group_by(feature) %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
             med_cor=median(peak_cor, na.rm=TRUE),
             max_SNR=max(SNR, na.rm = TRUE),
-            max_cor=max(peak_cor, na.rm = TRUE)) %>%
-  mutate(log_med_cor=log10(1-med_cor)) %>%
-  select(feature, med_cor, med_SNR)
+            max_cor=max(peak_cor, na.rm = TRUE),
+            medtop3_cor=second_largest(peak_cor)) %>%
+  mutate(log_med_cor=log10(1-med_cor))
 write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), row.names = FALSE)
 
 
