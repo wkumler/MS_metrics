@@ -9,72 +9,83 @@ dataset_version <- "FT2040"
 # dataset_version <- "CultureData"
 # dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
-classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
-  select(feature, feat_class)
 msnexp_filled <- readRDS(paste0(output_folder, "msnexp_filled.rds"))
 feature_centers <- featureDefinitions(msnexp_filled) %>%
   as.data.frame() %>%
   select(mzmed, rtmed) %>%
   rownames_to_column("feat_id") %>%
   mutate(rtmed=rtmed/60)
+msdata <- readRDS(paste0(output_folder, "msdata.rds"))
+
+
 
 # Extract the raw data and coerce to pixel matrix ----
-msdata <- readRDS(paste0(output_folder, "msdata.rds"))
 interp_dt <- pbapply::pbmapply(function(mzmed_i, rtmed_i, feat_id_i){
-    interp_range <- rtmed_i+c(-0.5, 0.5)
-    interp_points <- seq(interp_range[1], interp_range[2], length.out=50)
-    msdata$EIC[mz%between%pmppm(mzmed_i)] %>%
-      split(.$filename) %>%
-      lapply(function(eic_file){
-        if(nrow(eic_file)>2){
-          setNames(approx(eic_file$rt, eic_file$int, xout=interp_points), c("rt", "int"))
-        } else {
-          data.frame(rt=numeric(), int=numeric())
-        }
-      }) %>%
-      bind_rows(.id="filename") %>%
-      mutate(feature=feat_id_i)
+  interp_range <- rtmed_i+c(-0.5, 0.5)
+  interp_points <- seq(interp_range[1], interp_range[2], length.out=50)
+  msdata$EIC2[mz%between%pmppm(mzmed_i)] %>%
+    split(.$filename) %>%
+    lapply(function(eic_file){
+      if(nrow(eic_file)>2){
+        setNames(approx(eic_file$rt, eic_file$int, xout=interp_points), c("rt", "int"))
+      } else {
+        data.frame(rt=numeric(), int=numeric())
+      }
+    }) %>%
+    bind_rows(.id="filename") %>%
+    mutate(feature=feat_id_i)
   }, feature_centers$mzmed, feature_centers$rtmed, feature_centers$feat_id, 
   SIMPLIFY = FALSE) %>%
   bind_rows() %>%
   group_by(feature, filename) %>%
-  mutate(int=int/max(int)) %>%
+  mutate(int=int/max(int, na.rm = TRUE)) %>%
   as.data.table()
 
+
+
 # Perform the PCA and check variance explained ----
-pcaoutput <- interp_dt[, .(rt=rank(rt), int), by=c("feature", "filename")] %>%
-  # complete(feature, filename, rt, fill=list(int=0)) %>%
+interp_complete <- interp_dt[, .(rt=rank(rt), int), by=c("feature", "filename")] %>%
+  complete(feature, filename, rt, fill=list(int=-1))
+interp_mat <- interp_complete %>%
   pivot_wider(names_from=feature, values_from = int) %>%
-  select(which(colSums(is.na(.))==0)) %>%
+  # select(which(colSums(is.na(.))==0)) %>%
   arrange(filename, rt) %>%
   select(-rt, -filename) %>%
-  data.matrix() %>%
-  prcomp()
+  data.matrix()
+pcaoutput <- prcomp(interp_mat)
+
 
 # Visualize in two and three dimensions ----
 pcaoutput$rotation %>%
   as.data.frame() %>%
   rownames_to_column("feature") %>%
-  left_join(classified_feats) %>%
   ggplot() +
-  geom_text(aes(x=PC1, y=PC2, label=feature, color=feat_class))
+  geom_text(aes(x=PC1, y=PC2, label=feature))
+
+pcaoutput$x[,"PC1"] %>%
+  matrix(nrow=50, ncol=length(fileNames(msnexp_filled))) %>%
+  as.data.frame() %>%
+  mutate(rownum=row_number()) %>%
+  pivot_longer(-rownum, names_to="rt", values_to="int") %>% 
+  mutate(rt=factor(rt, levels=paste0("V", 1:length(fileNames(msnexp_filled))))) %>%
+  ggplot() +
+  geom_tile(aes(x=rownum, y=rt, fill=int))
 
 library(plotly)
 pcaoutput$rotation %>%
   as.data.frame() %>%
   rownames_to_column("feature") %>%
-  left_join(classified_feats) %>%
-  plot_ly(x=~PC1, y=~PC2, z=~PC3, color=~feat_class, mode="markers", type="scatter3d",
-          opacity=0.5)
+  plot_ly(x=~PC1, y=~PC2, z=~PC3, mode="markers", type="scatter3d", opacity=0.5)
+
 
 
 # Fact-check a single feature ----
-row_data <- feature_centers %>% filter(feat_id=="FT0004")
+row_data <- feature_centers %>% filter(feat_id=="FT0025")
 msdata_gp <- msdata$EIC2[mz%between%pmppm(row_data$mzmed, 5)] %>%
   filter(rt%between%(row_data$rtmed+c(-1, 1))) %>%
   ggplot() +
   geom_line(aes(x=rt, y=int, group=filename)) +
-  ggtitle(row_data$feat_id)
+  ggtitle(paste0(row_data$feat_id, ": ", round(row_data$mzmed, 5)))
 pixel_gp <- interp_dt %>%
   filter(feature==row_data$feat_id) %>%
   mutate(samp_type=str_extract(filename, "Smp|Std|Blk|Poo")) %>%
@@ -84,6 +95,13 @@ pixel_gp <- interp_dt %>%
   theme(axis.text.y=element_blank())
 lmat <- matrix(c(1,2,2), ncol = 1)
 plot(gridExtra::arrangeGrob(msdata_gp, pixel_gp, layout_matrix = lmat))
+
+msdata$EIC2[mz%between%pmppm(row_data$mzmed, 5)] %>%
+  filter(rt%between%(row_data$rtmed+c(-1, 1))) %>%
+  mutate(plot_color=ifelse(str_detect(filename, "8501"), "Croco", "Other")) %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=int, group=filename, color=plot_color)) +
+  ggtitle(paste0(row_data$feat_id, ": ", round(row_data$mzmed, 5), " (Trimethylamine)"))
 
 # Write a small shiny app to choose features ----
 library(shiny)
@@ -97,24 +115,28 @@ ui <- function(){fluidPage(
       h3("Group peakpicker"),
       h4("Settings"),
       numericInput("n_kmeans_groups", label="Number of k-means groups",
-                   value = 3, min = 1, max = 10, step = 1),
+                   value = 4, min = 1, max = 10, step = 1),
       numericInput("n_kmeans_dims", label="Number of PCs to use for k-means",
                    value = 3, min = 1, max = 10, step = 1),
-      actionButton("chosen_good", label = HTML("Click here to choose selection<br>as 
-                   Good and return to R")),
+      actionButton("kmeans_click", label = "Rerun k-means"),
       p(" "),
       plotOutput(outputId = "pcaprops", height = "200px"), 
+      p(" "),
+      actionButton("chosen_good", label = "Flag selection as Good"),
+      actionButton("chosen_bad", label = "Flag selection as Bad"),
+      actionButton("endsession", label = "Return to R and write out"),
       width = 3
     ),
     mainPanel(
       fluidRow(
-        column(width=7, plotlyOutput(outputId = "plotlypca")),
-        column(width=5, plotOutput(outputId = "kmeans_avgpeak"))
+        column(width=8, plotlyOutput(outputId = "plotlypca")),
+        column(width=4, plotOutput(outputId = "kmeans_avgpeak"))
       ),
       fluidRow(
         column(width = 6, plotOutput(outputId = "live_peak", height = "200px")),
         column(width = 6, plotOutput(outputId = "avg_selected_peak", height = "200px"))
-      )
+      ),
+      width=9
     )
   )
 )}
@@ -123,10 +145,10 @@ plotpeak <- function(feat_ids){
     , .(rt=1:.N, int), by=c("feature", "filename")][
       , .(int=mean(int, na.rm=TRUE), iqr_int=IQR(int, na.rm=TRUE)), by=rt]
   plot_dt$rt <- rank(plot_dt$rt)
-  plot_title <- ifelse(length(feat_ids)==1, feat_ids, "")
-  par(mar=c(0.1, 0.1, 0.1, 0.1))
+  plot_title <- ifelse(length(feat_ids)==1, feat_ids, "Aggregate")
+  par(mar=c(0.1, 0.1, 1.1, 0.1))
   with(plot_dt, plot(rt, int, type="l", lwd=2, ylim=c(0, 1), 
-                     xlab="", ylab="", title=plot_title))
+                     xlab="", ylab="", main=plot_title))
   with(plot_dt, lines(rt, int+iqr_int))
   with(plot_dt, lines(rt, int-iqr_int))
 }
@@ -146,6 +168,7 @@ server <- function(input, output, session){
     legend("topright", legend = legend_text, bty='n', bg="transparent")
   })
   kmeaned_df <- reactive({
+    input$kmeans_click
     pcaoutput$rotation[,1:input$n_kmeans_dims] %>%
       as.data.frame() %>%
       mutate(cluster=factor(kmeans(., centers=input$n_kmeans_groups)$cluster)) %>%
@@ -186,9 +209,14 @@ server <- function(input, output, session){
     plotpeak(ed_selected$key)
   })
   observeEvent(input$chosen_good, {
-    chosen_feats <<- event_data(source = "plotlypca", event = "plotly_selected")$key
-    message(paste("Number of selected features:", length(chosen_feats)))
-    message("Find them in the `chosen_feats` object")
+    good_feats <<- event_data(source = "plotlypca", event = "plotly_selected")$key
+  })
+  observeEvent(input$chosen_bad, {
+    bad_feats <<- event_data(source = "plotlypca", event = "plotly_selected")$key
+  })
+  observeEvent(input$endsession, {
+    message(paste("Number of good features:", length(good_feats)))
+    message(paste("Number of bad features:", length(bad_feats)))
     js$closeWindow()
     stopApp()
   })
@@ -198,8 +226,12 @@ server <- function(input, output, session){
 }
 shinyApp(ui=ui, server = server, options = c(launch.browser=TRUE))
 
-# Check performance against classified dataset ----
-classified_feats %>%
-  filter(feature%in%rownames(pcaoutput$rotation)) %>%
-  mutate(pred_class=ifelse(feature%in%chosen_feats, "Good", "Bad")) %>%
-  with(table(pred_class, feat_class))
+# Write out chosen features ----
+
+feature_centers %>%
+  mutate(feat_class=case_when(
+    feat_id%in%good_feats ~ "Good",
+    feat_id%in%bad_feats ~ "Bad",
+    TRUE~"Unclassified"
+  )) %>%
+  write.csv(file = paste0(output_folder, "quickclass_feats.csv"), row.names = FALSE)
