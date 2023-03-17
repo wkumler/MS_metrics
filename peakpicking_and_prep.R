@@ -14,10 +14,10 @@ library(xcms)
 library(RaMS)
 options(pillar.sigfig=7)
 
-# dataset_version <- "FT2040"
+dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
-dataset_version <- "Pttime"
+# dataset_version <- "Pttime"
 
 output_folder <- paste0("made_data_", dataset_version, "/")
 mzML_files <- list.files(paste0(output_folder, "mzMLs/"), full.names=TRUE)
@@ -52,12 +52,11 @@ if(dataset_version%in%c("FT2040", "MS3000")){
                     "SAR11", "SCM1") ~ "Bacteria",
       organism%in%c("1314P", "7803", "8102", "8501", "As9601", "MED4", "Nat") ~ "Cyanos",
       organism%in%c("116-1", "2090", "371", "Ca", "Cr", "Cs", "P3", "P5-5") ~ "Haptos",
-      TRUE~"UNKNOWN"
+      TRUE~"UNKNOWN" 
     )) %>%
     mutate(samp_group=str_remove(basename(filename), "_?(St[1-4]_pos|Exp[1-3]_pos|MediaBlk.*|[A-I]{1,2}_pos|\\d)\\.mzML$"))
 } else if(dataset_version=="Pttime"){
-  file_data
-  data.frame(filename=mzML_files) %>%
+  file_data <- data.frame(filename=mzML_files) %>%
     mutate(samp_id=str_remove(basename(filename), "20190429_JJ_VB_BioSFA_Pttime_1_QE144_Ag68377-924_USHXG01160_POS_MSMS-v2_")) %>%
     mutate(samp_type=str_extract(samp_id, "exudate|pellet|extr")) %>%
     mutate(timepoint=str_extract(samp_id, "\\d+d")) %>%
@@ -91,24 +90,22 @@ cwp <- CentWaveParam(
 msnexp_withpeaks <- findChromPeaks(msnexp, cwp)
 
 register(BPPARAM = SerialParam(progressbar = TRUE))
-if(dataset_version%in%c("FT2040", "MS3000")){
+if(dataset_version%in%c("FT2040", "MS3000", "Pttime")){
   obp <- ObiwarpParam(
     binSize = 0.1, 
     centerSample = round(nrow(file_data)/2), 
     response = 1, 
     distFun = "cor_opt"
   )
-} else if(dataset_version=="CultureData"){
-  obp <- ObiwarpParam(
-    binSize = 0.1, 
-    response = 1, 
-    distFun = "cor_opt",
-    subset = grep("Smp", fileNames(msnexp_withpeaks))
-  )
 }
 msnexp_rtcor <- adjustRtime(msnexp_withpeaks, obp)
 
-if(dataset_version%in%c("FT2040", "MS3000")){
+if(dataset_version=="CultureData"){
+  msnexp_rtcor <- dropAdjustedRtime(msnexp_rtcor)
+}
+
+
+if(dataset_version%in%c("FT2040", "MS3000", "Pttime")){
   pdp <- PeakDensityParam(
     sampleGroups = file_data$samp_group, 
     bw = 12, 
@@ -127,9 +124,11 @@ if(dataset_version%in%c("FT2040", "MS3000")){
 }
 msnexp_grouped <- groupChromPeaks(msnexp_rtcor, pdp)
 
+register(BPPARAM = SnowParam(workers = parallel::detectCores()-1, 
+                             tasks = nrow(file_data), progressbar = TRUE))
 fpp <- FillChromPeaksParam(ppm = 2.5)
 msnexp_filled <- fillChromPeaks(msnexp_grouped, fpp)
-
+register(BPPARAM = SerialParam(progressbar = TRUE))
 
 
 # Extracting corrected retention times for later use ----
@@ -144,7 +143,7 @@ rt_corrections <- msnexp_filled %>%
   as.data.frame() %>%
   rownames_to_column() %>%
   set_names(c("scanid", "new_rt")) %>%
-  mutate(filename=basename(mzML_files[as.numeric(str_extract(scanid, "\\d+"))])) %>%
+  mutate(filename=basename(fileNames(msnexp_filled)[as.numeric(str_extract(scanid, "\\d+"))])) %>%
   left_join(init_rts, by="scanid") %>% 
   mutate(new_rt=round(new_rt/60, 10), rt=round(init_rt/60, 10)) %>%
   select(-init_rt, -scanid)
