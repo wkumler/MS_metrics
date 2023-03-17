@@ -1,0 +1,744 @@
+---
+title: "MS_metrics results"
+author: "William Kumler"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv")
+MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv")
+```
+
+Can we simply train up a model on one dataset and apply it to another, i.e. how much does our performance suffer when switching to a different dataset?
+
+Test with MESOSCOPE and Falkor, two fully-labeled feature-based datasets. Train up with Falkor and test on MESOSCOPE, train up on MESOSCOPE and test on Falkor, compare model outputs (confusion matrices and model estimates).
+
+```{r Confusion matrices and figure}
+dataset_versions <- c("FT2040_features", "MS3000_features")
+traintest_gp <- lapply(dataset_versions, function(train_set){
+  full_model <- get(train_set) %>% 
+    select(-feat_id) %>%
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    mutate(feat_class=feat_class=="Good") %>%
+    glm(formula=feat_class~., family = binomial)
+  lapply(dataset_versions, function(test_set){
+    get(test_set) %>%
+      select(-feat_id) %>%
+      filter(feat_class%in%c("Good", "Bad")) %>%
+      mutate(pred_prob=predict(object=full_model,newdata = ., 
+                               type = "response")) %>%
+      mutate(pred_class_50=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+      mutate(pred_class_99=ifelse(pred_prob>0.99, "Good", "Bad")) %>%
+      mutate(pred_class_01=ifelse(pred_prob>0.01, "Good", "Bad")) %>%
+      select(feat_class, starts_with("pred_class")) %>%
+      mutate(train_test=paste(train_set, test_set, sep = "-")) %>%
+      mutate(train_test=str_remove_all(train_test, "_features")) %>%
+      mutate(cross_type=ifelse(train_set==test_set, "Within", "Cross"))
+  }) %>% bind_rows()
+}) %>%
+  bind_rows() %>%
+  pivot_longer(cols = starts_with("pred_class"), 
+               names_to = "threshold", 
+               values_to = "pred_class") %>%
+  mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  group_by(cross_type, train_test, threshold) %>%
+  count(error_type) %>%
+  mutate(perc=round(n/sum(n)*100)) %>%
+  ungroup() %>%
+  complete(error_type, train_test, threshold, fill = list(n=0, perc=0)) %>%
+  mutate(cross_type=ifelse(is.na(cross_type), "Within", cross_type)) %>%
+  # Rename things to look nice in ggplot
+  mutate(error_type=paste0("%", error_type)) %>%
+  mutate(error_type=factor(error_type, paste0("%", c("TN", "TP", "FN", "FP")))) %>%
+  mutate(train_test=str_replace_all(train_test, "FT2040", "Falkor")) %>%
+  mutate(train_test=str_replace_all(train_test, "MS3000", "MESO")) %>%
+  mutate(threshold=as.numeric(str_extract(threshold, "\\d+"))) %>%
+  mutate(threshold=paste("Threshold:", threshold/100)) %>%
+  mutate(cross_type=paste(cross_type, "dataset", sep = "-")) %>% 
+  mutate(cross_type=factor(cross_type, levels=c("Within-dataset", "Cross-dataset"))) %>%
+  arrange(train_test) %>% 
+  mutate(train_test=factor(train_test, levels=unique(train_test))) %>%
+  # Render the ggplot
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col(aes(fill=train_test), position = position_dodge()) +
+  geom_text(aes(label=n, color=train_test), 
+            position = position_dodge(width = 1), vjust=-0.2) +
+  facet_grid(threshold~cross_type, scales = "free_x") +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_discrete("Train-test", aesthetics=c("color", "fill")) +
+  theme_bw() +
+  theme(axis.title = element_blank())
+xcms_gp <- list(Falkor=FT2040_features, MESO=MS3000_features) %>%
+  bind_rows(.id = "cruise") %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  group_by(cruise) %>%
+  count(feat_class) %>%
+  mutate(perc=round(n/sum(n)*100)) %>%
+  ungroup() %>%
+  add_row(cruise=c("Falkor", "MESO"), feat_class="Bad", perc=NA) %>%
+  add_row(cruise=c("Falkor", "MESO"), feat_class="Good", perc=NA) %>%
+  arrange(cruise, feat_class, n) %>%
+  mutate(pred_class=rep(c("Good", "Bad"), length.out=8)) %>%
+  mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  mutate(error_type=paste0("%", error_type)) %>%
+  mutate(error_type=factor(error_type, paste0("%", c("TN", "TP", "FN", "FP")))) %>%
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col(aes(fill=cruise), position = "dodge") +
+  geom_text(aes(label=n, color=cruise), 
+            position = position_dodge(width = 1), vjust=-0.2) +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_fill_discrete("Dataset", aesthetics=c("color", "fill")) +
+  theme_bw() +
+  theme(legend.background = element_rect(color="black"),
+        axis.title = element_blank()) +
+  # theme(legend.position = c(0.5, 1),
+  #       legend.justification = c(0.5, 1), 
+  #       legend.direction = "horizontal") +
+  theme(legend.position = c(0, 1),
+        legend.justification = c(0, 1),
+        legend.direction = "vertical")
+plot(gridExtra::arrangeGrob(
+  xcms_gp + ggtitle("A. XCMS output"), 
+  traintest_gp + ggtitle("B. Performance of logistic model"), 
+  layout_matrix = matrix(c(1,2,2,2), nrow = 1)))
+```
+
+```{r Confusion matrices and figure, v2 clean}
+dataset_versions <- c("FT2040_features", "MS3000_features")
+confusion_data <- lapply(dataset_versions, function(train_set){
+  full_model <- get(train_set) %>% 
+    select(-feat_id) %>%
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    mutate(feat_class=feat_class=="Good") %>%
+    glm(formula=feat_class~., family = binomial)
+  lapply(dataset_versions, function(test_set){
+    get(test_set) %>%
+      select(-feat_id) %>%
+      filter(feat_class%in%c("Good", "Bad")) %>%
+      mutate(pred_prob=predict(object=full_model,newdata = ., 
+                               type = "response")) %>%
+      mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+      select(feat_class, starts_with("pred_class")) %>%
+      mutate(train_test=paste(train_set, test_set, sep = "-")) %>%
+      mutate(train_test=str_remove_all(train_test, "_features")) %>%
+      mutate(cross_type=ifelse(train_set==test_set, "Within", "Cross"))
+  }) %>% bind_rows()
+}) %>%
+  bind_rows() %>%
+  mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  group_by(cross_type, train_test) %>%
+  count(error_type) %>%
+  mutate(perc=round(n/sum(n)*100)) %>%
+  ungroup() %>%
+  # Rename things to look nice in ggplot
+  mutate(error_type=paste0("%", error_type)) %>%
+  mutate(error_type=factor(error_type, paste0("%", c("TN", "TP", "FN", "FP")))) %>%
+  mutate(train_test=str_replace_all(train_test, "FT2040", "Falkor")) %>%
+  mutate(train_test=str_replace_all(train_test, "MS3000", "MESO")) %>%
+  mutate(cross_type=paste(cross_type, "dataset", sep = "-")) %>% 
+  mutate(cross_type=factor(cross_type, levels=c("Within-dataset", "Cross-dataset"))) %>%
+  arrange(train_test) %>% 
+  mutate(train_test=factor(train_test, levels=unique(train_test)))
+
+within_gp <- confusion_data %>%
+  filter(cross_type=="Within-dataset") %>%
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col(aes(fill=train_test), position = position_dodge()) +
+  geom_text(aes(label=n, color=train_test), 
+            position = position_dodge(width = 1), vjust=-0.2) +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_discrete("Train-test", aesthetics=c("color", "fill")) +
+  theme_bw() +
+  theme(axis.title = element_blank(),
+      legend.background = element_rect(color="black"),
+      legend.position = c(1, 1),
+      legend.justification = c(1, 1),
+      legend.direction = "vertical",
+      axis.text.y = element_blank())
+cross_gp <- confusion_data %>%
+  filter(cross_type=="Cross-dataset") %>%
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col(aes(fill=train_test), position = position_dodge()) +
+  geom_text(aes(label=n, color=train_test), 
+            position = position_dodge(width = 1), vjust=-0.2) +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_discrete("Train-test", aesthetics=c("color", "fill")) +
+  theme_bw() +
+  theme(axis.title = element_blank(),
+      legend.background = element_rect(color="black"),
+      legend.position = c(1, 1),
+      legend.justification = c(1, 1),
+      legend.direction = "vertical",
+      axis.text.y = element_blank())
+xcms_gp <- list(Falkor=FT2040_features, MESO=MS3000_features) %>%
+  bind_rows(.id = "cruise") %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  group_by(cruise) %>%
+  count(feat_class) %>%
+  mutate(perc=round(n/sum(n)*100)) %>%
+  ungroup() %>%
+  add_row(cruise=c("Falkor", "MESO"), feat_class="Bad", perc=NA) %>%
+  add_row(cruise=c("Falkor", "MESO"), feat_class="Good", perc=NA) %>%
+  arrange(cruise, feat_class, n) %>%
+  mutate(pred_class=rep(c("Good", "Bad"), length.out=8)) %>%
+  mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  mutate(error_type=paste0("%", error_type)) %>%
+  mutate(error_type=factor(error_type, paste0("%", c("TN", "TP", "FN", "FP")))) %>%
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col(aes(fill=cruise), position = "dodge") +
+  geom_text(aes(label=n, color=cruise), 
+            position = position_dodge(width = 1), vjust=-0.2) +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_fill_discrete("Dataset", aesthetics=c("color", "fill")) +
+  theme_bw() +
+  theme(axis.title = element_blank(),
+        legend.background = element_rect(color="black"),
+        legend.position = c(0, 1),
+        legend.justification = c(0, 1),
+        legend.direction = "vertical")
+plot(gridExtra::arrangeGrob(
+  xcms_gp + ggtitle("A. Default XCMS output\n    (No model fitting)"), 
+  within_gp + ggtitle("B. Performance within\n     a given dataset"), 
+  cross_gp + ggtitle("C. Performance across\n     datasets"), 
+  layout_matrix = matrix(c(1,2,3), nrow = 1)))
+```
+
+```{r Thresholding demo}
+meso_full_model <- MS3000_features %>% 
+  select(-feat_id) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+
+plot_breaks <- c(0.01, 0.1, 0.5, 0.9, 0.99)
+base_plot <- MS3000_features %>%
+  mutate(pred_prob=predict(object=meso_full_model,newdata = ., type = "response")) %>%
+  mutate(cut_prob=cut(pred_prob, breaks = c(0, plot_breaks, 1),include.lowest = TRUE)) %>%
+  mutate(feat_class=factor(feat_class, levels=c("Bad", "Stans only", "Meh", "Good"))) %>%
+  ggplot() +
+  geom_bar(aes(x=cut_prob, fill=feat_class), 
+           position =position_dodge(preserve = "single")) +
+  facet_wrap(~cut_prob, nrow=1, scales = "free_x") +
+  scale_y_log10() +
+  scale_fill_discrete("Manual feature classification") +
+  labs(x="Predicted probability (binned) of being a good peak", y="Count") +
+  theme_bw() +
+  theme(legend.position = "top", legend.justification = "left") +
+  guides(fill=guide_legend(title.position="top"))
+
+threshold_plot <- lapply(plot_breaks, function(threshold){
+  MS3000_features %>%
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    mutate(pred_prob=predict(object=meso_full_model,newdata = ., type = "response")) %>%
+    mutate(pred_class=ifelse(pred_prob>threshold, "Good", "Bad")) %>%
+    mutate(error_type=case_when(
+      feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+      feat_class=="Bad" & pred_class=="Good" ~ "FP",
+      feat_class=="Good" & pred_class=="Bad" ~ "FN",
+      feat_class=="Good" & pred_class=="Good" ~ "TP"
+    )) %>%
+    count(error_type) %>%
+    mutate(perc=round(n/sum(n)*100)) %>%
+    ungroup() %>%
+    mutate(threshold=threshold)
+}) %>%
+  bind_rows() %>%
+  mutate(error_type=paste0("%", error_type)) %>%
+  mutate(error_type=factor(error_type, paste0("%", c("TN", "TP", "FN", "FP")))) %>%
+  mutate(threshold=paste("Threshold:", threshold)) %>%
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col() +
+  geom_text(aes(label=n), vjust=-0.5) +
+  facet_wrap(~threshold, nrow = 1) +
+  theme_bw() +
+  theme(axis.title = element_blank()) +
+  scale_y_continuous(limits = c(0, 100))
+
+layout_mat <- matrix(c(c(1,1,1,1,1,1,1,1,1,1),c(NA,2,2,2,2,2,2,2,2,NA)), nrow = 2, byrow = TRUE)
+plot(gridExtra::arrangeGrob(base_plot, threshold_plot, layout_matrix = layout_mat))
+```
+
+```{r Backup confusion matrix visuals, eval=FALSE}
+full_cmat <- rbind(
+  rbind(
+    data.frame(f2f_cmat) %>% mutate(tested_on="falkor"),
+    data.frame(f2m_cmat) %>% mutate(tested_on="mesoscope")
+  ) %>% mutate(trained_on="falkor"),
+  rbind(
+    data.frame(m2m_cmat) %>% mutate(tested_on="mesoscope"),
+    data.frame(m2f_cmat) %>% mutate(tested_on="falkor")
+  ) %>% mutate(trained_on="mesoscope")
+)
+
+library(ggplot2)
+full_cmat %>%
+  mutate(predicted=paste("Predicted to\nbe", predicted)) %>%
+  mutate(predicted=factor(predicted, levels=c("Predicted to\nbe Good", "Predicted to\nbe Bad"))) %>%
+  mutate(actual=paste("Actually", actual)) %>%
+  mutate(tested_on=paste("Tested on", tested_on)) %>%
+  mutate(trained_on=paste("Trained on", trained_on)) %>%
+  ggplot() +
+  geom_text(aes(x=actual, y=predicted, label=Freq)) +
+  facet_grid(tested_on~trained_on, switch = "y") +
+  scale_x_discrete(position = "top") + 
+  theme_bw() +
+  theme(strip.placement = "outside", axis.title = element_blank(),
+        axis.text.y = element_text(angle=90, hjust = 0.5, vjust = 0),
+        strip.background = element_rect(fill = "white"))
+
+library(flextable)
+full_cmat %>%
+  arrange(trained_on, tested_on, predicted, actual) %>%
+  select(`Trained on`=trained_on, `Tested on`=tested_on, Predicted=predicted, 
+         Actual=actual, Count=Freq) %>%
+  flextable() %>%
+  merge_v(j = "Trained on") %>%
+  merge_v(j = "Tested on") %>%
+  merge_v(j = "Predicted") %>%
+  align(align = "center") %>%
+  rotate(i = 1:16, j=1:2, rotation = "btlr") %>%
+  theme_box()
+
+library(gt)
+cmat_to_df <- function(cmat){
+  outmat <- matrix(c(
+    "", "Bad", "Good",
+    "Bad", cmat[1,1], cmat[1,2],
+    "Good", cmat[2,1], cmat[2,2]
+  ), nrow = 3, ncol = 3)
+  colnames(outmat) <- c("Predicted", "Actual", "Actual2")
+  outmat
+}
+as.data.frame(rbind(
+  rbind(cmat_to_df(f2f_cmat), cmat_to_df(f2m_cmat)),
+  rbind(cmat_to_df(m2m_cmat), cmat_to_df(m2f_cmat)
+  ))) %>%
+  gt() %>%
+  tab_row_group(
+    label="Trained on Mesoscope, tested on Falkor", rows = 10:12
+  ) %>%
+  tab_row_group(
+    label="Trained on Mesoscope, tested on Mesoscope", rows = 7:9
+  ) %>%
+  tab_row_group(
+    label="Trained on Falkor, tested on Mesoscope", rows = 4:6
+  ) %>%
+  tab_row_group(
+    label="Trained on Falkor, tested on Falkor", rows = 1:3
+  ) %>%
+  tab_options(column_labels.hidden = TRUE)
+```
+
+Model estimates:
+
+```{r Model comparison}
+falkor_full_model <- FT2040_features %>% 
+  select(-feat_id) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+meso_full_model <- MS3000_features %>% 
+  select(-feat_id) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+
+good_params <-list(falkor=broom::tidy(falkor_full_model),
+                   meso=broom::tidy(meso_full_model)) %>%
+  bind_rows(.id="dataset") %>%
+  group_by(term) %>%
+  mutate(keep_term=all(p.value<0.05)) %>%
+  filter(keep_term)
+
+good_params %>%
+  ggplot(aes(x=term, color=dataset)) +
+  geom_hline(yintercept = 0, color="black") +
+  geom_point(aes(y=estimate), position = position_dodge(width = 0.5), size=3) +
+  geom_errorbar(aes(ymin=estimate-2*std.error, ymax=estimate+2*std.error), 
+                position = position_dodge(width = 0.5), linewidth=1) +
+  facet_wrap(~term, scales = "free") +
+  labs(x=NULL, y="Model parameter estimate") +
+  theme_bw() +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+
+bind_rows(falkor=FT2040_features, meso=MS3000_features, .id = "dataset") %>%
+  select(dataset, all_of(unique(good_params$term)), feat_class) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=ifelse(feat_class=="Good", 1, 0)) %>%
+  mutate(feat_class_jitter=feat_class+rnorm(nrow(.), sd = 0.02)) %>%
+  pivot_longer(-c(dataset, feat_class, feat_class_jitter), names_to = "param") %>%
+  slice_sample(prop = 1) %>%
+  ggplot(aes(x=value, y=feat_class)) +
+  geom_point(aes(y=feat_class_jitter, color=dataset), alpha=0.1) +
+  geom_smooth(aes(group=dataset), formula="y~x", method = "glm",
+              method.args=list(family=binomial),
+              se=FALSE, linewidth=2, color="white") +
+  geom_smooth(aes(color=dataset), formula="y~x", method = "glm",
+              method.args=list(family=binomial)) +
+  facet_wrap(~param, scales = "free_x")
+
+bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
+  ggplot() + 
+  geom_histogram(aes(x=med_cor, fill=feat_class), bins=40) +
+  facet_wrap(~cruise, ncol = 1, scales = "free_y")
+```
+
+Repeat the above with a reduced set of predictors (just the "best" ones). Maybe also with just XCMS parameters?
+
+```{r feature selection and selection testing}
+raw_data_params <- c("med_cor", "med_SNR")
+xcms_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", 
+                 "sd_pw", "log_mean_height", "log_sd_height", "sn", 
+                 "f", "scale", "lmin", "feat_npeaks", "n_found", 
+                 "samps_found", "stans_found")
+all_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", "sd_pw",
+                "log_mean_height", "log_sd_height", "sn", "f", "scale", 
+                "lmin", "feat_npeaks", "n_found", "samps_found", "stans_found", 
+                "med_cor", "med_SNR", "med_missed_scans", "smp_to_blk", 
+                "smp_to_std", "shape_cor", "area_cor", "feat_class")
+lst(all_params, raw_data_params, xcms_params) %>%
+  imap(function(param_selection, param_name){
+    lapply(dataset_versions, function(train_set){
+      full_model <- get(train_set) %>% 
+        select(feat_class, all_of(param_selection)) %>%
+        filter(feat_class%in%c("Good", "Bad")) %>%
+        mutate(feat_class=feat_class=="Good") %>%
+        glm(formula=feat_class~., family = binomial)
+      lapply(dataset_versions, function(test_set){
+        get(test_set) %>%
+          filter(feat_class%in%c("Good", "Bad")) %>%
+          mutate(pred_prob=predict(object=full_model,newdata = ., 
+                                   type = "response")) %>%
+          mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+          select(feat_class, starts_with("pred_class")) %>%
+          mutate(train_test=paste(train_set, test_set, sep = "-")) %>%
+          mutate(train_test=str_remove_all(train_test, "_features")) %>%
+          mutate(cross_type=ifelse(train_set==test_set, "Within", "Cross"))
+      }) %>% bind_rows()
+    }) %>% bind_rows() %>% mutate(which_params=param_name)
+  }) %>% bind_rows() %>%
+  mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  group_by(cross_type, train_test, which_params) %>%
+  count(error_type) %>%
+  mutate(perc=round(n/sum(n)*100)) %>%
+  ungroup() %>%
+  # Rename things to look nice in ggplot
+  mutate(error_type=paste0("%", error_type)) %>%
+  mutate(error_type=factor(error_type, paste0("%", c("TN", "TP", "FN", "FP")))) %>%
+  mutate(train_test=str_replace_all(train_test, "FT2040", "Falkor")) %>%
+  mutate(train_test=str_replace_all(train_test, "MS3000", "MESO")) %>%
+  mutate(cross_type=paste(cross_type, "dataset", sep = "-")) %>% 
+  mutate(cross_type=factor(cross_type, levels=c("Within-dataset", "Cross-dataset"))) %>%
+  arrange(train_test) %>% 
+  mutate(train_test=factor(train_test, levels=unique(train_test))) %>%
+  # Render the ggplot
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col(aes(fill=train_test), position = position_dodge()) +
+  geom_text(aes(label=n, color=train_test), 
+            position = position_dodge(width = 1), vjust=-0.2) +
+  facet_grid(which_params~cross_type, scales = "free_x") +
+  scale_y_continuous(limits = c(0, 100)) +
+  scale_color_discrete("Train-test", aesthetics=c("color", "fill")) +
+  theme_bw() +
+  theme(axis.title = element_blank())
+```
+
+Should we include the subsetting analysis I did where we run the models on a subset of the data to see how large of a sample size we need to reach a stable model?
+
+```{r model stability sample size subsetting}
+# Full model
+meso_full_model <- MS3000_features %>% 
+  select(-feat_id) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial) %>%
+  broom::tidy()
+set.seed(123)
+meso_reps <- replicate(20, {
+  meso_full_model <- MS3000_features %>% 
+    slice_sample(prop = 0.5) %>%
+    select(-feat_id) %>%
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    mutate(feat_class=feat_class=="Good") %>%
+    glm(formula=feat_class~., family = binomial) %>%
+    broom::tidy()
+}, simplify = FALSE) %>%
+  bind_rows()
+ggplot() +
+  geom_vline(xintercept = 0) +
+  geom_point(aes(x=estimate, y=term), data = meso_full_model, size=3) +
+  geom_errorbar(aes(xmin=estimate-std.error*2, xmax=estimate+std.error*2, y=term), 
+                data = meso_full_model, linewidth=1) +
+  geom_point(aes(x=estimate, y=term), data = meso_reps, color="red") +
+  facet_wrap(~term, scales = "free") +
+  theme(axis.text.y=element_blank())
+
+# Reduced model
+meso_min_model <- MS3000_features %>% 
+  select(feat_class, med_cor, med_SNR) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial) %>%
+  broom::tidy()
+set.seed(123)
+meso_reps <- replicate(20, {
+  meso_min_model <- MS3000_features %>% 
+    slice_sample(prop = 0.5) %>%
+    select(feat_class, med_cor, med_SNR) %>%
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    mutate(feat_class=feat_class=="Good") %>%
+    glm(formula=feat_class~., family = binomial) %>%
+    broom::tidy()
+}, simplify = FALSE) %>%
+  bind_rows()
+ggplot() +
+  geom_vline(xintercept = 0) +
+  geom_point(aes(x=estimate, y=term), data = meso_min_model, size=3) +
+  geom_errorbar(aes(xmin=estimate-std.error*2, xmax=estimate+std.error*2, y=term), 
+                data = meso_min_model, linewidth=1) +
+  geom_point(aes(x=estimate, y=term), data = meso_reps, color="red") +
+  facet_wrap(~term, scales = "free") +
+  theme(axis.text.y=element_blank())
+```
+
+
+
+
+
+
+Clearly, we can't just hand over a model if we want a level of accuracy beyond this. However, labeling things manually one-at-a-time sucks. Can we group/aggregate peaks to label them in clusters?
+
+Yes, using PCA pixelpicking things.
+
+```{r visualize PCA pixelpicking}
+library(RaMS)
+library(xcms)
+dataset_version <- "FT2040"
+output_folder <- paste0("made_data_", dataset_version, "/")
+msnexp_filled <- readRDS(paste0(output_folder, "msnexp_filled.rds"))
+feature_centers <- featureDefinitions(msnexp_filled) %>%
+  as.data.frame() %>%
+  select(mzmed, rtmed) %>%
+  rownames_to_column("feat_id") %>%
+  mutate(rtmed=rtmed/60) %>%
+  filter(mzmed%between%c(117, 120))
+msdata <- readRDS(paste0(output_folder, "msdata.rds"))
+pixeldemo_msdata <- msdata$EIC2[mz%between%c(117, 120)]
+interp_dt <- mapply(function(mzmed_i, rtmed_i, feat_id_i){
+  interp_range <- rtmed_i+c(-0.5, 0.5)
+  interp_points <- seq(interp_range[1], interp_range[2], length.out=50)
+  pixeldemo_msdata[mz%between%pmppm(mzmed_i)] %>%
+    split(.$filename) %>%
+    lapply(function(eic_file){
+      if(nrow(eic_file)>2){
+        setNames(approx(eic_file$rt, eic_file$int, xout=interp_points), c("rt", "int"))
+      } else {
+        data.frame(rt=numeric(), int=numeric())
+      }
+    }) %>%
+    bind_rows(.id="filename") %>%
+    mutate(feature=feat_id_i)
+  }, feature_centers$mzmed, feature_centers$rtmed, feature_centers$feat_id, 
+  SIMPLIFY = FALSE) %>%
+  bind_rows()
+interp_dt %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=int, group=filename)) +
+  facet_wrap(~feature, scales="free") +
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank())
+
+interp_scaled <- interp_dt %>%
+  group_by(feature, filename) %>%
+  mutate(int=int/max(int)) %>%
+  mutate(rt=rank(rt)) %>%
+  ungroup() 
+  # complete(feature, filename, rt, fill = list(int=0))
+interp_scaled %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=int, color=int, group=filename)) +
+  facet_wrap(~feature, scales="free") +
+  scale_color_viridis_c()
+interp_scaled %>%
+  ggplot() +
+  geom_tile(aes(x=rt, y=filename, fill=int)) +
+  facet_wrap(~feature) +
+  scale_fill_viridis_c() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank())
+pcaoutput <- interp_scaled %>%
+  ungroup() %>%
+  pivot_wider(names_from=feature, values_from = int) %>%
+  select(which(colSums(is.na(.))==0)) %>%
+  arrange(filename, rt) %>%
+  select(-rt, -filename) %>%
+  data.matrix() %>%
+  prcomp()
+
+library(ggrepel)
+pcaoutput$rotation %>%
+  as.data.frame() %>%
+  rownames_to_column("feature") %>%
+  ggplot() +
+  geom_text_repel(aes(x=PC1, y=PC2, label=feature), max.overlaps = Inf, 
+                  min.segment.length = Inf) +
+  theme_bw()
+
+pcapercs <- pcaoutput$sdev^2*100
+ggplot() + 
+  geom_col(aes(x=seq_along(pcapercs), y=pcapercs)) +
+  labs(y="% variance explained", x="PC #") +
+  theme_bw() +
+  scale_y_continuous(expand = c(0.01, 0.02)) +
+  scale_x_continuous(breaks = seq_along(pcapercs), expand = c(0.02, 0))
+
+cbind(distinct(interp_scaled, filename, rt), -pcaoutput$x[,1:4]) %>% 
+  pivot_longer(starts_with("PC"), names_to = "PC", values_to = "int") %>%
+  ggplot() +
+  geom_tile(aes(x=rt, y=filename, fill=int)) +
+  facet_wrap(~PC) +
+  scale_fill_viridis_c() +
+  theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        axis.title = element_blank())
+```
+
+```{r full PCA pixelpicking}
+dataset_version <- "FT2040"
+output_folder <- paste0("made_data_", dataset_version, "/")
+# msnexp_filled <- readRDS(paste0(output_folder, "msnexp_filled.rds"))
+# feature_centers <- featureDefinitions(msnexp_filled) %>%
+#   as.data.frame() %>%
+#   select(mzmed, rtmed) %>%
+#   rownames_to_column("feat_id") %>%
+#   mutate(rtmed=rtmed/60)
+# msdata <- readRDS(paste0(output_folder, "msdata.rds"))
+# interp_dt <- mapply(function(mzmed_i, rtmed_i, feat_id_i){
+#   interp_range <- rtmed_i+c(-0.5, 0.5)
+#   interp_points <- seq(interp_range[1], interp_range[2], length.out=50)
+#   msdata$EIC2[mz%between%pmppm(mzmed_i)] %>%
+#     split(.$filename) %>%
+#     lapply(function(eic_file){
+#       if(nrow(eic_file)>2){
+#         setNames(approx(eic_file$rt, eic_file$int, xout=interp_points), c("rt", "int"))
+#       } else {
+#         data.frame(rt=numeric(), int=numeric())
+#       }
+#     }) %>%
+#     bind_rows(.id="filename") %>%
+#     mutate(feature=feat_id_i)
+#   }, feature_centers$mzmed, feature_centers$rtmed, feature_centers$feat_id, 
+#   SIMPLIFY = FALSE) %>%
+#   bind_rows()
+# saveRDS(interp_dt, file = paste0(output_folder, "interp_dt.rds"))
+interp_dt <- readRDS(file = paste0(output_folder, "interp_dt.rds"))
+interp_scaled <- interp_dt %>%
+  group_by(feature, filename) %>%
+  mutate(int=int/max(int)) %>%
+  mutate(rt=rank(rt)) %>%
+  ungroup()
+pcaoutput <- interp_scaled %>%
+  ungroup() %>%
+  pivot_wider(names_from=feature, values_from = int) %>%
+  select(which(colSums(is.na(.))==0)) %>%
+  arrange(filename, rt) %>%
+  select(-rt, -filename) %>%
+  data.matrix() %>%
+  prcomp()
+pcaoutput$rotation %>%
+  as.data.frame() %>%
+  rownames_to_column("feature") %>%
+  ggplot() +
+  geom_text(aes(x=PC1, y=PC2, label=feature)) +
+  theme_bw() +
+  coord_fixed()
+
+pc_features <- FT2040_features %>%
+  select(feature=feat_id, feat_class) %>%
+  filter(feature%in%rownames(pcaoutput$rotation)) %>%
+  cbind(pcaoutput$rotation[,c("PC1", "PC2")])
+
+ggplot(pc_features) +
+  geom_text(aes(x=PC1, y=PC2, color=feat_class, label=feature)) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  coord_fixed()
+
+pc_circled <- pc_features %>%
+  mutate(quick_class=ifelse(sqrt(PC1^2+PC2^2)<0.02, "Bad", "Unclassified")) %>%
+  mutate(quick_class=ifelse(sqrt((PC1-0.08)^2+(PC2-0.05)^2)<0.03, 
+                           "Good", quick_class))
+pc_circled %>%
+  mutate(plot_color=ifelse(quick_class=="Unclassified", NA, feat_class)) %>%
+  ggplot() +
+  geom_point(aes(x=PC1, y=PC2, color=plot_color)) +
+  ggforce::geom_circle(aes(x0=0, y0=0, r=0.02), n = 36, linewidth=1,
+                       color=scales::hue_pal()(4)[1]) +
+  ggforce::geom_circle(aes(x0=0.08, y0=0.05, r=0.03), n = 36, linewidth=1,
+                       color=scales::hue_pal()(4)[2]) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  coord_fixed()
+```
+
+Prove this with confusion matrices showing very few false pos/neg:
+
+```{r PCA pixelpicking confusion matrix}
+table(pc_circled$feat_class, pc_circled$quick_class)
+```
+
+How does a model trained on just the best/worst subset perform compared to the full model? Model explosion when complete separation happens? Need to train up a central subset? Show confusion matrices and model parameter estimates.
+
+```{r}
+quick_classes <- pc_circled %>%
+  select(feature, quick_class) %>%
+  filter(quick_class!="Unclassified") %>%
+  mutate(quick_class=quick_class=="Good")
+summary(quick_classes)
+
+full_quick_model <- FT2040_features %>% 
+  filter(feat_id%in%quick_classes$feature) %>%
+  select(-feat_class) %>%
+  left_join(quick_classes, by=c(feat_id="feature")) %>%
+  select(-feat_id) %>%
+  glm(formula=quick_class~., family = binomial)
+
+mini_quick_model <- FT2040_features %>% 
+  filter(feat_id%in%quick_classes$feature) %>%
+  select(-feat_class) %>%
+  left_join(quick_classes, by=c(feat_id="feature")) %>%
+  select(quick_class, med_cor, med_SNR) %>%
+  glm(formula=quick_class~., family = binomial)
+
+FT2040_features %>%
+  mutate(pred_prob=predict(object=mini_quick_model, newdata=., type="response")) %>%
+  mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+  with(table(feat_class, pred_class))
+```
+
