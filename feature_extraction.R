@@ -31,9 +31,9 @@ trapz <- function(x, y) {
   return(0.5*(p1-p2))
 }
 
-# dataset_version <- "FT2040"
+dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
-dataset_version <- "CultureData"
+# dataset_version <- "CultureData"
 # dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
@@ -54,8 +54,10 @@ peak_data <- msnexp_filled %>%
   rownames_to_column("id") %>%
   unnest_longer(peakidx) %>%
   rename_with(~paste0("feat_", .x), .cols = -peakidx) %>%
+  rename(feature="feat_id") %>%
   left_join(peak_data_long) %>%
-  mutate(filename=file_data$filename[sample])
+  mutate(filename=basename(fileNames(msnexp_filled))[sample]) %>%
+  complete(feature, filename)
 
 
 
@@ -64,17 +66,23 @@ n_files <- nrow(file_data)
 n_samps <- sum(file_data$samp_type=="Smp")
 n_stans <- sum(file_data$samp_type=="Std")
 simple_feats <- peak_data %>%
-  group_by(feat_id) %>%
-  mutate(sn=log10(sn)) %>%
-  summarise(mean_mz=unique(feat_mzmed), sd_ppm=sd(mz/feat_mzmed),
-            mean_rt=unique(feat_rtmed), sd_rt=sd(rt),
-            mean_pw=mean(rtmax-rtmin), sd_pw=sd(rtmax-rtmin),
-            log_mean_height=log10(mean(maxo)), log_sd_height=log10(sd(maxo)),
-            across(c(sn, f, scale, lmin), function(x)mean(x, na.rm=TRUE)),
-            feat_npeaks=unique(feat_npeaks)/n_files,
-            n_found=(sum(is.na(intb))-n_files)/n_files,
-            samps_found=1-sum(is.na(intb) & str_detect(filename, "Smp"))/n_samps,
-            stans_found=1-sum(is.na(intb) & str_detect(filename, "Std"))/n_stans
+  left_join(file_data) %>%
+  group_by(feature) %>%
+  fill(starts_with("feat"), .direction = "downup") %>%
+  summarise(mean_mz=unique(feat_mzmed), 
+            sd_ppm=sd(mz/feat_mzmed*1e6, na.rm=TRUE),
+            mean_rt=unique(feat_rtmed), 
+            sd_rt=sd(rt, na.rm=TRUE),
+            mean_pw=mean(rtmax-rtmin, na.rm=TRUE), 
+            sd_pw=sd(rtmax-rtmin, na.rm=TRUE),
+            log_mean_area=mean(log10(into), na.rm=TRUE), 
+            log_sd_area=sd(log10(into), na.rm=TRUE),
+            sn=mean(log10(sn[sn>=0]), na.rm=TRUE),
+            across(c(f, scale, lmin), function(x)mean(x, na.rm=TRUE)),
+            feat_npeaks=n()/n_files,
+            n_found=(n_files-sum(is.na(intb)))/n_files,
+            samps_found=1-sum(is.na(intb) & samp_type=="Smp")/n_samps,
+            stans_found=1-sum(is.na(intb) & samp_type=="Std")/n_stans
             ) %>%
   mutate(sn=ifelse(is.infinite(sn), 0, sn))
 write.csv(simple_feats, paste0(output_folder, "simple_feats.csv"), row.names = FALSE)
@@ -84,15 +92,15 @@ msdata <- readRDS(paste0(output_folder, "msdata.rds"))
 msdata_EIClist <- split(msdata$EIC2, msdata$EIC2$filename)
 eic_dt <- peak_bounds %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60, filename=basename(filename)) %>%
-  left_join(file_data) %>%
-  # filter(samp_type=="Smp") %>%
-  pmap_dfr(function(...){
-    row_data <- list(...)
-    msdata_EIClist[[row_data$filename
-                ]][mz%between%c(row_data$mzmin, row_data$mzmax)
-                  ][rt%between%c(row_data$rtmin, row_data$rtmax)][
-                    , feature:=row_data$feature][]
-  })
+  {pbapply::pbmapply(FUN = function(filename_i, mzmin_i, mzmax_i, rtmin_i, 
+                                    rtmax_i, feature_i){
+      msdata_EIClist[[filename_i]][mz%between%c(mzmin_i, mzmax_i)
+      ][rt%between%c(rtmin_i, rtmax_i)][
+        , feature:=feature_i][]
+    }, SIMPLIFY = FALSE, .$filename, .$mzmin, .$mzmax, .$rtmin, .$rtmax, .$feature)
+  } %>%
+  bind_rows()
+
 qscoreCalculator <- function(rt, int){
   #Check for bogus EICs
   if(length(rt)<5){
@@ -136,8 +144,6 @@ peakshape_rawdata <- eic_dt %>%
   summarise(qscores=list(qscoreCalculator(rt, int))) %>%
   unnest_wider(qscores)
 peakshape_mets <- peakshape_rawdata %>%
-  right_join(file_data %>% select(filename))
-  complete(filename, feature) %>%
   group_by(feature) %>%
   summarise(med_SNR=median(SNR, na.rm=TRUE), 
             med_cor=median(peak_cor, na.rm=TRUE),
@@ -145,7 +151,8 @@ peakshape_mets <- peakshape_rawdata %>%
             max_cor=max(peak_cor, na.rm = TRUE),
             medtop3_cor=second_largest(peak_cor)) %>%
   mutate(log_med_cor=log10(1-med_cor))
-write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), row.names = FALSE)
+write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), 
+          row.names = FALSE)
 
 
 scan_time <- msdata$EIC2 %>%
@@ -161,45 +168,11 @@ med_missed_scans <- peak_bounds %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
   mutate(expected_scans=round((rtmax-rtmin)/scan_time)) %>%
   left_join(n_scans) %>%
-  # with(hist(expected_scans-N, breaks = 100))
   group_by(feature) %>%
-  summarise(med_missed_scans=median(expected_scans-N, na.rm=TRUE)) %>%
-  # with(hist(med_missed_scans, breaks = 100))
-  ungroup()
-write.csv(med_missed_scans, paste0(output_folder, "med_missed_scans.csv"), row.names = FALSE)
+  summarise(med_missed_scans=median(expected_scans-N, na.rm=TRUE))
+write.csv(med_missed_scans, paste0(output_folder, "med_missed_scans.csv"), 
+          row.names = FALSE)
 
-
-# Currently broken because NAs are included during RT correction
-# rt_dt <- rtime(msnexp_filled) %>%
-#   as.data.frame() %>%
-#   setNames("rt") %>%
-#   rownames_to_column("filenum") %>%
-#   mutate(filenum=as.numeric(str_extract(filenum, "(?<=F)\\d+"))) %>%
-#   mutate(filename=basename(fileNames(msnexp_filled))[filenum]) %>%
-#   mutate(rt=round(rt/60, digits = 7)) %>%
-#   select(filename, rt) %>%
-#   as.data.table()
-# file_feat_n_missed <- eic_dt %>%
-#   mutate(rt=round(rt, digits = 7)) %>%
-#   group_by(filename, feature) %>%
-#   group_split() %>%
-#   pbapply::pblapply(function(eic){
-#     fname_i <- eic$filename[1]
-#     min_rt=min(eic$rt)
-#     max_rt=max(eic$rt)
-#     psb_rts <- rt_dt[rt%between%c(min_rt, max_rt)][filename==fname_i]
-#     merged_dt <- merge(unique(eic), psb_rts, all.y=TRUE)
-#     summarise(merged_dt, 
-#               filename=unique(filename), 
-#               feature=unique(feature),
-#               n_missed=sum(is.na(merged_dt$int)),
-#               n_scans=n()) %>%
-#       na.omit()
-#   }) %>%
-#   bind_rows()
-# med_missed_scans_2 <- file_feat_n_missed %>%
-#   group_by(feature) %>%
-#   summarise(med_missed_scans_2=median(n_missed, na.rm=TRUE))
 
 
 # Calculate presence/absence of isotope info ----
@@ -267,10 +240,10 @@ write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = F
 # Calculate DOE metrics ----
 # library(lmPerm)
 depth_diffs <- peak_data %>%
-  select(feat_id, filename, into) %>%
+  select(feature, filename, into) %>%
   left_join(file_data) %>%
   filter(samp_type=="Smp") %>%
-  nest(data=-feat_id) %>%
+  nest(data=-feature) %>%
   mutate(t_pval=map_dbl(data, function(x){
     depthtab <- table(x$depth)
     if(any(depthtab<2))return(99)
@@ -283,52 +256,60 @@ depth_diffs <- peak_data %>%
   mutate(t_pval=ifelse(t_pval==999, min(t_pval[t_pval<1])/10, t_pval)) %>%
   mutate(t_pval=log10(t_pval)) %>%
   mutate(t_pval=log10(t_pval*-1)*-1) %>%
-  select(feat_id, t_pval) %>%
+  select(feature, t_pval) %>%
   # Cover cases where there's zero data in samples OR blank
   # 0.9 p-value is high enough to be ignored but not 1 to cause problems
-  right_join(distinct(peak_data, feat_id)) %>%
+  right_join(distinct(peak_data, feature)) %>%
   mutate(smp_to_blk=ifelse(is.na(t_pval), 0.9, t_pval))
 write.csv(depth_diffs, paste0(output_folder, "depth_diffs.csv"), row.names = FALSE)
 
 blank_diffs <- peak_data %>%
-  select(feat_id, filename, into) %>%
+  select(feature, filename, into) %>%
   left_join(file_data) %>%
   filter(samp_type%in%c("Smp", "Blk")) %>%
-  select(feat_id, samp_type, into) %>%
-  group_by(feat_id, samp_type) %>%
+  select(feature, samp_type, into) %>%
+  group_by(feature, samp_type) %>%
   summarise(mean_area=mean(into)) %>%
   pivot_wider(names_from = samp_type, values_from = mean_area) %>%
   ungroup() %>%
   mutate(smp_to_blk=Smp/Blk) %>%
   # Cover cases where no data was found in the samples (therefore -Inf when logged)
   # Replace with 1/10th the lowest global value
-  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Smp), min(smp_to_blk, na.rm = TRUE)/10, smp_to_blk)) %>%
+  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Smp), 
+                           min(smp_to_blk, na.rm = TRUE)/10, 
+                           smp_to_blk)) %>%
   # Cover cases where no data was found in the blank (therefore Inf)
   # Replace with 10x the largest global value
-  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Blk), max(smp_to_blk, na.rm = TRUE)*10, smp_to_blk)) %>%
-  select(feat_id, smp_to_blk) %>%
+  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Blk), 
+                           max(smp_to_blk, na.rm = TRUE)*10, 
+                           smp_to_blk)) %>%
+  select(feature, smp_to_blk) %>%
   mutate(smp_to_blk=log10(smp_to_blk)) %>%
   # Cover cases where there's zero data in standards OR blank
   # Ratio of 1 feels about right
-  right_join(distinct(peak_data, feat_id)) %>%
+  right_join(distinct(peak_data, feature)) %>%
   mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 1, smp_to_blk))
 write.csv(blank_diffs, paste0(output_folder, "blank_diffs.csv"), row.names = FALSE)
 
 stan_diffs <- peak_data %>%
-  select(feat_id, filename, into) %>%
+  select(feature, filename, into) %>%
   left_join(file_data) %>%
   filter(samp_type%in%c("Smp", "Std")) %>%
-  select(feat_id, samp_type, into) %>%
-  group_by(feat_id, samp_type) %>%
+  select(feature, samp_type, into) %>%
+  group_by(feature, samp_type) %>%
   summarise(mean_area=mean(into)) %>%
   pivot_wider(names_from = samp_type, values_from = mean_area) %>%
   mutate(smp_to_std=Smp/Std) %>%
   ungroup() %>%
-  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Smp), min(smp_to_std, na.rm = TRUE)/10, smp_to_std)) %>%
-  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Std), max(smp_to_std, na.rm = TRUE)*10, smp_to_std)) %>%
-  select(feat_id, smp_to_std) %>%
+  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Smp), 
+                           min(smp_to_std, na.rm = TRUE)/10, 
+                           smp_to_std)) %>%
+  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Std), 
+                           max(smp_to_std, na.rm = TRUE)*10, 
+                           smp_to_std)) %>%
+  select(feature, smp_to_std) %>%
   mutate(smp_to_std=log10(smp_to_std)) %>%
-  right_join(distinct(peak_data, feat_id)) %>%
+  right_join(distinct(peak_data, feature)) %>%
   mutate(smp_to_std=ifelse(is.na(smp_to_std), 1, smp_to_std))
 write.csv(stan_diffs, paste0(output_folder, "stan_diffs.csv"), row.names = FALSE)
 
@@ -345,17 +326,18 @@ if(file.exists(paste0(output_folder, "classified_feats.csv"))){
   classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
     select(feature, feat_class)
 } else {
-  classified_feats <- data.frame(feature=simple_feats$feat_id, feat_class="Unclassified")
+  classified_feats <- data.frame(feature=simple_feats$feature, feat_class="Unclassified")
 }
 
 features_extracted <- simple_feats %>%
-  left_join(peakshape_mets, by=c(feat_id="feature")) %>% 
-  left_join(med_missed_scans, by=c(feat_id="feature")) %>% 
+  left_join(peakshape_mets) %>% 
+  left_join(med_missed_scans) %>% 
   # left_join(depth_diffs) %>% 
   left_join(blank_diffs) %>% 
   left_join(stan_diffs) %>% 
-  left_join(feat_isodata, by=c(feat_id="feature")) %>% 
-  left_join(classified_feats, by=c(feat_id="feature"))
+  left_join(feat_isodata) %>% 
+  left_join(classified_feats) %>%
+  filter(mean_rt%between%c(30, 1200))
 write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"), 
           row.names = FALSE)
 
@@ -365,7 +347,7 @@ features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv"))
 
 metric_plots <- features_extracted %>%
   names() %>%
-  setdiff(c("feat_id", "blank_found", "feat_class")) %>%
+  setdiff(c("feature", "blank_found", "feat_class")) %>%
   lapply(function(col_name){
     features_extracted %>%
       mutate(col_to_plot=cut(get(col_name), pretty(get(col_name), n = 10))) %>%
@@ -385,7 +367,7 @@ plot_ly(features_extracted, x=~mean_pw, y=~log10(sn), z=~n_found, color=~feat_cl
         type = "scatter3d", mode="markers")
 features_extracted %>%
   plot_ly(x=~med_SNR, y=~med_cor, z=~log_mean_height, 
-          color=~feat_class, text=~feat_id,
+          color=~feat_class, text=~feature,
           type = "scatter3d", mode="markers")
 features_extracted %>%
   plot_ly(x=~log10(1-shape_cor), y=~med_SNR, z=~log10(1-med_cor), color=~feat_class,
@@ -394,7 +376,7 @@ features_extracted %>%
 
 library(GGally)
 gp <- features_extracted %>%
-  select(-feat_id) %>%
+  select(-feature) %>%
   ggpairs(aes(color=feat_class), lower=list(
     combo=wrap("facethist",  bins=30))
     )
