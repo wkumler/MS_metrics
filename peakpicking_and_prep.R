@@ -14,9 +14,9 @@ library(xcms)
 library(RaMS)
 options(pillar.sigfig=7)
 
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
-# dataset_version <- "CultureData"
+dataset_version <- "CultureData"
 # dataset_version <- "Pttime"
 
 output_folder <- paste0("made_data_", dataset_version, "/")
@@ -97,13 +97,10 @@ if(dataset_version%in%c("FT2040", "MS3000", "Pttime")){
     response = 1, 
     distFun = "cor_opt"
   )
+  msnexp_rtcor <- adjustRtime(msnexp_withpeaks, obp)
+} else {
+  msnexp_rtcor <- msnexp_withpeaks
 }
-msnexp_rtcor <- adjustRtime(msnexp_withpeaks, obp)
-
-if(dataset_version=="CultureData"){
-  msnexp_rtcor <- dropAdjustedRtime(msnexp_rtcor)
-}
-
 
 if(dataset_version%in%c("FT2040", "MS3000", "Pttime")){
   pdp <- PeakDensityParam(
