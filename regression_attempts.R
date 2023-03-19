@@ -7,8 +7,7 @@ dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
-features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv")) %>%
-  mutate(sn=ifelse(is.infinite(sn), 0, sn))
+features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv"))
 
 set.seed(123)
 traintestlist <- features_extracted %>%
@@ -32,7 +31,7 @@ traintestlist$test %>%
 
 # All-feature regression ----
 full_model <- traintestlist$train %>% 
-  select(-feat_id, -blank_found, -shape_cor, -area_cor) %>%
+  select(-feature, -blank_found, -shape_cor, -area_cor) %>%
   glm(formula=feat_class~., family = binomial)
 
 summary(full_model)
@@ -45,7 +44,7 @@ traintestlist$test %>%
 
 
 # Stepwise AIC optimization using MASS ----
-all_model_feats <- select(traintestlist$train, -feat_id, -blank_found)
+all_model_feats <- select(traintestlist$train, -feature, -blank_found)
 full_model <- glm(formula=feat_class~., family = binomial, data = all_model_feats)
 step_model <- MASS::stepAIC(full_model, direction = "both")
 
@@ -132,7 +131,7 @@ traintestlist$test %>%
 
 # Visualization (Full model, excludes ggplot fit) ----
 full_model <- traintestlist$train %>% 
-  select(-feat_id, -blank_found) %>%
+  select(-feature, -blank_found) %>%
   glm(formula=feat_class~log_peak_height, family = binomial)
 init_gp <- traintestlist$test %>%
   cbind(pred_prob=predict(full_model, ., type="response")) %>%

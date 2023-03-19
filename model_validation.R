@@ -2,16 +2,13 @@
 # Setup ----
 library(tidyverse)
 
-FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv") %>%
-  mutate(sn=ifelse(is.infinite(sn), 0, sn)) %>%
-  select(-blank_found)
-MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv") %>%
-  mutate(sn=ifelse(is.infinite(sn), 0, sn)) %>%
-  select(-blank_found)
+FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv")
+MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv")
+
 # Visualize a single metric across both datasets
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
   ggplot() + 
-  geom_histogram(aes(x=sd_rt, fill=feat_class), bins=40) +
+  geom_histogram(aes(x=log_med_cor, fill=feat_class), bins=40) +
   facet_wrap(~cruise, ncol = 1, scales = "free_y")
 library(ggh4x)
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
@@ -21,12 +18,12 @@ bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise
 
 # Testing Falkor full model fit on MESOSCOPE data ----
 falkor_full_model <- FT2040_features %>% 
-  select(-feat_id) %>%
+  select(-feature) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 FT2040_preds <- FT2040_features %>%
-  select(-feat_id) %>%
+  select(-feature) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(pred_prob=predict(object=falkor_full_model,newdata = ., type = "response")) %>%
   mutate(pred_class=pred_prob>0.5) %>%
@@ -49,24 +46,24 @@ MS3000_preds %>%
 
 # Testing Falkor minimal model on MESOSCOPE ----
 falkor_min_model <- FT2040_features %>% 
-  select(feat_class, med_cor, med_SNR, sd_rt) %>%
+  select(feat_class, med_cor, med_SNR) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 MS3000_features %>%
   mutate(pred_prob=predict(object=falkor_min_model, newdata = ., type = "response")) %>%
-  mutate(pred_class=round(pred_prob)) %>%
+  mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
   with(table(pred_class, feat_class))
 
 
 # Modeling MESOSCOPE alone and comparing parameter differences ----
 falkor_full_model <- FT2040_features %>% 
-  select(-feat_id) %>%
+  select(-feature) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 meso_full_model <- MS3000_features %>% 
-  select(-feat_id) %>%
+  select(-feature) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
@@ -95,11 +92,11 @@ file_types <- c("Blk", "15m", "DCM", "175m", "Poo", "Std")
 MS3000_preds %>%
   filter(feat_class=="Good") %>%
   arrange(pred_prob) %>% 
-  select(feat_id, pred_prob, mean_mz, mean_rt)
+  select(feature, pred_prob, mean_mz, mean_rt)
 
 given_peak <- "FT1955"
 (row_data <- MS3000_features %>% 
-  filter(feat_id==given_peak)) %>% 
+  filter(feature==given_peak)) %>% 
   as.data.frame() %>% t()
 msdata$EIC2[mz%between%pmppm(row_data$mean_mz, 5)][
   rt%between%(row_data$mean_rt/60+c(-1, 1))
@@ -114,23 +111,23 @@ msdata$EIC2[mz%between%pmppm(row_data$mean_mz, 5)][
   scale_y_continuous()
 
 # Constructing a model from BOTH datasets for comparison to each ----
-# using only the minimal model of med_cor, med_SNR, and sd_rt
+# using only the minimal model of med_cor, med_SNR
 falkor_min_model <- FT2040_features %>% 
-  select(feat_class, med_cor, med_SNR, sd_rt) %>%
+  select(feat_class, med_cor, med_SNR) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 FT2040_preds <- FT2040_features %>%
-  select(-feat_id) %>%
+  select(-feature) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(pred_prob=predict(object=falkor_min_model,newdata = ., type = "response"))
 meso_min_model <- MS3000_features %>% 
-  select(feat_class, med_cor, med_SNR, sd_rt) %>%
+  select(feat_class, med_cor, med_SNR) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 MS3000_preds <- MS3000_features %>%
-  select(-feat_id) %>%
+  select(-feature) %>%
   mutate(pred_prob=predict(object=meso_min_model,newdata = ., type = "response"))
 
 FM_min_model <- bind_rows(MS3000_features, FT2040_features) %>%
@@ -139,7 +136,7 @@ FM_min_model <- bind_rows(MS3000_features, FT2040_features) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
 FM_preds <- bind_rows(MS3000_features, FT2040_features) %>%
-  select(-feat_id) %>%
+  select(-feature) %>%
   mutate(pred_prob=predict(object=FM_min_model,newdata = ., type = "response")) %>%
   mutate(pred_class=pred_prob>0.5) %>%
   mutate(pred_class=ifelse(pred_class, "Good", "Bad"))
