@@ -31,10 +31,10 @@ trapz <- function(x, y) {
   return(0.5*(p1-p2))
 }
 
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
-# dataset_version <- "Pttime"
+dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -54,7 +54,7 @@ peak_data <- msnexp_filled %>%
   rownames_to_column("id") %>%
   unnest_longer(peakidx) %>%
   rename_with(~paste0("feat_", .x), .cols = -peakidx) %>%
-  rename(feature="feat_id") %>%
+  dplyr::rename(feature="feat_id") %>%
   left_join(peak_data_long) %>%
   mutate(filename=basename(fileNames(msnexp_filled))[sample]) %>%
   complete(feature, filename)
@@ -150,6 +150,9 @@ peakshape_mets <- peakshape_rawdata %>%
             max_SNR=max(SNR, na.rm = TRUE),
             max_cor=max(peak_cor, na.rm = TRUE),
             medtop3_cor=second_largest(peak_cor)) %>%
+  right_join(distinct(peak_data, feature)) %>%
+  mutate(across(-feature, ~ifelse(is.na(.x), 0, .x))) %>%
+  mutate(across(-feature, ~ifelse(is.infinite(.x), 0, .x))) %>%
   mutate(log_med_cor=log10(1-med_cor))
 write.csv(peakshape_mets, paste0(output_folder, "peakshape_mets.csv"), 
           row.names = FALSE)
@@ -162,7 +165,9 @@ scan_time <- msdata$EIC2 %>%
   summarise(mean_diff=mean(diff(rt))) %>%
   summarise(grand_mean_diff=mean(mean_diff)) %>%
   pull(grand_mean_diff)
-n_scans <- eic_dt[, .N, .(filename, feature)]
+n_scans <- eic_dt[, .N, .(filename, feature)] %>%
+  right_join(distinct(peak_data, feature, filename)) %>%
+  mutate(N=ifelse(is.na(N), 0, N))
 med_missed_scans <- peak_bounds %>%
   mutate(filename=basename(filename)) %>%
   mutate(rtmin=rtmin/60, rtmax=rtmax/60) %>%
@@ -263,56 +268,68 @@ depth_diffs <- peak_data %>%
   mutate(smp_to_blk=ifelse(is.na(t_pval), 0.9, t_pval))
 write.csv(depth_diffs, paste0(output_folder, "depth_diffs.csv"), row.names = FALSE)
 
-blank_diffs <- peak_data %>%
-  select(feature, filename, into) %>%
-  left_join(file_data) %>%
-  filter(samp_type%in%c("Smp", "Blk")) %>%
-  select(feature, samp_type, into) %>%
-  group_by(feature, samp_type) %>%
-  summarise(mean_area=mean(into)) %>%
-  pivot_wider(names_from = samp_type, values_from = mean_area) %>%
-  ungroup() %>%
-  mutate(smp_to_blk=Smp/Blk) %>%
-  # Cover cases where no data was found in the samples (therefore -Inf when logged)
-  # Replace with 1/10th the lowest global value
-  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Smp), 
-                           min(smp_to_blk, na.rm = TRUE)/10, 
-                           smp_to_blk)) %>%
-  # Cover cases where no data was found in the blank (therefore Inf)
-  # Replace with 10x the largest global value
-  mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Blk), 
-                           max(smp_to_blk, na.rm = TRUE)*10, 
-                           smp_to_blk)) %>%
-  select(feature, smp_to_blk) %>%
-  mutate(smp_to_blk=log10(smp_to_blk)) %>%
-  # Cover cases where there's zero data in standards OR blank
-  # Ratio of 1 feels about right
-  right_join(distinct(peak_data, feature)) %>%
-  mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 1, smp_to_blk))
+if(dataset_version%in%c("FT2040", "MS3000", "CultureData")){
+  blank_diffs <- peak_data %>%
+    select(feature, filename, into) %>%
+    left_join(file_data) %>%
+    filter(samp_type%in%c("Smp", "Blk", "extr")) %>%
+    select(feature, samp_type, into) %>%
+    group_by(feature, samp_type) %>%
+    summarise(mean_area=mean(into)) %>%
+    pivot_wider(names_from = samp_type, values_from = mean_area) %>%
+    ungroup() %>%
+    mutate(smp_to_blk=Smp/Blk) %>%
+    # Cover cases where no data was found in the samples (therefore -Inf when logged)
+    # Replace with 1/10th the lowest global value
+    mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Smp), 
+                             min(smp_to_blk, na.rm = TRUE)/10, 
+                             smp_to_blk)) %>%
+    # Cover cases where no data was found in the blank (therefore Inf)
+    # Replace with 10x the largest global value
+    mutate(smp_to_blk=ifelse(is.na(smp_to_blk) & is.na(Blk), 
+                             max(smp_to_blk, na.rm = TRUE)*10, 
+                             smp_to_blk)) %>%
+    select(feature, smp_to_blk) %>%
+    mutate(smp_to_blk=log10(smp_to_blk)) %>%
+    # Cover cases where there's zero data in standards OR blank
+    # Ratio of 1 feels about right
+    right_join(distinct(peak_data, feature)) %>%
+    mutate(smp_to_blk=ifelse(is.na(smp_to_blk), 1, smp_to_blk))
+} else {
+  blank_diffs <- peak_data %>% 
+    distinct(feature) %>%
+    mutate(smp_to_blk=1)
+}
 write.csv(blank_diffs, paste0(output_folder, "blank_diffs.csv"), row.names = FALSE)
 
-stan_diffs <- peak_data %>%
-  select(feature, filename, into) %>%
-  left_join(file_data) %>%
-  filter(samp_type%in%c("Smp", "Std")) %>%
-  select(feature, samp_type, into) %>%
-  group_by(feature, samp_type) %>%
-  summarise(mean_area=mean(into)) %>%
-  pivot_wider(names_from = samp_type, values_from = mean_area) %>%
-  mutate(smp_to_std=Smp/Std) %>%
-  ungroup() %>%
-  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Smp), 
-                           min(smp_to_std, na.rm = TRUE)/10, 
-                           smp_to_std)) %>%
-  mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Std), 
-                           max(smp_to_std, na.rm = TRUE)*10, 
-                           smp_to_std)) %>%
-  select(feature, smp_to_std) %>%
-  mutate(smp_to_std=log10(smp_to_std)) %>%
-  right_join(distinct(peak_data, feature)) %>%
-  mutate(smp_to_std=ifelse(is.na(smp_to_std), 1, smp_to_std))
-write.csv(stan_diffs, paste0(output_folder, "stan_diffs.csv"), row.names = FALSE)
 
+if(dataset_version%in%c("FT2040", "MS3000", "CultureData")){
+  stan_diffs <- peak_data %>%
+    select(feature, filename, into) %>%
+    left_join(file_data) %>%
+    filter(samp_type%in%c("Smp", "Std")) %>%
+    select(feature, samp_type, into) %>%
+    group_by(feature, samp_type) %>%
+    summarise(mean_area=mean(into)) %>%
+    pivot_wider(names_from = samp_type, values_from = mean_area) %>%
+    mutate(smp_to_std=Smp/Std) %>%
+    ungroup() %>%
+    mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Smp), 
+                             min(smp_to_std, na.rm = TRUE)/10, 
+                             smp_to_std)) %>%
+    mutate(smp_to_std=ifelse(is.na(smp_to_std) & is.na(Std), 
+                             max(smp_to_std, na.rm = TRUE)*10, 
+                             smp_to_std)) %>%
+    select(feature, smp_to_std) %>%
+    mutate(smp_to_std=log10(smp_to_std)) %>%
+    right_join(distinct(peak_data, feature)) %>%
+    mutate(smp_to_std=ifelse(is.na(smp_to_std), 1, smp_to_std))
+} else {
+  stan_diffs <- peak_data %>% 
+    distinct(feature) %>%
+    mutate(smp_to_std=1)
+}
+write.csv(stan_diffs, paste0(output_folder, "stan_diffs.csv"), row.names = FALSE)
 
 # Join feature classes and write out ----
 simple_feats <- read_csv(paste0(output_folder, "simple_feats.csv"))
@@ -338,6 +355,10 @@ features_extracted <- simple_feats %>%
   left_join(feat_isodata) %>% 
   left_join(classified_feats) %>%
   filter(mean_rt%between%c(30, 1200))
+if(dataset_version=="Pttime"){
+  features_extracted <- select(-c(samps_found, stans_found, smp_to_blk, smp_to_std),
+                               .data = features_extracted)
+}
 write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"), 
           row.names = FALSE)
 
@@ -350,7 +371,7 @@ metric_plots <- features_extracted %>%
   setdiff(c("feature", "blank_found", "feat_class")) %>%
   lapply(function(col_name){
     features_extracted %>%
-      mutate(col_to_plot=cut(get(col_name), pretty(get(col_name), n = 10))) %>%
+      mutate(col_to_plot=cut(get(col_name), pretty(get(col_name), n = 10), include.lowest = TRUE)) %>%
       ggplot() +
       geom_bar(aes(x=col_to_plot, fill=feat_class)) +
       labs(x=col_name) +
@@ -358,7 +379,8 @@ metric_plots <- features_extracted %>%
   })
 
 fullplot <- do.call(gridExtra::arrangeGrob, c(metric_plots, ncol=1))
-
+ggsave(filename = "metric_dists.pdf", plot = fullplot, device = "pdf", 
+       path = output_folder, width = 6, height = 20, units = "in")
 
 
 
