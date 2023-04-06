@@ -4,9 +4,9 @@ library(tidyverse)
 library(RaMS)
 library(xcms)
 library(data.table)
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
-# dataset_version <- "CultureData"
+dataset_version <- "CultureData"
 # dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 msnexp_filled <- readRDS(paste0(output_folder, "msnexp_filled.rds"))
@@ -16,6 +16,7 @@ feature_centers <- featureDefinitions(msnexp_filled) %>%
   rownames_to_column("feat_id") %>%
   mutate(rtmed=rtmed/60)
 msdata <- readRDS(paste0(output_folder, "msdata.rds"))
+# msdata <- grabMSdata(list.files(paste0(output_folder, "mzMLs"), pattern = "Poo", full.names = TRUE))
 
 
 
@@ -44,11 +45,10 @@ interp_dt <- pbapply::pbmapply(function(mzmed_i, rtmed_i, feat_id_i){
 
 
 # Perform the PCA and check variance explained ----
-interp_complete <- interp_dt[, .(rt=rank(rt), int), by=c("feature", "filename")] %>%
-  complete(feature, filename, rt, fill=list(int=-1))
+interp_complete <- interp_dt[, .(rt=rank(rt), int), by=c("feature", "filename")]
 interp_mat <- interp_complete %>%
   pivot_wider(names_from=feature, values_from = int) %>%
-  # select(which(colSums(is.na(.))==0)) %>%
+  select(which(colSums(is.na(.))==0)) %>%
   arrange(filename, rt) %>%
   select(-rt, -filename) %>%
   data.matrix()
@@ -71,16 +71,16 @@ pcaoutput$x[,"PC1"] %>%
   ggplot() +
   geom_tile(aes(x=rownum, y=rt, fill=int))
 
-library(plotly)
-pcaoutput$rotation %>%
-  as.data.frame() %>%
-  rownames_to_column("feature") %>%
-  plot_ly(x=~PC1, y=~PC2, z=~PC3, mode="markers", type="scatter3d", opacity=0.5)
+# library(plotly)
+# pcaoutput$rotation %>%
+#   as.data.frame() %>%
+#   rownames_to_column("feature") %>%
+#   plot_ly(x=~PC1, y=~PC2, z=~PC3, mode="markers", type="scatter3d", opacity=0.5)
 
 
 
 # Fact-check a single feature ----
-row_data <- feature_centers %>% filter(feat_id=="FT0025")
+row_data <- feature_centers %>% filter(feat_id=="FT0382")
 msdata_gp <- msdata$EIC2[mz%between%pmppm(row_data$mzmed, 5)] %>%
   filter(rt%between%(row_data$rtmed+c(-1, 1))) %>%
   ggplot() +
@@ -96,12 +96,6 @@ pixel_gp <- interp_dt %>%
 lmat <- matrix(c(1,2,2), ncol = 1)
 plot(gridExtra::arrangeGrob(msdata_gp, pixel_gp, layout_matrix = lmat))
 
-msdata$EIC2[mz%between%pmppm(row_data$mzmed, 5)] %>%
-  filter(rt%between%(row_data$rtmed+c(-1, 1))) %>%
-  mutate(plot_color=ifelse(str_detect(filename, "8501"), "Croco", "Other")) %>%
-  ggplot() +
-  geom_line(aes(x=rt, y=int, group=filename, color=plot_color)) +
-  ggtitle(paste0(row_data$feat_id, ": ", round(row_data$mzmed, 5), " (Trimethylamine)"))
 
 # Write a small shiny app to choose features ----
 library(shiny)
