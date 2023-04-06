@@ -16,8 +16,8 @@ options(pillar.sigfig=7)
 
 # dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
-dataset_version <- "CultureData"
-# dataset_version <- "Pttime"
+# dataset_version <- "CultureData"
+dataset_version <- "Pttime"
 
 output_folder <- paste0("made_data_", dataset_version, "/")
 mzML_files <- list.files(paste0(output_folder, "mzMLs/"), full.names=TRUE)
@@ -54,7 +54,8 @@ if(dataset_version%in%c("FT2040", "MS3000")){
       organism%in%c("116-1", "2090", "371", "Ca", "Cr", "Cs", "P3", "P5-5") ~ "Haptos",
       TRUE~"UNKNOWN" 
     )) %>%
-    mutate(samp_group=str_remove(basename(filename), "_?(St[1-4]_pos|Exp[1-3]_pos|MediaBlk.*|[A-I]{1,2}_pos|\\d)\\.mzML$"))
+    mutate(samp_group=str_remove(basename(filename), "_?(St[1-4]_pos|Exp[1-3]_pos|MediaBlk.*|[A-I]{1,2}_pos|\\d)\\.mzML$")) %>%
+    mutate(col=c("red", "blue", "black", "#008080")[factor(samp_type, levels=c("Blk", "Smp", "Std", "Poo"))], lwd=1)
 } else if(dataset_version=="Pttime"){
   file_data <- data.frame(filename=mzML_files) %>%
     mutate(samp_id=str_remove(basename(filename), "20190429_JJ_VB_BioSFA_Pttime_1_QE144_Ag68377-924_USHXG01160_POS_MSMS-v2_")) %>%
@@ -62,7 +63,8 @@ if(dataset_version%in%c("FT2040", "MS3000")){
     mutate(timepoint=str_extract(samp_id, "\\d+d")) %>%
     mutate(timepoint=ifelse(is.na(timepoint), "ctrl", timepoint)) %>%
     mutate(samp_group=paste(samp_type, timepoint, sep = "-")) %>%
-    arrange(samp_group)
+    arrange(samp_group) %>%
+    mutate(col=scales::hue_pal()(3)[factor(samp_type, levels=c("extr", "exudate", "pellet"))], lwd=1)
 } else {
   stop("Dataset not recognized!")
 }
