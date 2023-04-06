@@ -1,7 +1,7 @@
 # Constructing a robust metric of peak quality for untargeted mass-spectrometry
 ## Repo information and people
 This repository contains data and code processed during the 2023 eScience Winter Incubator. 
-  - Project lead: [William Kumler](https://github.com/wkumler)
+  - Project lead: [William Kumler](https://github.com/wkumler) (wkumler@uw.edu)
   - eScience advisor: [Bryna Hazelton](https://github.com/bhazelton)
   - Academic advisor: [Anitra Ingalls](https://sites.google.com/view/anitra-ingalls/home?authuser=0)
 
