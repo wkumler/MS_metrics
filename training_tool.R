@@ -12,8 +12,10 @@ library(tidyverse)
 library(RaMS)
 options(pillar.sigfig=7)
 
-dataset_version <- "FT2040"
+# dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
+dataset_version <- "CultureData"
+# dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -24,13 +26,43 @@ rt_corrections <- read_csv(paste0(output_folder, "rt_corrections.csv"))
 
 
 # Extract feature data from raw mzML files ----
-feature_df <- peak_bounds %>%
-  group_by(feature) %>%
-  summarize(min_mz=min(mzmin), max_mz=max(mzmax), 
-            min_rt=min(rtmin), max_rt=max(rtmax)) %>%
-  mutate(mean_mz=(min_mz+max_mz)/2)
-msdata <- readRDS(paste0(output_folder, "msdata.rds"))
+if(dataset_version%in%c("FT2040", "MS3000")){
+  feature_df <- peak_bounds %>%
+    group_by(feature) %>%
+    summarize(min_mz=min(mzmin), max_mz=max(mzmax), 
+              min_rt=min(rtmin), max_rt=max(rtmax)) %>%
+    mutate(mean_mz=(min_mz+max_mz)/2)
+} else {
+  FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv")
+  MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv")
+  both_min_model <- rbind(FT2040_features, MS3000_features) %>%
+    select(feat_class, med_cor, med_SNR) %>%
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    mutate(feat_class=feat_class=="Good") %>%
+    glm(formula=feat_class~., family = binomial)
+  good_features <- read_csv(paste0(output_folder, "features_extracted.csv")) %>%
+    mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+    filter(pred_prob>0.9)
+  feature_df <- read_csv(paste0(output_folder, "peak_bounds.csv")) %>%
+    group_by(feature) %>%
+    summarize(min_mz=min(mzmin), max_mz=max(mzmax), 
+              min_rt=min(rtmin), max_rt=max(rtmax)) %>%
+    mutate(mean_mz=(min_mz+max_mz)/2) %>%
+    filter(feature%in%good_features$feature)
+  
+  msdata <- file_data$filename %>%
+    paste0(output_folder, "mzMLs/", .) %>% 
+    grabMSdata(verbosity = 1, grab_what = "EIC",
+               mz=feature_df$mean_mz, ppm = 10)
+  msdata$EIC2 <- msdata$EIC %>%
+    mutate(rt=round(rt, 10)) %>%
+    left_join(rt_corrections, by=c("filename", "rt")) %>%
+    select(rt=new_rt, mz, int, filename)
+  saveRDS(msdata, file = paste0(output_folder, "msdata_only_good.rds"))
+}
+write.csv(feature_df, paste0(output_folder, "feature_df.csv"), row.names = FALSE)
 
+feature_df <- read_csv(paste0(output_folder, "feature_df.csv"))
 
 
 # Read in existing classification doc and find last classified feature ----
@@ -52,6 +84,12 @@ if(file.exists(paste0(output_folder, "classified_feats.csv"))){
 }
 
 # Perform classification ----
+if(dataset_version%in%c("FT2040", "MS3000")){
+  msdata <- readRDS(paste0(output_folder, "msdata.rds"))
+} else {
+  msdata <- readRDS(paste0(output_folder, "msdata_only_good.rds"))
+}
+
 while(TRUE){
   row_data <- feature_df[feature_df$feature==feat_id,]
   mzbounds <- c(row_data$min_mz, row_data$max_mz)
