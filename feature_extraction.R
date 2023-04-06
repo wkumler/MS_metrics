@@ -33,8 +33,8 @@ trapz <- function(x, y) {
 
 # dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
-# dataset_version <- "CultureData"
-dataset_version <- "Pttime"
+dataset_version <- "CultureData"
+# dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -343,7 +343,11 @@ if(file.exists(paste0(output_folder, "classified_feats.csv"))){
   classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
     select(feature, feat_class)
 } else {
-  classified_feats <- data.frame(feature=simple_feats$feature, feat_class="Unclassified")
+  classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
+    select(feature, feat_class) %>%
+    right_join(data.frame(feature=simple_feats$feature)) %>%
+    mutate(feat_class=ifelse(is.na(feat_class), "Unclassified", feat_class)) %>%
+    arrange(feature)
 }
 
 features_extracted <- simple_feats %>%

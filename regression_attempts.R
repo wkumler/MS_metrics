@@ -19,7 +19,7 @@ traintestlist <- features_extracted %>%
   setNames(c("train", "test"))
 
 # Single-(ML)-feature regression ----
-single_model <- glm(feat_class~log_mean_height, family = binomial, data=traintestlist$train)
+single_model <- glm(feat_class~log_mean_area, family = binomial, data=traintestlist$train)
 summary(single_model)
 traintestlist$test %>%
   cbind(pred_class=predict(single_model, ., type="response")>0.5) %>%
@@ -31,7 +31,7 @@ traintestlist$test %>%
 
 # All-feature regression ----
 full_model <- traintestlist$train %>% 
-  select(-feature, -blank_found, -shape_cor, -area_cor) %>%
+  select(-feature) %>%
   glm(formula=feat_class~., family = binomial)
 
 summary(full_model)
@@ -44,7 +44,7 @@ traintestlist$test %>%
 
 
 # Stepwise AIC optimization using MASS ----
-all_model_feats <- select(traintestlist$train, -feature, -blank_found)
+all_model_feats <- select(traintestlist$train, -feature)
 full_model <- glm(formula=feat_class~., family = binomial, data = all_model_feats)
 step_model <- MASS::stepAIC(full_model, direction = "both")
 
@@ -64,7 +64,7 @@ traintestlist$test %>%
 
 
 # Visualization (Single-metric, includes ggplot fit) ----
-pred_feat <- "mean_mz"
+pred_feat <- "med_cor"
 init_gp <- traintestlist$train %>%
   mutate(pred_cut=cut(get(pred_feat), pretty(get(pred_feat), n=15), include.lowest=TRUE)) %>%
   mutate(feat_class=factor(feat_class, labels = c("Bad", "Good"), levels=c(FALSE, TRUE))) %>%
@@ -115,6 +115,7 @@ raw_curve_data <- traintestlist$train %>%
   mutate(med_SNR=med_SNR*length(SNR_range)) %>%
   mutate(med_cor=((med_cor-min(med_cor))/(max(med_cor)-min(med_cor)))) %>%
   mutate(med_cor=med_cor*length(cor_range))
+library(plotly)
 plot_ly() %>%
   add_trace(x=~med_cor, y=~med_SNR, z=~feat_class, opacity=0.5,
             mode="markers", type="scatter3d", 
@@ -131,8 +132,8 @@ traintestlist$test %>%
 
 # Visualization (Full model, excludes ggplot fit) ----
 full_model <- traintestlist$train %>% 
-  select(-feature, -blank_found) %>%
-  glm(formula=feat_class~log_peak_height, family = binomial)
+  select(-feature) %>%
+  glm(formula=feat_class~., family = binomial)
 init_gp <- traintestlist$test %>%
   cbind(pred_prob=predict(full_model, ., type="response")) %>%
   mutate(pred_prob=cut(pred_prob, pretty(pred_prob, n=15), include.lowest=TRUE)) %>%
