@@ -4,17 +4,24 @@ library(tidyverse)
 
 FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv")
 MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv")
+Pttime_features <- read_csv("made_data_Pttime/features_extracted.csv")
+CultureData_features <- read_csv("made_data_CultureData/features_extracted.csv")
 
-# Visualize a single metric across both datasets
-bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
+# Visualize a single metric across all datasets
+bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features,
+               CultureData=CultureData_features, Pttime=Pttime_features), 
+          .id = "cruise") %>%
   ggplot() + 
-  geom_histogram(aes(x=log_med_cor, fill=feat_class), bins=40) +
+  geom_histogram(aes(x=med_cor, fill=feat_class), bins=40) +
   facet_wrap(~cruise, ncol = 1, scales = "free_y")
+
 library(ggh4x)
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
   ggplot() + 
   geom_histogram(aes(x=med_SNR, fill=feat_class), bins=40) +
   facet_grid2(cruise~feat_class, scales = "free_y", independent = "y")
+
+
 
 # Testing Falkor full model fit on MESOSCOPE data ----
 falkor_full_model <- FT2040_features %>% 
@@ -151,3 +158,21 @@ list(falkor=falkor_min_model, meso=meso_min_model, both=FM_min_model) %>%
                      y=model, color=model)) +
   facet_wrap(~term, ncol=1, scales = "free")
 
+
+
+# Using combined model to visualize predictions ----
+FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv")
+MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv")
+both_min_model <- rbind(FT2040_features, MS3000_features) %>%
+  select(feat_class, med_cor, med_SNR) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+Pttime_features %>%
+  mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+  ggplot() +
+  geom_histogram(aes(x=pred_prob), bins=50)
+CultureData_features %>%
+  mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+  ggplot() +
+  geom_histogram(aes(x=pred_prob), bins=50)
