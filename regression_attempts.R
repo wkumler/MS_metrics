@@ -5,6 +5,7 @@ library(tidyverse)
 # dataset_version <- "FT350"
 dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
+dataset_version <- "CultureData"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv"))
