@@ -33,8 +33,8 @@ trapz <- function(x, y) {
 
 # dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
-dataset_version <- "CultureData"
-# dataset_version <- "Pttime"
+# dataset_version <- "CultureData"
+dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -339,16 +339,11 @@ depth_diffs <- read_csv(paste0(output_folder, "depth_diffs.csv"))
 blank_diffs <- read_csv(paste0(output_folder, "blank_diffs.csv"))
 stan_diffs <- read_csv(paste0(output_folder, "stan_diffs.csv"))
 feat_isodata <- read_csv(paste0(output_folder, "feat_isodata.csv"))
-if(file.exists(paste0(output_folder, "classified_feats.csv"))){
-  classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
-    select(feature, feat_class)
-} else {
-  classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
-    select(feature, feat_class) %>%
-    right_join(data.frame(feature=simple_feats$feature)) %>%
-    mutate(feat_class=ifelse(is.na(feat_class), "Unclassified", feat_class)) %>%
-    arrange(feature)
-}
+classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
+  select(feature, feat_class) %>%
+  right_join(data.frame(feature=simple_feats$feature)) %>%
+  mutate(feat_class=ifelse(is.na(feat_class), "Unclassified", feat_class)) %>%
+  arrange(feature)
 
 features_extracted <- simple_feats %>%
   left_join(peakshape_mets) %>% 
