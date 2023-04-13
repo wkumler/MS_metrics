@@ -13,7 +13,9 @@ bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features,
           .id = "cruise") %>%
   ggplot() + 
   geom_histogram(aes(x=med_cor, fill=feat_class), bins=40) +
-  facet_wrap(~cruise, ncol = 1, scales = "free_y")
+  facet_wrap(~cruise, ncol = 1, scales = "free_y") +
+  scale_fill_manual(breaks = c("Good", "Bad", "Meh", "Stans only", "Unclassified"),
+                    values = c("#f4bb23", "#a41118", "#0b505c", "#028e34", "grey50"))
 
 library(ggh4x)
 bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features), .id = "cruise") %>%
@@ -160,7 +162,7 @@ list(falkor=falkor_min_model, meso=meso_min_model, both=FM_min_model) %>%
 
 
 
-# Using combined model to visualize predictions ----
+# Using combined model to visualize predictions in all 4 datasets ----
 FT2040_features <- read_csv("made_data_FT2040/features_extracted.csv")
 MS3000_features <- read_csv("made_data_MS3000/features_extracted.csv")
 both_min_model <- rbind(FT2040_features, MS3000_features) %>%
@@ -168,11 +170,68 @@ both_min_model <- rbind(FT2040_features, MS3000_features) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
-Pttime_features %>%
+bind_rows(list(Falkor=FT2040_features, MESOSCOPE=MS3000_features,
+               CultureData=CultureData_features, Pttime=Pttime_features), 
+          .id = "cruise")
+
+pred_probs_all <- bind_rows(lst(Falkor=FT2040_features, MESOSCOPE=MS3000_features,
+                                CultureData=CultureData_features, Pttime=Pttime_features), 
+                            .id = "dataset") %>%
   mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+  mutate(pred_class=ifelse(pred_prob>0.9, "Good", "Bad")) %>%
+  mutate(error_type=case_when(
+    feat_class=="Good" & pred_class=="Good" ~ "%TP",
+    feat_class=="Good" & pred_class=="Bad" ~ "%FN",
+    feat_class=="Bad" & pred_class=="Good" ~ "%FP",
+    feat_class=="Bad" & pred_class=="Bad" ~ "%TN",
+    TRUE ~ "Incomparable"
+  ))
+ggplot(pred_probs_all) +
+  geom_histogram(aes(x=pred_prob, fill=feat_class), bins=50) +
+  facet_wrap(~dataset, ncol = 1, scales="free_y") +
+  coord_cartesian(ylim = c(0, 200)) +
+  geom_vline(xintercept = 0.9, color="red", linewidth=1) +
+  scale_fill_manual(breaks = c("Good", "Bad", "Meh", "Stans only", "Unclassified"),
+                    values = c("#f4bb23", "#a41118", "#0b505c", "#028e34", "grey50"))
+
+pred_probs_all %>%
+  filter(error_type!="Incomparable") %>%
+  mutate(dataset=factor(dataset, levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"))) %>%
+  with(table(feat_class, pred_class, dataset))
+
+pred_probs_all %>%
+  filter(error_type!="Incomparable") %>%
+  group_by(dataset, error_type) %>%
+  summarise(n=n(), .groups = 'drop_last') %>%
+  mutate(perc=n/sum(n)) %>%
+  ungroup() %>%
+  complete(dataset, error_type, fill=list(n=0, perc=0)) %>%
+  ggplot(aes(x=error_type, y=perc)) +
+  geom_col(color="#0b505c", fill="#0b505c") +
+  geom_text(aes(label=n), vjust=-0.2, color="#0b505c") +
+  facet_wrap(~dataset, nrow=1) +
+  scale_y_continuous(limits=c(0, 1)) +
+  theme_bw() +
+  theme(axis.title = element_blank())
+
+pred_probs_all %>%
+  filter(error_type!="Incomparable") %>%
+  group_by(dataset, error_type) %>%
+  summarise(n=n(), .groups = 'drop_last') %>%
+  mutate(perc=n/sum(n)) %>%
+  ungroup() %>%
+  complete(dataset, error_type, fill=list(n=0)) %>%
+  select(-perc) %>%
+  pivot_wider(names_from=error_type, values_from = n) %>%
+  mutate(`%FDR`=`%FP`/(`%FP`+`%TP`)*100) %>%
+  mutate(`%GPF`=`%TP`/(`%FN`+`%TP`)*100) %>%
+  mutate(`%GPF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `%GPF`)) %>%
+  pivot_longer(c(`%FDR`, `%GPF`)) %>%
+  mutate(dataset=factor(dataset, levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"))) %>%
   ggplot() +
-  geom_histogram(aes(x=pred_prob), bins=50)
-CultureData_features %>%
-  mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
-  ggplot() +
-  geom_histogram(aes(x=pred_prob), bins=50)
+  geom_point(aes(x=dataset, y=value, color=name), size=3) +
+  facet_wrap(~name, scales = "free_y", nrow = 1) +
+  scale_y_continuous(limits = c(0, NA))
+
+
+
