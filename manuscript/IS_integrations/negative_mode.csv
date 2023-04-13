@@ -1,0 +1,1252 @@
+Protein Name,Replicate Name,Precursor Ion Name,Retention Time,Area,Background,Height,Mass Error PPM,Protein
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Adenosine Monophosphate, 15N5",11.28,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Adenosine Monophosphate, 15N5",11.37,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Adenosine Monophosphate, 15N5",11.35,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Adenosine Monophosphate, 15N5",11.95,19024686,0,1627934,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Adenosine Monophosphate, 15N5",11.97,20172556,0,1168192,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Adenosine Monophosphate, 15N5",11.87,30274174,0,1106605,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Adenosine Monophosphate, 15N5",11.33,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Adenosine Monophosphate, 15N5",11.47,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Adenosine Monophosphate, 15N5",11.47,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Adenosine Monophosphate, 15N5",12.05,19022326,0,1443126,1.9,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Adenosine Monophosphate, 15N5",12.01,23546754,0,1347292,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Adenosine Monophosphate, 15N5",11.91,26305088,1741858,1349671,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Adenosine Monophosphate, 15N5",12.08,20480644,0,1587041,2.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Adenosine Monophosphate, 15N5",11.92,18046402,0,1153057,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Adenosine Monophosphate, 15N5",11.73,29365910,0,1100138,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Adenosine Monophosphate, 15N5",11.49,35892728,0,1507665,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Adenosine Monophosphate, 15N5",12.21,12905796,0,920382,2.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Adenosine Monophosphate, 15N5",12.05,14404198,0,1064049,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Adenosine Monophosphate, 15N5",11.7,26966186,0,1331339,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Adenosine Monophosphate, 15N5",12.41,10716491,0,727117,2.3,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Adenosine Monophosphate, 15N5",12.18,13029078,0,885146,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Adenosine Monophosphate, 15N5",11.95,19493336,0,968390,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Adenosine Monophosphate, 15N5",12.24,16620040,0,1274372,2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Adenosine Monophosphate, 15N5",12.32,7993634,69490,626210,2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Adenosine Monophosphate, 15N5",12.24,11003334,0,768459,2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Adenosine Monophosphate, 15N5",12.15,11924971,0,886133,1.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Adenosine Monophosphate, 15N5",12.04,17191438,0,948994,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Adenosine Monophosphate, 15N5",11.92,22658090,0,1095626,1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Adenosine Monophosphate, 15N5",12.16,8842450,0,661386,2.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Adenosine Monophosphate, 15N5",12.3,4614730,0,287835,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Adenosine Monophosphate, 15N5",12.24,5888889,0,451424,2.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Adenosine Monophosphate, 15N5",12.1,6079085,0,369097,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Adenosine Monophosphate, 15N5",11.87,10304485,0,434626,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Adenosine Monophosphate, 15N5",11.76,12770944,0,583315,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Adenosine Monophosphate, 15N5",12.36,8289876,0,649227,1.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Adenosine Monophosphate, 15N5",12.3,9399337,0,707304,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Adenosine Monophosphate, 15N5",12.25,10003703,0,857955,2.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Adenosine Monophosphate, 15N5",12.28,10886149,0,853707,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Adenosine Monophosphate, 15N5",11.98,18639972,0,1013003,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Adenosine Monophosphate, 15N5",11.9,20986408,0,960275,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Adenosine Monophosphate, 15N5",12.45,8196139,88633,627070,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Adenosine Monophosphate, 15N5",11.72,26310718,0,1129758,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Adenosine Monophosphate, 15N5",12.15,12856995,0,679843,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Adenosine Monophosphate, 15N5",11.64,26583064,0,892317,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Adenosine Monophosphate, 15N5",11.93,21066738,0,1183354,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Adenosine Monophosphate, 15N5",12.37,10740614,0,690653,2.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Adenosine Monophosphate, 15N5",11.89,21338338,0,1067717,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Adenosine Monophosphate, 15N5",11.69,21572154,4861703,888217,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Adenosine Monophosphate, 15N5",11.89,22563810,12395,1131523,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Adenosine Monophosphate, 15N5",12.24,10953169,0,795966,2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Adenosine Monophosphate, 15N5",12.29,10689097,0,804297,2.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Adenosine Monophosphate, 15N5",12.27,12000162,0,801362,2.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Adenosine Monophosphate, 15N5",11.93,18405982,0,1178747,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Adenosine Monophosphate, 15N5",12.28,11939412,0,766725,2.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Adenosine Monophosphate, 15N5",12.1,13238941,0,884849,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Adenosine Monophosphate, 15N5",11.99,17376234,0,925721,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Adenosine Monophosphate, 15N5",12.39,9013655,0,648305,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Adenosine Monophosphate, 15N5",11.87,20240612,0,986167,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Adenosine Monophosphate, 15N5",11.93,20821148,47403,1095119,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Adenosine Monophosphate, 15N5",11.75,26543358,0,1121272,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Adenosine Monophosphate, 15N5",12.01,15287091,0,854256,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Adenosine Monophosphate, 15N5",12.38,9118268,0,658317,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Adenosine Monophosphate, 15N5",11.92,24192446,0,1188324,1.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Adenosine Monophosphate, 15N5",12.12,13825760,0,915971,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Adenosine Monophosphate, 15N5",12.28,9585391,0,756788,2.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Adenosine Monophosphate, 15N5",11.95,15343022,0,910633,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Adenosine Monophosphate, 15N5",11.95,16833870,0,966012,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Adenosine Monophosphate, 15N5",12.3,9438089,0,673671,2.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Adenosine Monophosphate, 15N5",12.28,11213577,0,766420,2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Adenosine Monophosphate, 15N5",12.15,12271151,360670,824860,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Adenosine Monophosphate, 15N5",12.22,10897167,0,780226,2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Adenosine Monophosphate, 15N5",12.09,13191310,0,857884,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Adenosine Monophosphate, 15N5",12.13,10923299,0,721524,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Adenosine Monophosphate, 15N5",11.98,15233675,0,762500,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Adenosine Monophosphate, 15N5",12.36,9943547,0,690826,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Adenosine Monophosphate, 15N5",11.89,16713338,0,823232,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Adenosine Monophosphate, 15N5",11.73,28835996,0,997823,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Adenosine Monophosphate, 15N5",12.21,11288120,0,855488,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Adenosine Monophosphate, 15N5",12.16,11756689,0,779551,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Adenosine Monophosphate, 15N5",12.21,11157493,0,704812,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Adenosine Monophosphate, 15N5",11.87,21139266,1072881,1075756,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Adenosine Monophosphate, 15N5",12.3,8838860,61310,747424,2.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Adenosine Monophosphate, 15N5",12.33,10065917,0,741245,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Adenosine Monophosphate, 15N5",11.75,28141748,0,1332872,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Adenosine Monophosphate, 15N5",12.2,23365280,0,1661777,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Adenosine Monophosphate, 15N5",12.25,17256370,0,1387179,2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Adenosine Monophosphate, 15N5",11.9,21467678,0,1138917,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Adenosine Monophosphate, 15N5",11.66,22063542,0,879156,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Adenosine Monophosphate, 15N5",12.35,8244179,52636,713039,2.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Adenosine Monophosphate, 15N5",12.27,11570692,0,803438,2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Adenosine Monophosphate, 15N5",11.95,13243525,0,755212,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Adenosine Monophosphate, 15N5",12.29,11030934,0,827277,2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Adenosine Monophosphate, 15N5",12.36,8530699,0,680705,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Adenosine Monophosphate, 15N5",12.19,11123068,0,778174,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Adenosine Monophosphate, 15N5",11.92,17152450,0,898148,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Adenosine Monophosphate, 15N5",12.39,10365687,0,766518,1.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Adenosine Monophosphate, 15N5",12.16,12132859,0,809561,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Adenosine Monophosphate, 15N5",12.38,10286818,0,760829,2.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Adenosine Monophosphate, 15N5",12.07,12887563,0,700553,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Adenosine Monophosphate, 15N5",11.7,28543340,0,993582,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Adenosine Monophosphate, 15N5",11.97,19997172,0,1156642,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Adenosine Monophosphate, 15N5",12.3,17372378,0,1265680,1.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Adenosine Monophosphate, 15N5",11.73,30255452,0,1384526,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Adenosine Monophosphate, 15N5",12.25,12386972,0,907830,1.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Adenosine Monophosphate, 15N5",12.19,13085197,0,804633,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Adenosine Monophosphate, 15N5",12.12,12716977,0,826882,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Adenosine Monophosphate, 15N5",11.69,23881286,3903128,1023180,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Adenosine Monophosphate, 15N5",11.92,23272032,0,1150464,1.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Adenosine Monophosphate, 15N5",12.37,17008194,0,1326721,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Adenosine Monophosphate, 15N5",12.33,10584521,0,880334,1.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Adenosine Monophosphate, 15N5",12.42,10563460,0,797784,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Adenosine Monophosphate, 15N5",12.01,18716848,0,1190044,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Adenosine Monophosphate, 15N5",12.21,12033774,0,788790,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Adenosine Monophosphate, 15N5",12.43,16255810,0,1448192,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Adenosine Monophosphate, 15N5",12.21,10324066,0,750215,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Adenosine Monophosphate, 15N5",12.17,12277790,0,771979,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Adenosine Monophosphate, 15N5",12.38,9977331,0,786028,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Adenosine Monophosphate, 15N5",12.23,11338407,0,777347,2.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Adenosine Monophosphate, 15N5",12.25,11578331,0,862510,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Adenosine Monophosphate, 15N5",12.18,12745094,0,737284,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Adenosine Monophosphate, 15N5",11.99,14970956,0,876317,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Adenosine Monophosphate, 15N5",12.18,11801698,56426,849979,1.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Adenosine Monophosphate, 15N5",12.41,11583431,0,772425,1.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Adenosine Monophosphate, 15N5",11.87,26590660,0,1193357,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Adenosine Monophosphate, 15N5",11.76,25014440,0,1058088,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Adenosine Monophosphate, 15N5",11.93,37090872,0,2025072,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Adenosine Monophosphate, 15N5",11.76,27095868,0,1284415,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Adenosine Monophosphate, 15N5",11.7,21946734,5247230,950895,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Adenosine Monophosphate, 15N5",11.73,30246724,0,1414966,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Adenosine Monophosphate, 15N5",12.41,10185766,0,778791,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Adenosine Monophosphate, 15N5",12.25,11559682,0,850543,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Adenosine Monophosphate, 15N5",11.7,27097836,0,1148744,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Adenosine Monophosphate, 15N5",12.31,9873304,0,794502,1.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Adenosine Monophosphate, 15N5",11.87,24921118,0,1237178,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Adenosine Monophosphate, 15N5",12.24,10927059,0,792083,1.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Adenosine Monophosphate, 15N5",12.44,8922092,0,676665,1.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Adenosine Monophosphate, 15N5",11.84,32138570,0,1368788,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Adenosine Monophosphate, 15N5",12.37,9491260,0,842159,2.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Adenosine Monophosphate, 15N5",11.73,30095704,0,1355168,1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Isethionic Acid, 13C2",7.1,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Isethionic Acid, 13C2",7.02,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Isethionic Acid, 13C2",6.95,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Isethionic Acid, 13C2",7.73,14526596,0,600080,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Isethionic Acid, 13C2",7.04,26388694,0,949537,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Isethionic Acid, 13C2",6.22,48460436,0,1900078,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Isethionic Acid, 13C2",6.97,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Isethionic Acid, 13C2",6.96,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Isethionic Acid, 13C2",7.04,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Isethionic Acid, 13C2",7.76,13138912,0,508139,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Isethionic Acid, 13C2",7.1,29840680,0,979699,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Isethionic Acid, 13C2",6.31,44524568,0,1413485,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Isethionic Acid, 13C2",7.74,17765512,0,636561,-7,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Isethionic Acid, 13C2",7.02,38228296,0,1414877,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Isethionic Acid, 13C2",6.17,54857328,0,1572209,-8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Isethionic Acid, 13C2",6.52,67204888,0,6640450,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Isethionic Acid, 13C2",7.78,14651310,0,1461614,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Isethionic Acid, 13C2",7.6,23205734,0,2670838,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Isethionic Acid, 13C2",7.04,51568976,0,7446916,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Isethionic Acid, 13C2",7.76,17078466,0,648617,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Isethionic Acid, 13C2",7.52,27998180,0,1118957,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Isethionic Acid, 13C2",6.87,55386320,0,1869023,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Isethionic Acid, 13C2",7.79,14692212,0,555532,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Isethionic Acid, 13C2",7.74,12618585,0,585200,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Isethionic Acid, 13C2",7.6,22413856,0,863420,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Isethionic Acid, 13C2",7.42,29269602,0,1055855,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Isethionic Acid, 13C2",6.81,56062208,0,1977478,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Isethionic Acid, 13C2",6.59,53829568,0,1721802,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Isethionic Acid, 13C2",7.76,7532530,0,370449,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Isethionic Acid, 13C2",7.79,6770791,0,286998,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Isethionic Acid, 13C2",7.62,10217109,0,479245,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Isethionic Acid, 13C2",7.42,13911031,0,716658,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Isethionic Acid, 13C2",6.84,31654382,0,1181304,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Isethionic Acid, 13C2",6.59,30391868,0,909871,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Isethionic Acid, 13C2",7.76,14427847,0,562188,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Isethionic Acid, 13C2",7.77,16422403,0,786043,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Isethionic Acid, 13C2",7.62,24364504,0,1075209,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Isethionic Acid, 13C2",7.51,28581544,0,1362478,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Isethionic Acid, 13C2",6.85,57540980,0,2536960,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Isethionic Acid, 13C2",6.62,56969952,0,2519204,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Isethionic Acid, 13C2",7.84,13382501,0,422533,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Isethionic Acid, 13C2",6.42,62193324,0,2860809,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Isethionic Acid, 13C2",7.68,28037274,0,2386323,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Isethionic Acid, 13C2",6.49,59622708,0,3762340,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Isethionic Acid, 13C2",6.88,60123188,0,1931777,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Isethionic Acid, 13C2",7.7,17950546,0,792370,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Isethionic Acid, 13C2",7.05,53322216,0,3462634,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Isethionic Acid, 13C2",6.36,60362200,0,1795385,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Isethionic Acid, 13C2",6.85,54995820,0,1765475,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Isethionic Acid, 13C2",7.72,44293324,0,2378206,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Isethionic Acid, 13C2",7.74,14336478,0,623228,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Isethionic Acid, 13C2",7.65,21457046,0,852658,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Isethionic Acid, 13C2",7.07,38494124,0,1470748,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Isethionic Acid, 13C2",7.91,17332148,0,1395055,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Isethionic Acid, 13C2",7.49,26242202,0,1073674,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Isethionic Acid, 13C2",7.03,37214100,0,1251948,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Isethionic Acid, 13C2",7.82,10870212,0,455282,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Isethionic Acid, 13C2",6.87,51548884,0,1593320,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Isethionic Acid, 13C2",6.99,47365640,0,3143022,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Isethionic Acid, 13C2",6.63,58350472,0,2012930,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Isethionic Acid, 13C2",7.08,36249392,0,1273941,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Isethionic Acid, 13C2",7.8,12929792,0,518934,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Isethionic Acid, 13C2",6.86,60933196,0,2011333,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Isethionic Acid, 13C2",7.48,29309150,0,1719478,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Isethionic Acid, 13C2",7.8,12441853,0,448697,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Isethionic Acid, 13C2",7.02,33223462,0,1100822,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Isethionic Acid, 13C2",7.05,32833878,0,1051653,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Isethionic Acid, 13C2",7.79,13350559,0,807545,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Isethionic Acid, 13C2",7.73,19044530,0,1218241,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Isethionic Acid, 13C2",7.57,47294128,0,2512502,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Isethionic Acid, 13C2",7.69,21422958,0,1116547,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Isethionic Acid, 13C2",7.51,25038490,0,1008416,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Isethionic Acid, 13C2",7.5,27802208,0,1339363,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Isethionic Acid, 13C2",7.07,38452540,0,1381558,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Isethionic Acid, 13C2",7.86,12285542,0,611824,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Isethionic Acid, 13C2",7.04,39953404,0,1340821,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Isethionic Acid, 13C2",6.42,59599312,0,1922138,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Isethionic Acid, 13C2",7.53,26546634,0,1037966,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Isethionic Acid, 13C2",7.53,30145634,0,1689242,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Isethionic Acid, 13C2",7.51,28056026,0,1541143,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Isethionic Acid, 13C2",7.05,55657804,0,3983151,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Isethionic Acid, 13C2",7.73,14115513,0,548892,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Isethionic Acid, 13C2",7.79,13257874,0,515290,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Isethionic Acid, 13C2",6.72,60129580,0,3254244,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Isethionic Acid, 13C2",7.49,49011352,0,1498708,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Isethionic Acid, 13C2",7.81,16796970,0,620190,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Isethionic Acid, 13C2",6.83,57188668,0,1636005,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Isethionic Acid, 13C2",6.26,57133676,0,1844438,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Isethionic Acid, 13C2",7.75,14396048,0,542242,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Isethionic Acid, 13C2",7.69,20718554,0,862123,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Isethionic Acid, 13C2",7.07,40191896,0,1431949,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Isethionic Acid, 13C2",7.68,18248300,0,811176,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Isethionic Acid, 13C2",7.77,11838692,0,501395,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Isethionic Acid, 13C2",7.53,26423022,0,1411033,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Isethionic Acid, 13C2",7.03,42133292,0,1536964,-8.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Isethionic Acid, 13C2",7.76,19619000,0,822172,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Isethionic Acid, 13C2",7.56,24173426,0,911900,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Isethionic Acid, 13C2",7.76,15764482,0,602604,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Isethionic Acid, 13C2",7.5,49779016,0,2273417,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Isethionic Acid, 13C2",6.23,60751496,0,1807277,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Isethionic Acid, 13C2",7.17,36426404,0,2066676,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Isethionic Acid, 13C2",7.79,14907971,0,566167,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Isethionic Acid, 13C2",6.68,59493968,0,2493234,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Isethionic Acid, 13C2",7.86,18892438,0,1684474,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Isethionic Acid, 13C2",7.57,26743506,0,1394069,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Isethionic Acid, 13C2",7.05,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Isethionic Acid, 13C2",6.25,56335800,0,1668580,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Isethionic Acid, 13C2",6.85,56267008,0,2032367,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Isethionic Acid, 13C2",7.81,17266272,0,621589,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Isethionic Acid, 13C2",7.8,17133502,0,1106383,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Isethionic Acid, 13C2",7.72,15547517,0,705717,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Isethionic Acid, 13C2",7.09,41203328,0,1262978,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Isethionic Acid, 13C2",7.56,26951300,0,1693167,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Isethionic Acid, 13C2",7.87,15406405,0,621061,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Isethionic Acid, 13C2",7.56,25519430,0,1220477,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Isethionic Acid, 13C2",7.54,23150510,0,1115413,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Isethionic Acid, 13C2",7.71,19284142,0,734677,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Isethionic Acid, 13C2",7.83,18948626,0,1387368,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Isethionic Acid, 13C2",7.54,27212944,0,1609563,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Isethionic Acid, 13C2",7.57,24003428,0,1259168,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Isethionic Acid, 13C2",7,35389504,0,1068581,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Isethionic Acid, 13C2",7.53,25132590,0,1035822,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Isethionic Acid, 13C2",7.69,15917577,0,678839,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Isethionic Acid, 13C2",6.64,57486216,0,2402681,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Isethionic Acid, 13C2",6.63,57419252,0,2147008,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Isethionic Acid, 13C2",6.87,52767872,0,1624354,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Isethionic Acid, 13C2",6.67,60879616,0,2319020,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Isethionic Acid, 13C2",6.23,52493756,0,1546410,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Isethionic Acid, 13C2",6.91,54837776,0,4335938,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Isethionic Acid, 13C2",7.89,13278412,0,518729,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Isethionic Acid, 13C2",7.57,24019050,0,1309986,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Isethionic Acid, 13C2",6.35,61275424,0,3219011,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Isethionic Acid, 13C2",7.77,17109308,0,1012165,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Isethionic Acid, 13C2",6.59,61565184,0,2226666,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Isethionic Acid, 13C2",7.76,21295912,0,1430299,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Isethionic Acid, 13C2",7.92,13114009,0,779153,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Isethionic Acid, 13C2",6.66,54508424,0,2376762,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Isethionic Acid, 13C2",7.74,19084914,0,659501,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Isethionic Acid, 13C2",6.66,57434880,0,1988070,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"L-Cysteic Acid, D3",12,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"L-Cysteic Acid, D3",11.95,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"L-Cysteic Acid, D3",11.98,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"L-Cysteic Acid, D3",13.23,4662053,0,614614,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"L-Cysteic Acid, D3",13.15,4710831,0,581755,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"L-Cysteic Acid, D3",12.92,6457247,0,856899,-4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"L-Cysteic Acid, D3",12.01,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"L-Cysteic Acid, D3",12,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"L-Cysteic Acid, D3",12,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"L-Cysteic Acid, D3",13.3,4928044,0,632067,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"L-Cysteic Acid, D3",13.2,5418915,0,748695,-4.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"L-Cysteic Acid, D3",12.92,8009976,0,1003542,-4.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"L-Cysteic Acid, D3",13.28,4121410,0,545854,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"L-Cysteic Acid, D3",13.1,4602671,0,678016,-4.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"L-Cysteic Acid, D3",12.86,5632979,0,768243,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"L-Cysteic Acid, D3",12.51,5333885,0,503359,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"L-Cysteic Acid, D3",13.1,2503749,0,341049,-3,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"L-Cysteic Acid, D3",13.01,2950896,0,371076,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"L-Cysteic Acid, D3",12.71,5288090,0,555152,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"L-Cysteic Acid, D3",13.44,2365069,0,279877,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"L-Cysteic Acid, D3",13.28,2938111,0,426475,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"L-Cysteic Acid, D3",12.99,4430784,0,573446,-4.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"L-Cysteic Acid, D3",13.36,3326682,0,478743,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"L-Cysteic Acid, D3",13.43,1996077,0,273050,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"L-Cysteic Acid, D3",13.34,2681555,0,351104,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"L-Cysteic Acid, D3",13.25,2678440,0,393579,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"L-Cysteic Acid, D3",13.06,3799575,0,488783,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"L-Cysteic Acid, D3",12.97,4502074,0,564136,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"L-Cysteic Acid, D3",13.25,1132403,0,194913,-2.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"L-Cysteic Acid, D3",13.28,931928,0,172911,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"L-Cysteic Acid, D3",13.25,1027486,0,157942,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"L-Cysteic Acid, D3",13.16,1320779,0,239998,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"L-Cysteic Acid, D3",12.95,1507164,0,251345,-2.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"L-Cysteic Acid, D3",12.84,2335866,0,255113,-4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"L-Cysteic Acid, D3",13.46,2174343,0,342817,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"L-Cysteic Acid, D3",13.43,2240877,0,288761,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"L-Cysteic Acid, D3",13.31,2751710,0,354020,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"L-Cysteic Acid, D3",13.36,3013364,0,405440,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"L-Cysteic Acid, D3",13.13,4320277,0,559181,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"L-Cysteic Acid, D3",13.03,4787739,0,628319,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"L-Cysteic Acid, D3",13.54,2110349,0,285178,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"L-Cysteic Acid, D3",12.82,5607009,0,700049,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"L-Cysteic Acid, D3",13.2,3252027,0,474818,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"L-Cysteic Acid, D3",12.77,4467100,0,606910,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"L-Cysteic Acid, D3",13.01,4675365,0,680838,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"L-Cysteic Acid, D3",13.37,2127252,0,303744,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"L-Cysteic Acid, D3",12.99,4667638,0,671380,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"L-Cysteic Acid, D3",12.71,4826643,0,603891,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"L-Cysteic Acid, D3",12.96,4357564,0,544364,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"L-Cysteic Acid, D3",13.29,5605643,0,769012,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"L-Cysteic Acid, D3",13.37,2425856,16069,413303,-3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"L-Cysteic Acid, D3",13.32,2934296,0,415090,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"L-Cysteic Acid, D3",13.04,4333835,0,592088,-4.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"L-Cysteic Acid, D3",13.34,2613283,0,348825,-3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"L-Cysteic Acid, D3",13.24,3507221,0,420133,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"L-Cysteic Acid, D3",13.04,3437292,0,456796,-4.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"L-Cysteic Acid, D3",13.46,2149410,0,310236,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"L-Cysteic Acid, D3",12.97,4663633,0,586595,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"L-Cysteic Acid, D3",13.04,4387429,0,532002,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"L-Cysteic Acid, D3",12.84,4734053,0,610929,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"L-Cysteic Acid, D3",13.1,3549405,0,441085,-4.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"L-Cysteic Acid, D3",13.39,2191548,0,286476,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"L-Cysteic Acid, D3",13.03,4447087,0,560931,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"L-Cysteic Acid, D3",13.22,2985168,0,428094,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"L-Cysteic Acid, D3",13.37,2394056,0,319908,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"L-Cysteic Acid, D3",13.05,3435234,0,424047,-4.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"L-Cysteic Acid, D3",13.06,3848667,0,480423,-4.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"L-Cysteic Acid, D3",13.4,2197670,0,310460,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"L-Cysteic Acid, D3",13.32,2464165,0,355586,-2.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"L-Cysteic Acid, D3",13.22,6334735,0,878814,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"L-Cysteic Acid, D3",13.28,3200115,0,422371,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"L-Cysteic Acid, D3",13.2,3002473,0,416733,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"L-Cysteic Acid, D3",13.19,3038785,0,398027,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"L-Cysteic Acid, D3",13.08,3613312,0,498276,-4.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"L-Cysteic Acid, D3",13.4,2113859,0,275669,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"L-Cysteic Acid, D3",13,3538310,0,522616,-4.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"L-Cysteic Acid, D3",12.77,5198335,0,663456,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"L-Cysteic Acid, D3",13.29,2967973,0,477668,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"L-Cysteic Acid, D3",13.23,2794045,0,399126,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"L-Cysteic Acid, D3",13.25,2948277,0,382781,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"L-Cysteic Acid, D3",12.97,4181944,0,569096,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"L-Cysteic Acid, D3",13.34,1990453,0,284285,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"L-Cysteic Acid, D3",13.4,2205406,0,306434,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"L-Cysteic Acid, D3",12.87,4476949,0,554413,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"L-Cysteic Acid, D3",13.36,6654242,0,870896,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"L-Cysteic Acid, D3",13.42,3456871,0,404514,-3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"L-Cysteic Acid, D3",13,5476920,0,722994,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"L-Cysteic Acid, D3",12.76,5210994,0,684425,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"L-Cysteic Acid, D3",13.42,2114276,0,265226,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"L-Cysteic Acid, D3",13.34,2966566,0,417788,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"L-Cysteic Acid, D3",13.02,3003419,0,407527,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"L-Cysteic Acid, D3",13.34,2551277,0,384066,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"L-Cysteic Acid, D3",13.4,2380797,0,327693,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"L-Cysteic Acid, D3",13.26,3044273,0,431398,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"L-Cysteic Acid, D3",13.02,3671374,0,511690,-4.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"L-Cysteic Acid, D3",13.4,2606511,0,346247,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"L-Cysteic Acid, D3",13.28,2442910,0,434914,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"L-Cysteic Acid, D3",13.43,2193155,0,272645,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"L-Cysteic Acid, D3",13.19,6315885,0,855616,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"L-Cysteic Acid, D3",12.75,4737049,0,628587,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"L-Cysteic Acid, D3",13.07,4106414,0,550833,-4.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"L-Cysteic Acid, D3",13.46,3471196,0,469563,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"L-Cysteic Acid, D3",12.88,4951448,0,644493,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"L-Cysteic Acid, D3",13.29,2746398,0,371240,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"L-Cysteic Acid, D3",13.25,2996791,0,462801,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"L-Cysteic Acid, D3",12.55,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"L-Cysteic Acid, D3",12.81,4857473,0,675995,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"L-Cysteic Acid, D3",13.03,4843801,0,649474,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"L-Cysteic Acid, D3",13.46,3569883,0,447970,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"L-Cysteic Acid, D3",13.42,2431580,0,314056,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"L-Cysteic Acid, D3",13.42,2327668,0,302436,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"L-Cysteic Acid, D3",13.09,4552130,0,602150,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"L-Cysteic Acid, D3",13.29,2864670,0,420248,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"L-Cysteic Acid, D3",13.5,3380093,0,453314,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"L-Cysteic Acid, D3",13.28,2577924,0,374094,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"L-Cysteic Acid, D3",13.27,2835465,0,477512,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"L-Cysteic Acid, D3",13.4,2486782,0,386600,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"L-Cysteic Acid, D3",13.31,2375365,0,356547,-2.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"L-Cysteic Acid, D3",13.29,2952764,0,401656,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"L-Cysteic Acid, D3",13.23,3011469,0,417737,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"L-Cysteic Acid, D3",13.11,3488325,0,426301,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"L-Cysteic Acid, D3",13.28,2859734,0,472559,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"L-Cysteic Acid, D3",13.43,2276268,0,296288,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"L-Cysteic Acid, D3",12.92,5019075,0,653442,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"L-Cysteic Acid, D3",12.93,4514744,0,591555,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"L-Cysteic Acid, D3",13.02,4439891,0,614204,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"L-Cysteic Acid, D3",12.9,5320606,0,679921,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"L-Cysteic Acid, D3",12.79,5004228,0,631023,-4.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"L-Cysteic Acid, D3",12.88,4440283,0,622529,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"L-Cysteic Acid, D3",13.48,2548045,0,346873,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"L-Cysteic Acid, D3",13.3,2547031,0,331988,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"L-Cysteic Acid, D3",12.75,5491514,0,619804,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"L-Cysteic Acid, D3",13.37,2351501,0,317529,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"L-Cysteic Acid, D3",12.95,5331612,0,740107,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"L-Cysteic Acid, D3",13.31,2592827,0,366724,-3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"L-Cysteic Acid, D3",13.45,1997340,0,322757,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"L-Cysteic Acid, D3",12.96,5056314,0,767989,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"L-Cysteic Acid, D3",13.41,2388506,0,323234,-2.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"L-Cysteic Acid, D3",12.88,4448046,0,640466,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Sucrose, 13C",11.57,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Sucrose, 13C",11.6,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Sucrose, 13C",11.52,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Sucrose, 13C",11.71,24322358,0,2298925,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Sucrose, 13C",11.66,26311644,0,2863986,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Sucrose, 13C",11.63,36754660,0,3938936,-0.3,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Sucrose, 13C",11.69,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Sucrose, 13C",11.6,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Sucrose, 13C",11.44,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Sucrose, 13C",11.69,26628956,0,2697633,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Sucrose, 13C",11.66,29984262,0,2957625,-0.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Sucrose, 13C",11.6,35493404,0,3778509,-0.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Sucrose, 13C",11.69,27564508,0,2842679,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Sucrose, 13C",11.65,26314498,0,2738348,-0.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Sucrose, 13C",11.62,36397376,0,3748951,-0.3,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Sucrose, 13C",11.57,56554756,0,5274278,0,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Sucrose, 13C",11.66,21081856,0,2021979,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Sucrose, 13C",11.63,23884018,0,2176576,0,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Sucrose, 13C",11.6,47303668,0,4387740,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Sucrose, 13C",11.69,13454056,0,1388246,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Sucrose, 13C",11.65,18077894,0,1840216,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Sucrose, 13C",11.61,26320662,0,2647202,0,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Sucrose, 13C",11.7,24336040,0,2430395,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Sucrose, 13C",11.67,11294906,0,1286167,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Sucrose, 13C",11.67,17432188,0,1848098,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Sucrose, 13C",11.64,17167644,0,2026081,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Sucrose, 13C",11.63,24805964,0,2286113,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Sucrose, 13C",11.61,30361700,0,3366258,0,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Sucrose, 13C",11.68,15530303,0,1591094,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Sucrose, 13C",11.66,6767042,0,668527,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Sucrose, 13C",11.64,9658646,0,1030299,1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Sucrose, 13C",11.61,9870131,0,987610,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Sucrose, 13C",11.63,19246662,0,2064209,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Sucrose, 13C",11.6,24375838,0,2632041,0,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Sucrose, 13C",11.72,9546469,0,974187,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Sucrose, 13C",11.7,11678401,0,1146160,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Sucrose, 13C",11.67,16537461,0,1747489,1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Sucrose, 13C",11.66,15976689,0,1695043,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Sucrose, 13C",11.63,23707264,0,2621834,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Sucrose, 13C",11.64,26134774,0,2818534,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Sucrose, 13C",11.72,11392467,0,1219599,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Sucrose, 13C",11.63,44250736,0,4430491,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Sucrose, 13C",11.64,17294442,0,1664585,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Sucrose, 13C",11.6,38688436,0,3950008,-0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Sucrose, 13C",11.63,30505666,0,3179305,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Sucrose, 13C",11.7,15898016,0,1524450,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Sucrose, 13C",11.64,30355666,0,3028995,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Sucrose, 13C",11.6,45813976,0,4218818,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Sucrose, 13C",11.61,32232154,80737,3445032,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Sucrose, 13C",11.64,17580406,0,1728042,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Sucrose, 13C",11.72,12190460,0,1215989,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Sucrose, 13C",11.69,19595452,0,2009668,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Sucrose, 13C",11.63,29082802,0,2828667,-0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Sucrose, 13C",11.69,18201100,0,1870834,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Sucrose, 13C",11.65,19812618,0,2142913,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Sucrose, 13C",11.65,25397000,0,2641348,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Sucrose, 13C",11.7,12803967,0,1366981,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Sucrose, 13C",11.64,28215976,0,2917828,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Sucrose, 13C",11.61,22668814,147367,2443098,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Sucrose, 13C",11.61,41104400,0,4116298,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Sucrose, 13C",11.64,22212954,0,2344964,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Sucrose, 13C",11.7,12554739,0,1308404,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Sucrose, 13C",11.62,36417532,0,3799624,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Sucrose, 13C",11.64,19633686,11067,2125644,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Sucrose, 13C",11.69,13041561,0,1368855,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Sucrose, 13C",11.61,26240222,0,2580741,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Sucrose, 13C",11.64,25856420,0,2705942,-0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Sucrose, 13C",11.67,13744918,0,1496369,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Sucrose, 13C",11.66,18839376,0,1857088,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Sucrose, 13C",11.64,18071076,0,1689785,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Sucrose, 13C",11.64,17532032,0,1812485,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Sucrose, 13C",11.66,17737086,0,1966553,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Sucrose, 13C",11.66,18230540,0,1787574,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Sucrose, 13C",11.64,20972568,0,2158179,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Sucrose, 13C",11.69,12667109,0,1324358,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Sucrose, 13C",11.63,23204168,0,2574717,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Sucrose, 13C",11.63,45552888,0,4473429,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Sucrose, 13C",11.69,18154706,0,1758822,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Sucrose, 13C",11.64,18770112,0,1966912,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Sucrose, 13C",11.64,18870030,0,1837897,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Sucrose, 13C",11.61,34239452,0,3760144,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Sucrose, 13C",11.67,11967784,0,1249030,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Sucrose, 13C",11.69,12935406,0,1397955,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Sucrose, 13C",11.61,48952864,0,5111414,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Sucrose, 13C",11.66,33027706,0,3450817,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Sucrose, 13C",11.7,22790308,0,2692812,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Sucrose, 13C",11.62,30072502,0,3178450,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Sucrose, 13C",11.63,39959808,102776,4274209,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Sucrose, 13C",11.69,11652013,0,1188675,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Sucrose, 13C",11.66,17990636,0,1796478,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Sucrose, 13C",11.63,21297420,0,2306850,-0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Sucrose, 13C",11.69,17325526,0,1709279,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Sucrose, 13C",11.69,12463671,0,1293885,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Sucrose, 13C",11.69,17675856,0,1699043,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Sucrose, 13C",11.62,24866484,0,2506689,-1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Sucrose, 13C",11.66,17288240,0,1767058,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Sucrose, 13C",11.66,17385930,0,1900891,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Sucrose, 13C",11.69,13073923,0,1556117,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Sucrose, 13C",11.64,19705130,0,1901961,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Sucrose, 13C",11.61,47567512,0,4686238,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Sucrose, 13C",11.61,30465796,0,3119493,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Sucrose, 13C",11.7,24064342,0,2419105,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Sucrose, 13C",11.61,50819272,0,5296937,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Sucrose, 13C",11.67,18815042,0,1837026,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Sucrose, 13C",11.67,19151256,0,1930908,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Sucrose, 13C",11.67,18755194,0,1831069,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Sucrose, 13C",11.63,44058436,0,4274826,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Sucrose, 13C",11.61,30602616,0,3177696,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Sucrose, 13C",11.69,25099438,0,2425374,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Sucrose, 13C",11.69,16797972,0,1866047,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Sucrose, 13C",11.7,16808502,0,1751533,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Sucrose, 13C",11.61,29520192,0,3106743,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Sucrose, 13C",11.66,16346497,0,1644290,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Sucrose, 13C",11.7,25462626,0,2675665,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Sucrose, 13C",11.66,15905408,0,1617050,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Sucrose, 13C",11.66,18530632,0,1840470,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Sucrose, 13C",11.7,15485434,0,1572854,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Sucrose, 13C",11.67,19337070,0,2025277,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Sucrose, 13C",11.67,17670738,0,1789052,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Sucrose, 13C",11.67,19163800,0,1928245,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Sucrose, 13C",11.62,21247952,0,2082211,-0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Sucrose, 13C",11.66,20041408,0,2131760,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Sucrose, 13C",11.67,15750858,0,1634606,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Sucrose, 13C",11.62,38712580,0,4061056,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Sucrose, 13C",11.63,33297734,0,3710773,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Sucrose, 13C",11.61,55927788,0,5904450,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Sucrose, 13C",11.64,42158892,0,4212794,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Sucrose, 13C",11.62,42422172,0,4320548,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Sucrose, 13C",11.61,49977332,0,5281154,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Sucrose, 13C",11.67,14163226,59847,1503064,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Sucrose, 13C",11.69,16178116,0,1607749,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Sucrose, 13C",11.61,46119524,0,4888472,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Sucrose, 13C",11.67,15903040,0,1461384,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Sucrose, 13C",11.6,37868860,0,3867172,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Sucrose, 13C",11.67,18163154,0,1820925,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Sucrose, 13C",11.69,13337178,0,1414748,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Sucrose, 13C",11.61,41727840,0,4369317,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Sucrose, 13C",11.7,15309149,0,1618619,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Sucrose, 13C",11.59,50130408,0,5027604,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Taurine, D4",9.68,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Taurine, D4",9.84,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Taurine, D4",9.8,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Taurine, D4",11.66,3533015,0,302933,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Taurine, D4",11.12,3850994,0,668561,-8,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Taurine, D4",11.05,2468840,0,783360,-8,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Taurine, D4",9.73,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Taurine, D4",9.82,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Taurine, D4",9.64,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Taurine, D4",11.69,4707300,0,326536,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Taurine, D4",11.12,3674628,0,570708,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Taurine, D4",11.07,2439948,0,752946,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Taurine, D4",11.63,5174824,0,406607,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Taurine, D4",11.09,4975185,0,706534,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Taurine, D4",11.04,2397256,0,537822,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Taurine, D4",9.59,13869590,0,1154753,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Taurine, D4",11.07,9662166,0,916399,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Taurine, D4",10.84,7525092,0,854533,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Taurine, D4",10.1,27123942,0,2279593,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Taurine, D4",11.55,6133683,0,524018,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Taurine, D4",11.24,7505510,0,584731,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Taurine, D4",11.05,2392995,0,456018,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Taurine, D4",11.65,3744246,994332,333171,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Taurine, D4",11.55,5646305,0,376916,-7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Taurine, D4",11.37,7200526,0,436351,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Taurine, D4",11.18,4737930,0,418252,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Taurine, D4",11.08,2384703,0,455861,-7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Taurine, D4",11.04,1956450,0,431097,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Taurine, D4",11.26,5733176,0,365037,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Taurine, D4",11.25,3079942,0,252571,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Taurine, D4",11.15,3641790,0,415792,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Taurine, D4",11.08,3227279,0,466607,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Taurine, D4",10.88,3249920,0,530675,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Taurine, D4",10.86,3169636,0,463449,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Taurine, D4",11.75,5508581,0,447317,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Taurine, D4",11.64,7163448,0,480240,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Taurine, D4",11.46,7216588,0,454521,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Taurine, D4",11.35,6695642,0,450389,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Taurine, D4",11.09,2851397,0,507964,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Taurine, D4",11.06,2311424,0,488638,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Taurine, D4",11.78,4549215,0,378344,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Taurine, D4",10.98,2389955,0,520812,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Taurine, D4",11.12,3958316,0,500549,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Taurine, D4",10.97,2110510,0,431940,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Taurine, D4",11.05,2363827,0,456626,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Taurine, D4",11.35,5159367,0,299227,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Taurine, D4",11.05,2492941,0,533344,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Taurine, D4",10.92,4760490,0,793682,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Taurine, D4",11.03,2997794,0,516631,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Taurine, D4",11.26,5484497,0,322057,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Taurine, D4",11.58,6533242,0,408212,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Taurine, D4",11.34,6377111,0,424807,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Taurine, D4",11.04,3102737,0,577936,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Taurine, D4",11.38,7248156,0,485596,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Taurine, D4",11.13,5318508,0,588390,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Taurine, D4",11.05,2039346,0,350020,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Taurine, D4",11.61,3916388,0,300537,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Taurine, D4",11.03,2411918,0,427374,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Taurine, D4",11.08,3379054,0,544236,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Taurine, D4",10.99,1989733,0,446131,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Taurine, D4",11.05,2623195,0,523845,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Taurine, D4",11.55,5458610,0,326615,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Taurine, D4",11.02,2294245,0,418998,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Taurine, D4",11.09,4847325,0,622560,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Taurine, D4",11.57,6378347,0,379313,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Taurine, D4",10.98,3950668,0,576555,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Taurine, D4",11.03,2743465,0,540478,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Taurine, D4",11.54,6850854,0,446554,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Taurine, D4",11.23,5876854,0,381295,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Taurine, D4",11.21,7607121,0,620290,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Taurine, D4",11.34,7403198,0,488770,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Taurine, D4",11.18,5533849,0,566226,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Taurine, D4",11.12,4667109,0,506954,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Taurine, D4",11.05,2210436,0,400742,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Taurine, D4",11.55,6221317,0,356949,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Taurine, D4",11.01,3914914,0,758574,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Taurine, D4",10.97,2607176,0,555035,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Taurine, D4",11.2,5478606,0,496923,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Taurine, D4",11.12,4780291,0,556966,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Taurine, D4",11.17,4211517,0,423501,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Taurine, D4",11.03,3722427,0,757316,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Taurine, D4",11.54,6624977,0,406282,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Taurine, D4",11.57,6511319,0,413725,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Taurine, D4",10.98,4315348,0,744280,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Taurine, D4",11.48,11897532,0,899677,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Taurine, D4",11.79,5283822,0,358766,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Taurine, D4",11.05,2170616,0,414814,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Taurine, D4",10.98,1922050,0,442033,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Taurine, D4",11.62,6786901,0,429396,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Taurine, D4",11.32,7046276,0,433499,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Taurine, D4",11.02,3691488,0,693381,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Taurine, D4",11.45,7407060,0,452295,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Taurine, D4",11.58,5872676,0,328005,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Taurine, D4",11.18,5556798,0,473446,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Taurine, D4",11.03,3224861,0,651841,-8.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Taurine, D4",11.44,7593091,0,402754,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Taurine, D4",11.17,5790478,0,445274,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Taurine, D4",11.53,7782476,0,492048,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Taurine, D4",11.14,12730903,0,1282193,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Taurine, D4",10.99,2825335,0,564403,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Taurine, D4",11.04,3727034,0,618978,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Taurine, D4",11.67,7055221,0,325944,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Taurine, D4",11,3412084,0,689413,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Taurine, D4",11.21,6019403,0,431849,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Taurine, D4",11.15,4182383,0,439126,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Taurine, D4",10.79,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Taurine, D4",10.99,1835387,0,430098,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Taurine, D4",11.03,2009432,0,387632,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Taurine, D4",11.79,7644044,0,399262,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Taurine, D4",11.5,6038043,0,359781,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Taurine, D4",11.55,5971643,0,407847,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Taurine, D4",11.04,3132015,0,515098,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Taurine, D4",11.2,5526520,0,439969,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Taurine, D4",11.75,5984800,0,311664,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Taurine, D4",11.15,5662345,0,371316,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Taurine, D4",11.17,4479243,0,342926,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Taurine, D4",11.55,6666455,0,409278,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Taurine, D4",11.22,6913766,0,471977,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Taurine, D4",11.24,5639715,0,447719,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Taurine, D4",11.17,4395398,0,379720,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Taurine, D4",11.08,2573359,0,429801,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Taurine, D4",11.18,5030899,0,443061,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Taurine, D4",11.57,6058834,0,377970,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Taurine, D4",11.02,2185133,0,474219,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Taurine, D4",11.05,2460471,0,459414,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Taurine, D4",11.05,2136126,0,401198,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Taurine, D4",10.98,1980420,0,437256,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Taurine, D4",11,2083041,0,459832,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Taurine, D4",11,3553125,0,706015,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Taurine, D4",11.7,7597035,0,419495,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Taurine, D4",11.17,5225126,0,413770,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Taurine, D4",11,2899400,0,579291,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Taurine, D4",11.43,6302685,0,345313,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Taurine, D4",11.02,2130239,0,475557,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Taurine, D4",11.35,6768578,0,423947,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Taurine, D4",11.67,5552735,0,357633,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Taurine, D4",11.03,2305536,3529,486465,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Taurine, D4",11.51,6028179,0,388774,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Taurine, D4",11.02,2804329,0,529103,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Trehalose, 13C",12.33,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Trehalose, 13C",12.48,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Trehalose, 13C",12.42,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Trehalose, 13C",12.57,28743264,0,3278711,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Trehalose, 13C",12.53,25901736,0,2810437,-0.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Trehalose, 13C",12.48,39455148,0,4251890,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Trehalose, 13C",12.49,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Trehalose, 13C",12.43,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Trehalose, 13C",12.46,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Trehalose, 13C",12.59,28496702,0,3044508,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Trehalose, 13C",12.53,28257856,0,3137561,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Trehalose, 13C",12.5,41345112,0,4477753,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Trehalose, 13C",12.55,30330300,0,3298350,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Trehalose, 13C",12.53,24795118,0,2747241,-0.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Trehalose, 13C",12.46,36321140,0,3881186,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Trehalose, 13C",12.47,40804676,0,3873456,0,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Trehalose, 13C",12.52,16364586,0,1642818,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Trehalose, 13C",12.49,19304448,0,1911988,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Trehalose, 13C",12.47,34091540,0,3430026,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Trehalose, 13C",12.55,12036615,0,1384609,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Trehalose, 13C",12.54,15842295,0,1549900,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Trehalose, 13C",12.51,26752506,0,2763791,0,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Trehalose, 13C",12.57,25321744,0,2833583,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Trehalose, 13C",12.53,10271043,0,1178761,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Trehalose, 13C",12.54,15675039,0,1607453,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Trehalose, 13C",12.54,14459954,0,1537913,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Trehalose, 13C",12.51,24215246,0,2557105,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Trehalose, 13C",12.48,30166092,0,3237458,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Trehalose, 13C",12.54,14353908,0,1441355,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Trehalose, 13C",12.52,6104259,0,658563,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Trehalose, 13C",12.5,7936687,0,935947,1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Trehalose, 13C",12.51,8150026,0,802021,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Trehalose, 13C",12.51,14799697,0,1502562,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Trehalose, 13C",12.48,19405458,0,2074245,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Trehalose, 13C",12.56,8330272,0,931201,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Trehalose, 13C",12.56,10546729,0,1271422,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Trehalose, 13C",12.51,13650550,0,1525805,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Trehalose, 13C",12.56,14371541,0,1583473,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Trehalose, 13C",12.48,23867762,0,2482680,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Trehalose, 13C",12.5,28139018,0,3147016,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Trehalose, 13C",12.58,10419040,0,1135927,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Trehalose, 13C",12.48,37576408,0,4210325,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Trehalose, 13C",12.53,15058325,0,1605495,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Trehalose, 13C",12.48,33670476,0,3459457,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Trehalose, 13C",12.51,29094582,0,2919823,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Trehalose, 13C",12.51,14113471,0,1514204,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Trehalose, 13C",12.51,29318084,0,2945435,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Trehalose, 13C",12.47,35898708,0,3708472,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Trehalose, 13C",12.51,31356754,0,3283816,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Trehalose, 13C",12.51,15374319,0,1667436,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Trehalose, 13C",12.56,12220910,0,1361808,1.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Trehalose, 13C",12.54,17206528,0,1766304,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Trehalose, 13C",12.49,26176340,0,2733775,-0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Trehalose, 13C",12.53,16314845,0,1645303,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Trehalose, 13C",12.51,17781864,0,1885788,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Trehalose, 13C",12.51,21636704,0,2298660,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Trehalose, 13C",12.56,11388750,0,1339048,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Trehalose, 13C",12.51,28000196,0,3130732,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Trehalose, 13C",12.49,23913986,0,2470314,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Trehalose, 13C",12.49,37055172,95635,3906983,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Trehalose, 13C",12.52,18280430,0,1929137,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Trehalose, 13C",12.54,11167981,0,1194540,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Trehalose, 13C",12.51,35236616,0,3556644,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Trehalose, 13C",12.48,17163736,8772,1646640,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Trehalose, 13C",12.54,12403769,0,1235224,1.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Trehalose, 13C",12.5,20448154,34331,2414583,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Trehalose, 13C",12.49,20540326,0,2132029,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Trehalose, 13C",12.54,11860546,0,1291806,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Trehalose, 13C",12.53,15510110,0,1542912,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Trehalose, 13C",12.53,16214775,0,1665566,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Trehalose, 13C",12.53,16063540,0,1628234,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Trehalose, 13C",12.51,15390238,0,1580476,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Trehalose, 13C",12.5,15465840,0,1459503,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Trehalose, 13C",12.5,18551420,0,2007365,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Trehalose, 13C",12.56,11861974,0,1253743,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Trehalose, 13C",12.5,20353014,0,2108024,-0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Trehalose, 13C",12.47,36794620,0,3454742,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Trehalose, 13C",12.51,15231621,0,1650081,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Trehalose, 13C",12.53,15599872,0,1495028,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Trehalose, 13C",12.54,15743980,0,1544668,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Trehalose, 13C",12.5,30830154,0,3159487,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Trehalose, 13C",12.58,10741609,0,1098832,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Trehalose, 13C",12.56,11269207,0,1186171,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Trehalose, 13C",12.47,38597476,0,4036578,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Trehalose, 13C",12.54,32567074,0,3414924,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Trehalose, 13C",12.57,25724330,0,2865053,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Trehalose, 13C",12.48,30677120,0,3109246,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Trehalose, 13C",12.48,33889204,0,3645609,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Trehalose, 13C",12.57,10798555,0,1282185,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Trehalose, 13C",12.53,15822319,0,1720031,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Trehalose, 13C",12.49,18454456,0,1782387,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Trehalose, 13C",12.55,16143301,0,1851465,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Trehalose, 13C",12.55,10179127,0,1155286,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Trehalose, 13C",12.51,15644084,0,1582504,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Trehalose, 13C",12.49,21416624,0,2422408,-0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Trehalose, 13C",12.54,14981222,0,1634029,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Trehalose, 13C",12.53,15432499,0,1667825,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Trehalose, 13C",12.53,12078726,0,1379910,1.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Trehalose, 13C",12.51,15535146,0,1726579,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Trehalose, 13C",12.48,37770036,0,3882551,-0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Trehalose, 13C",12.49,26277482,0,2822598,-0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Trehalose, 13C",12.55,25279832,0,2766219,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Trehalose, 13C",12.5,43986024,0,4689836,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Trehalose, 13C",12.53,16909912,0,1823860,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Trehalose, 13C",12.53,15812410,0,1785037,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Trehalose, 13C",12.51,16523147,0,1720742,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Trehalose, 13C",12.49,36554096,0,3836829,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Trehalose, 13C",12.51,29544932,0,2884568,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Trehalose, 13C",12.55,28489452,0,3114694,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Trehalose, 13C",12.55,14449677,0,1648313,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Trehalose, 13C",12.54,14984919,0,1641656,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Trehalose, 13C",12.53,26902998,0,2705234,-0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Trehalose, 13C",12.51,14986882,0,1621007,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Trehalose, 13C",12.55,23704348,0,2550070,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Trehalose, 13C",12.56,14410362,0,1489048,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Trehalose, 13C",12.52,15166557,0,1516376,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Trehalose, 13C",12.51,13798828,0,1517627,0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Trehalose, 13C",12.55,15642492,0,1775767,1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Trehalose, 13C",12.51,15114835,0,1723788,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Trehalose, 13C",12.54,16886354,0,1838051,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Trehalose, 13C",12.51,18877110,0,1994096,-0.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Trehalose, 13C",12.53,16456780,0,1682482,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Trehalose, 13C",12.54,15045502,0,1587611,0.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Trehalose, 13C",12.46,34856112,0,3475179,0,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Trehalose, 13C",12.48,32858270,185898,3703527,0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Trehalose, 13C",12.51,52603232,0,5554113,0.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Trehalose, 13C",12.48,37906132,0,4128030,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Trehalose, 13C",12.48,37086340,0,3815780,-0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Trehalose, 13C",12.48,42589444,0,4264354,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Trehalose, 13C",12.55,12653642,0,1434500,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Trehalose, 13C",12.54,14196355,0,1569651,0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Trehalose, 13C",12.49,37301960,0,3697723,-0.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Trehalose, 13C",12.51,13760910,0,1390552,0.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Trehalose, 13C",12.5,35263712,0,3750146,0.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Trehalose, 13C",12.54,15994945,0,1685309,0.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Trehalose, 13C",12.54,12121820,0,1325609,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Trehalose, 13C",12.48,39823064,0,4087150,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Trehalose, 13C",12.52,14227011,0,1582913,0.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Trehalose, 13C",12.49,41409628,13755,4697064,-0.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Succinic Acid, D4",11.81,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Succinic Acid, D4",11.74,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Succinic Acid, D4",11.73,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Succinic Acid, D4",13.07,76187040,0,8407790,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Succinic Acid, D4",12.96,75038840,0,9716900,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Succinic Acid, D4",12.76,74981920,0,9562438,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Succinic Acid, D4",11.84,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Succinic Acid, D4",11.69,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Succinic Acid, D4",11.62,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Succinic Acid, D4",13.12,108142288,0,11275235,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Succinic Acid, D4",12.99,61443720,0,10043423,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Succinic Acid, D4",12.75,77733488,0,9102912,-8.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Succinic Acid, D4",13.13,98904680,853597,9994905,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Succinic Acid, D4",12.93,62335452,829279,9826743,-8.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Succinic Acid, D4",12.72,70263416,291601,8795754,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Succinic Acid, D4",12.51,68545600,0,5720832,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Succinic Acid, D4",13.07,38428812,0,3891614,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Succinic Acid, D4",12.96,45931756,120760,4603836,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Succinic Acid, D4",12.7,57617696,0,5472683,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Succinic Acid, D4",13.25,39200508,365383,5028745,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Succinic Acid, D4",13.13,49405584,0,6008162,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Succinic Acid, D4",12.88,51995940,387568,7143781,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Succinic Acid, D4",13.2,90694840,0,8830052,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Succinic Acid, D4",13.22,30578278,279183,4268019,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Succinic Acid, D4",13.17,39981604,0,5801470,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Succinic Acid, D4",13.08,44218496,0,5961433,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Succinic Acid, D4",12.92,52702984,495389,7238193,-8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Succinic Acid, D4",12.83,57624220,0,7293972,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Succinic Acid, D4",13.14,47701356,0,3940854,-7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Succinic Acid, D4",13.17,15410442,0,1793992,-8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Succinic Acid, D4",13.13,19549350,0,2046225,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Succinic Acid, D4",13.05,24624934,0,2604696,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Succinic Acid, D4",12.84,25715538,0,2629774,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Succinic Acid, D4",12.76,31965978,0,3150258,-8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Succinic Acid, D4",13.25,30468772,0,4543248,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Succinic Acid, D4",13.22,33090024,0,4631753,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Succinic Acid, D4",13.16,38191952,0,4980968,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Succinic Acid, D4",13.16,47576492,0,6685534,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Succinic Acid, D4",12.94,50223508,630733,6727643,-8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Succinic Acid, D4",12.87,55545928,0,7145684,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Succinic Acid, D4",13.3,33775468,91342,4175655,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Succinic Acid, D4",12.71,62539800,443374,7066878,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Succinic Acid, D4",13.06,46861120,314870,6287565,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Succinic Acid, D4",12.68,57931108,0,6309824,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Succinic Acid, D4",12.87,55566292,124239,6783014,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Succinic Acid, D4",13.22,38841608,324812,5141350,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Succinic Acid, D4",12.87,55664220,0,6895703,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Succinic Acid, D4",12.65,63555104,0,6439423,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Succinic Acid, D4",12.85,57107836,0,6701360,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Succinic Acid, D4",13.16,37439464,0,4902868,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Succinic Acid, D4",13.2,33169682,109800,4933873,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Succinic Acid, D4",13.16,40969188,0,5609464,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Succinic Acid, D4",12.89,32557996,2060478,7819824,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Succinic Acid, D4",13.19,37392484,137668,5268422,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Succinic Acid, D4",13.07,48331864,405343,6350874,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Succinic Acid, D4",12.93,62331960,0,7800600,-8.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Succinic Acid, D4",13.26,34626956,0,4740733,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Succinic Acid, D4",12.87,53644148,86718,7193802,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Succinic Acid, D4",12.9,54398524,468158,7300828,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Succinic Acid, D4",12.75,65954472,38590,8357019,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Succinic Acid, D4",12.95,58289368,167488,6343998,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Succinic Acid, D4",13.23,33879856,0,4379063,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Succinic Acid, D4",12.88,60864804,0,6695530,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Succinic Acid, D4",13.08,48916020,0,5886015,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Succinic Acid, D4",13.17,32367310,199095,4226409,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Succinic Acid, D4",12.91,64338372,0,6443423,-8.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Succinic Acid, D4",12.94,63741792,0,7162280,-8.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Succinic Acid, D4",13.2,33515970,0,4635901,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Succinic Acid, D4",13.16,37881252,0,4689496,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Succinic Acid, D4",13.1,44678192,0,5913929,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Succinic Acid, D4",13.14,37252864,0,4925324,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Succinic Acid, D4",13.05,47081956,0,5673864,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Succinic Acid, D4",13.06,46348312,0,5646915,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Succinic Acid, D4",12.96,46032096,600936,6168968,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Succinic Acid, D4",13.23,34475604,0,4640983,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Succinic Acid, D4",12.91,54906812,0,5843334,-8.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Succinic Acid, D4",12.68,67340904,0,7810279,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Succinic Acid, D4",13.13,48842560,160408,6627874,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Succinic Acid, D4",13.08,45136928,0,5584722,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Succinic Acid, D4",13.1,44359072,663075,5776030,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Succinic Acid, D4",12.87,54691192,422528,6453514,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Succinic Acid, D4",13.19,30757068,0,4085950,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Succinic Acid, D4",13.22,34359928,0,4519295,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Succinic Acid, D4",12.77,68880168,354770,7641220,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Succinic Acid, D4",13.12,96942288,1467393,12979857,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Succinic Acid, D4",13.22,78300400,0,8686352,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Succinic Acid, D4",12.88,56353380,0,7351382,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Succinic Acid, D4",12.65,61529012,0,7550320,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Succinic Acid, D4",13.22,31411086,291543,4295024,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Succinic Acid, D4",13.17,39555704,0,5311980,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Succinic Acid, D4",12.92,53733032,0,6097898,-8.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Succinic Acid, D4",13.19,38234892,0,5271173,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Succinic Acid, D4",13.23,31090290,20162,4265147,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Succinic Acid, D4",13.1,43967352,0,6017219,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Succinic Acid, D4",12.91,43798264,0,7252312,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Succinic Acid, D4",13.22,39127004,0,5111032,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Succinic Acid, D4",13.08,46289288,0,6185783,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Succinic Acid, D4",13.23,35879248,0,4601439,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Succinic Acid, D4",13.06,48803888,0,6186735,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Succinic Acid, D4",12.66,65600988,729753,7459757,-8.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Succinic Acid, D4",12.94,80467536,0,8050461,-8.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Succinic Acid, D4",13.25,80221488,205883,8044424,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Succinic Acid, D4",12.74,75420272,677777,9721969,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Succinic Acid, D4",13.16,38478464,150910,5352224,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Succinic Acid, D4",13.11,47837900,0,6121066,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Succinic Acid, D4",13.06,46042888,0,6248438,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Succinic Acid, D4",12.69,64293600,0,7534370,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Succinic Acid, D4",12.88,56485740,0,7161811,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Succinic Acid, D4",13.28,90287272,0,9076852,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Succinic Acid, D4",13.21,37244144,0,5266823,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Succinic Acid, D4",13.25,38942320,0,5177404,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Succinic Acid, D4",12.96,79795944,209879,9882257,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Succinic Acid, D4",13.11,43937532,0,6248894,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Succinic Acid, D4",13.3,87180744,463480,9007616,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Succinic Acid, D4",13.13,43710692,0,5978691,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Succinic Acid, D4",13.12,45055500,0,5841610,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Succinic Acid, D4",13.25,35823128,0,4758250,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Succinic Acid, D4",13.16,36575616,0,4675341,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Succinic Acid, D4",13.13,44376316,251885,5997509,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Succinic Acid, D4",13.1,49515496,0,6713271,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Succinic Acid, D4",12.96,55183508,0,6669272,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Succinic Acid, D4",13.12,50632992,527539,6406180,-7.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Succinic Acid, D4",13.25,40803888,0,5326796,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Succinic Acid, D4",12.79,61360744,711125,7799414,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Succinic Acid, D4",12.8,67939200,148250,9384327,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Succinic Acid, D4",12.87,100818376,1022861,12485990,-8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Succinic Acid, D4",12.76,73773464,420848,9635734,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Succinic Acid, D4",12.68,66943624,0,7898211,-8.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Succinic Acid, D4",12.77,73414560,0,8932523,-8.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Succinic Acid, D4",13.28,46070164,0,5070542,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Succinic Acid, D4",13.13,45307948,0,5982489,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Succinic Acid, D4",12.66,64370392,0,6689010,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Succinic Acid, D4",13.19,35859684,0,5017936,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Succinic Acid, D4",12.81,61028324,875818,7768307,-8.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Succinic Acid, D4",13.17,37856328,359550,5095619,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Succinic Acid, D4",13.28,39516684,259344,5137455,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Succinic Acid, D4",12.82,73731264,91186,9948096,-8.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Succinic Acid, D4",13.22,39593492,0,5715342,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Succinic Acid, D4",12.77,75222416,30963,9482674,-8.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Sulfoacetic Acid, 13C2",13.66,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Sulfoacetic Acid, 13C2",13.79,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Sulfoacetic Acid, 13C2",13.75,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Sulfoacetic Acid, 13C2",14.42,5619043,0,1058813,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Sulfoacetic Acid, 13C2",14.3,6137009,0,1423574,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Sulfoacetic Acid, 13C2",14.19,8912528,0,1969828,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Sulfoacetic Acid, 13C2",13.79,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Sulfoacetic Acid, 13C2",13.76,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Sulfoacetic Acid, 13C2",13.7,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Sulfoacetic Acid, 13C2",14.45,5118969,0,1053113,-6.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Sulfoacetic Acid, 13C2",14.33,7236769,0,1433527,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Sulfoacetic Acid, 13C2",14.21,7377125,0,1669557,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Sulfoacetic Acid, 13C2",14.48,5901858,0,1217810,-6.1,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Sulfoacetic Acid, 13C2",14.27,6905022,0,1433372,-7.6,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Sulfoacetic Acid, 13C2",14.16,8004284,0,1620537,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Sulfoacetic Acid, 13C2",14.59,25191766,0,3880151,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Sulfoacetic Acid, 13C2",15.04,6209448,0,757869,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Sulfoacetic Acid, 13C2",14.9,7134298,0,779708,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Sulfoacetic Acid, 13C2",14.67,14150883,0,1514027,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Sulfoacetic Acid, 13C2",14.71,5172901,0,1026921,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Sulfoacetic Acid, 13C2",14.58,5694852,0,1151365,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Sulfoacetic Acid, 13C2",14.32,8466392,0,1940536,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Sulfoacetic Acid, 13C2",14.6,4302443,0,873958,-6.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Sulfoacetic Acid, 13C2",14.64,5098046,0,1030724,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Sulfoacetic Acid, 13C2",14.58,5976344,0,1309134,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Sulfoacetic Acid, 13C2",14.49,5193083,0,977762,-6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Sulfoacetic Acid, 13C2",14.33,7254927,0,1676530,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Sulfoacetic Acid, 13C2",14.27,7756728,0,1546898,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Sulfoacetic Acid, 13C2",14.74,3051155,0,594461,-5.5,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Sulfoacetic Acid, 13C2",14.76,3054624,0,576691,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Sulfoacetic Acid, 13C2",14.7,2685665,0,595550,-5.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Sulfoacetic Acid, 13C2",14.61,3204995,0,635280,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Sulfoacetic Acid, 13C2",14.45,4566927,0,908257,-6.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Sulfoacetic Acid, 13C2",14.4,4545519,0,921436,-6.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Sulfoacetic Acid, 13C2",14.52,4962996,0,1328026,-7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Sulfoacetic Acid, 13C2",14.56,4751311,0,975005,-6.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Sulfoacetic Acid, 13C2",14.58,5765378,0,1309514,-5.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Sulfoacetic Acid, 13C2",14.55,5562309,0,1084433,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Sulfoacetic Acid, 13C2",14.35,8019575,0,1687937,-6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Sulfoacetic Acid, 13C2",14.3,7966647,0,1632878,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Sulfoacetic Acid, 13C2",14.67,3983552,0,819283,-6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Sulfoacetic Acid, 13C2",14.2,11001236,0,2337582,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Sulfoacetic Acid, 13C2",14.55,7240481,0,1353396,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Sulfoacetic Acid, 13C2",14.18,9936517,0,2086599,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Sulfoacetic Acid, 13C2",14.36,8860903,0,1907852,-6.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Sulfoacetic Acid, 13C2",14.7,6444253,0,1145348,-5.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Sulfoacetic Acid, 13C2",14.35,8251379,0,1487976,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Sulfoacetic Acid, 13C2",14.21,10728868,0,2181348,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Sulfoacetic Acid, 13C2",14.37,8978691,0,1934105,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Sulfoacetic Acid, 13C2",14.64,12832633,0,2367257,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Sulfoacetic Acid, 13C2",14.63,5153814,0,1146038,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Sulfoacetic Acid, 13C2",14.62,6456289,0,1297743,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Sulfoacetic Acid, 13C2",14.38,6179272,0,1234412,-7.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Sulfoacetic Acid, 13C2",14.72,6675794,0,1204629,-6.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Sulfoacetic Acid, 13C2",14.58,7198914,0,1198055,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Sulfoacetic Acid, 13C2",14.41,6289835,0,1327958,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Sulfoacetic Acid, 13C2",14.73,4935109,0,1193662,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Sulfoacetic Acid, 13C2",14.34,7613980,0,1608770,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Sulfoacetic Acid, 13C2",14.3,7664212,0,1747361,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Sulfoacetic Acid, 13C2",14.23,9907795,0,2113482,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Sulfoacetic Acid, 13C2",14.45,7687547,0,1741364,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Sulfoacetic Acid, 13C2",14.75,4180372,0,721151,-6.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Sulfoacetic Acid, 13C2",14.4,9493278,0,1785383,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Sulfoacetic Acid, 13C2",14.6,6520924,0,1278731,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Sulfoacetic Acid, 13C2",14.67,6295801,0,1186590,-6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Sulfoacetic Acid, 13C2",14.47,8522627,0,1705053,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Sulfoacetic Acid, 13C2",14.44,7004801,0,1338518,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Sulfoacetic Acid, 13C2",14.66,4843909,0,1184338,-5.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Sulfoacetic Acid, 13C2",14.7,6127720,0,1161272,-5.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Sulfoacetic Acid, 13C2",14.56,12890000,0,2700824,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Sulfoacetic Acid, 13C2",14.61,7184727,0,1233348,-5.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Sulfoacetic Acid, 13C2",14.6,7060641,0,1462173,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Sulfoacetic Acid, 13C2",14.58,6322897,0,1484229,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Sulfoacetic Acid, 13C2",14.4,7836933,0,1501443,-7.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Sulfoacetic Acid, 13C2",14.73,4931645,0,966062,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Sulfoacetic Acid, 13C2",14.44,7521626,0,1384661,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Sulfoacetic Acid, 13C2",14.18,11440247,0,2389962,-7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Sulfoacetic Acid, 13C2",14.6,6304531,0,1144491,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Sulfoacetic Acid, 13C2",14.59,7345910,0,1408775,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Sulfoacetic Acid, 13C2",14.59,6493781,0,1411276,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Sulfoacetic Acid, 13C2",14.4,9205081,0,2080106,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Sulfoacetic Acid, 13C2",14.69,5811579,0,1160417,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Sulfoacetic Acid, 13C2",14.67,5057768,0,1006890,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Sulfoacetic Acid, 13C2",14.29,10173539,0,2021505,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Sulfoacetic Acid, 13C2",14.46,10678162,0,2203905,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Sulfoacetic Acid, 13C2",14.58,4824328,0,929359,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Sulfoacetic Acid, 13C2",14.37,8507831,0,1972214,-6.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Sulfoacetic Acid, 13C2",14.14,9943918,0,1953328,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Sulfoacetic Acid, 13C2",14.63,4587011,0,972489,-5.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Sulfoacetic Acid, 13C2",14.64,6219312,0,1413742,-5.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Sulfoacetic Acid, 13C2",14.42,7705702,0,1655054,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Sulfoacetic Acid, 13C2",14.63,5579929,0,1179376,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Sulfoacetic Acid, 13C2",14.69,4728926,0,1185881,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Sulfoacetic Acid, 13C2",14.52,6151769,0,1077485,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Sulfoacetic Acid, 13C2",14.43,7132953,0,1611146,-7.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Sulfoacetic Acid, 13C2",14.69,6207493,0,1330746,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Sulfoacetic Acid, 13C2",14.55,6472885,0,1274554,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Sulfoacetic Acid, 13C2",14.71,5409129,0,1087670,-6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Sulfoacetic Acid, 13C2",14.58,14662482,0,2530729,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Sulfoacetic Acid, 13C2",14.17,9420575,0,1981986,-7.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Sulfoacetic Acid, 13C2",14.45,7482106,0,1596097,-7.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Sulfoacetic Acid, 13C2",14.67,4548723,0,1010652,-6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Sulfoacetic Acid, 13C2",14.26,11143967,0,2303867,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Sulfoacetic Acid, 13C2",14.64,6463065,0,1135184,-6.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Sulfoacetic Acid, 13C2",14.61,7222834,0,1319094,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Sulfoacetic Acid, 13C2",14.09,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Sulfoacetic Acid, 13C2",14.17,9166453,0,1977387,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Sulfoacetic Acid, 13C2",14.35,7608552,0,1715239,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Sulfoacetic Acid, 13C2",14.66,5463343,0,1118352,-5.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Sulfoacetic Acid, 13C2",14.59,5421727,0,1278591,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Sulfoacetic Acid, 13C2",14.69,4728797,0,894497,-6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Sulfoacetic Acid, 13C2",14.4,6973295,0,1478536,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Sulfoacetic Acid, 13C2",14.55,6420014,0,1316901,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Sulfoacetic Acid, 13C2",14.68,4253546,0,897190,-6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Sulfoacetic Acid, 13C2",14.55,5543002,0,1317350,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Sulfoacetic Acid, 13C2",14.58,6493619,0,1325197,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Sulfoacetic Acid, 13C2",14.64,5306617,0,1007050,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Sulfoacetic Acid, 13C2",14.69,6351606,0,1319829,-6.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Sulfoacetic Acid, 13C2",14.55,6264987,0,1287552,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Sulfoacetic Acid, 13C2",14.55,6411946,0,1321472,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Sulfoacetic Acid, 13C2",14.37,6924097,0,1231362,-7.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Sulfoacetic Acid, 13C2",14.61,6566557,0,1251696,-6.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Sulfoacetic Acid, 13C2",14.66,4625736,0,867946,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Sulfoacetic Acid, 13C2",14.27,8945588,0,2056913,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Sulfoacetic Acid, 13C2",14.18,9177825,0,1942995,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Sulfoacetic Acid, 13C2",14.35,8209852,0,1741828,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Sulfoacetic Acid, 13C2",14.21,8958291,0,1975365,-6.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Sulfoacetic Acid, 13C2",14.18,8934022,0,1834531,-6.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Sulfoacetic Acid, 13C2",14.27,8931401,0,1866846,-6.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Sulfoacetic Acid, 13C2",14.73,5657261,0,1149315,-6.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Sulfoacetic Acid, 13C2",14.58,6151509,0,1349433,-6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Sulfoacetic Acid, 13C2",14.21,11059978,0,2360094,-7.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Sulfoacetic Acid, 13C2",14.65,5349237,0,1035799,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Sulfoacetic Acid, 13C2",14.29,8723160,0,2271647,-6.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Sulfoacetic Acid, 13C2",14.64,6118342,0,1326904,-5.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Sulfoacetic Acid, 13C2",14.73,5021394,0,900238,-5.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Sulfoacetic Acid, 13C2",14.24,6416012,0,1285391,-6.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Sulfoacetic Acid, 13C2",14.65,5648642,0,1144278,-5.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Sulfoacetic Acid, 13C2",14.24,9416658,0,1769569,-6.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_1,"Sulfolactic Acid, 13C3",12.97,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_2,"Sulfolactic Acid, 13C3",12.93,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InH2O_3,"Sulfolactic Acid, 13C3",13.12,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_1,"Sulfolactic Acid, 13C3",14.37,5110759,0,1269132,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_2,"Sulfolactic Acid, 13C3",14.22,5848077,0,1783729,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix1InMatrix_3,"Sulfolactic Acid, 13C3",14.13,10935446,0,4061942,-4,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_1,"Sulfolactic Acid, 13C3",13.07,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_2,"Sulfolactic Acid, 13C3",13.15,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InH2O_3,"Sulfolactic Acid, 13C3",13.1,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_1,"Sulfolactic Acid, 13C3",14.4,4346573,0,1169925,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_2,"Sulfolactic Acid, 13C3",14.29,4186339,0,1302228,-4.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_4uMStdsMix2InMatrix_3,"Sulfolactic Acid, 13C3",14.18,6080628,0,1930312,-4.3,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_1,"Sulfolactic Acid, 13C3",14.42,5260383,0,1585205,-2.5,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_2,"Sulfolactic Acid, 13C3",14.21,6458103,0,1908476,-4.8,Internal Stds_neg
+Internal Stds_neg,180821_Std_H2OInMatrix_3,"Sulfolactic Acid, 13C3",14.08,10869621,0,4265548,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Blk_FilterBlank_1,"Sulfolactic Acid, 13C3",14.03,2780082,0,292582,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_1,"Sulfolactic Acid, 13C3",14.58,1798074,0,220541,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_2,"Sulfolactic Acid, 13C3",14.48,1561675,0,183364,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Blk_MQBlk_3,"Sulfolactic Acid, 13C3",14.17,2907772,0,346384,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_1,"Sulfolactic Acid, 13C3",14.65,3503081,0,1523355,-2.7,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_2,"Sulfolactic Acid, 13C3",14.51,3453305,0,1285520,-4,Internal Stds_neg
+Internal Stds_neg,180821_Blk_SWBlk_3,"Sulfolactic Acid, 13C3",14.26,5001885,0,1896512,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full1,"Sulfolactic Acid, 13C3",14.55,4543024,0,1138353,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full2,"Sulfolactic Acid, 13C3",14.6,2860443,0,1073884,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full3,"Sulfolactic Acid, 13C3",14.53,3738026,0,1115029,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full4,"Sulfolactic Acid, 13C3",14.44,3265690,0,1433788,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full5,"Sulfolactic Acid, 13C3",14.27,5513115,0,2371447,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Full6,"Sulfolactic Acid, 13C3",14.21,6758729,0,3438670,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half1,"Sulfolactic Acid, 13C3",14.63,4012981,0,1574219,-2.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half2,"Sulfolactic Acid, 13C3",14.72,1058049,0,292504,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half3,"Sulfolactic Acid, 13C3",14.64,1364478,0,354743,-2.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half4,"Sulfolactic Acid, 13C3",14.55,1327034,0,348234,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half5,"Sulfolactic Acid, 13C3",14.39,1701294,0,264100,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Poo_Day1and2Poo_Half6,"Sulfolactic Acid, 13C3",14.3,2085668,0,511281,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_1,"Sulfolactic Acid, 13C3",14.5,2196968,0,746259,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_2,"Sulfolactic Acid, 13C3",14.52,2525995,0,856297,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_3,"Sulfolactic Acid, 13C3",14.52,3283812,0,1126272,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_4,"Sulfolactic Acid, 13C3",14.49,3029800,0,1033625,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_5,"Sulfolactic Acid, 13C3",14.29,4549737,0,1707494,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Poo_MesoScopeQC_6,"Sulfolactic Acid, 13C3",14.23,6043523,0,1979333,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_A,"Sulfolactic Acid, 13C3",14.59,2821638,0,958461,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_B,"Sulfolactic Acid, 13C3",14.14,6461852,0,2564686,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C215m_C,"Sulfolactic Acid, 13C3",14.5,3112409,0,1333297,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_A,"Sulfolactic Acid, 13C3",14.14,4882698,0,1747349,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_B,"Sulfolactic Acid, 13C3",14.32,5002813,0,2009329,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2175m_C,"Sulfolactic Acid, 13C3",14.65,2868990,0,916478,-2.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_A,"Sulfolactic Acid, 13C3",14.29,4909496,0,1664025,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_B,"Sulfolactic Acid, 13C3",14.15,4869024,0,1428117,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS10C2DCM_C,"Sulfolactic Acid, 13C3",14.3,7215355,8255,4027513,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_A,"Sulfolactic Acid, 13C3",14.59,7095857,0,2177424,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_B,"Sulfolactic Acid, 13C3",14.58,3224589,0,1066741,-2.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C215m_C,"Sulfolactic Acid, 13C3",14.56,3237602,0,1491916,-2.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_A,"Sulfolactic Acid, 13C3",14.32,9793662,0,4279010,-4.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_B,"Sulfolactic Acid, 13C3",14.66,1857565,0,840097,-2.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2175m_C,"Sulfolactic Acid, 13C3",14.51,4573147,0,1640909,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_A,"Sulfolactic Acid, 13C3",14.35,4798464,0,1761640,-4.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_B,"Sulfolactic Acid, 13C3",14.67,2801002,0,961824,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS11C2DCM_C,"Sulfolactic Acid, 13C3",14.29,5108024,0,1938070,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_A,"Sulfolactic Acid, 13C3",14.24,5050278,0,2053134,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_B,"Sulfolactic Acid, 13C3",14.17,4751066,0,1490840,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C115m_C,"Sulfolactic Acid, 13C3",14.39,3173717,0,1172778,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_A,"Sulfolactic Acid, 13C3",14.67,2289870,0,964768,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_B,"Sulfolactic Acid, 13C3",14.34,7317894,0,3578931,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1175m_C,"Sulfolactic Acid, 13C3",14.53,2670530,0,952005,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_A,"Sulfolactic Acid, 13C3",14.61,2999070,0,1054425,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_B,"Sulfolactic Acid, 13C3",14.41,3838142,0,923539,-4.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS12C1DCM_C,"Sulfolactic Acid, 13C3",14.37,5498344,0,1785861,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_A,"Sulfolactic Acid, 13C3",14.61,2504890,0,1051259,-2.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_B,"Sulfolactic Acid, 13C3",14.63,3260423,0,1280218,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2175m_C,"Sulfolactic Acid, 13C3",14.5,6697948,0,2273618,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_A,"Sulfolactic Acid, 13C3",14.55,3822974,0,1263483,-3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_B,"Sulfolactic Acid, 13C3",14.53,3725229,0,1186301,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C2DCM_C,"Sulfolactic Acid, 13C3",14.52,3213500,0,977383,-4.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_A,"Sulfolactic Acid, 13C3",14.35,4195955,0,1261198,-4.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_B,"Sulfolactic Acid, 13C3",14.67,2658239,0,965364,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS13C315m_C,"Sulfolactic Acid, 13C3",14.36,5396620,0,2383043,-4.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_A,"Sulfolactic Acid, 13C3",14.12,6779969,0,2538613,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_B,"Sulfolactic Acid, 13C3",14.52,3804388,0,1579320,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C215m_C,"Sulfolactic Acid, 13C3",14.53,3262569,0,1026814,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_A,"Sulfolactic Acid, 13C3",14.53,2857697,0,852100,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_B,"Sulfolactic Acid, 13C3",14.32,6121312,0,2237799,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2175m_C,"Sulfolactic Acid, 13C3",14.61,2965223,0,1257183,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_A,"Sulfolactic Acid, 13C3",14.63,3603124,0,1237006,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_B,"Sulfolactic Acid, 13C3",14.23,6070249,0,1958542,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS14C2DCM_C,"Sulfolactic Acid, 13C3",14.41,7351131,0,2157791,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_A,"Sulfolactic Acid, 13C3",14.53,3136735,0,909268,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_B,"Sulfolactic Acid, 13C3",14.29,7528126,0,3947540,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C115m_C,"Sulfolactic Acid, 13C3",14.09,6463365,0,2506232,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_A,"Sulfolactic Acid, 13C3",14.58,3272530,0,1132860,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_B,"Sulfolactic Acid, 13C3",14.58,3292444,0,1517443,-2.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1175m_C,"Sulfolactic Acid, 13C3",14.38,3871118,0,1100569,-4.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_A,"Sulfolactic Acid, 13C3",14.57,4124915,0,1825112,-3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_B,"Sulfolactic Acid, 13C3",14.63,3056273,0,1253988,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS4C1DCM_C,"Sulfolactic Acid, 13C3",14.47,2966254,0,1065458,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_A,"Sulfolactic Acid, 13C3",14.35,4678460,0,1752886,-4.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_B,"Sulfolactic Acid, 13C3",14.63,3540440,0,1178590,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C115m_C,"Sulfolactic Acid, 13C3",14.47,3043970,0,1071709,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_A,"Sulfolactic Acid, 13C3",14.63,3228588,0,962400,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_B,"Sulfolactic Acid, 13C3",14.52,7278624,0,2059422,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1175m_C,"Sulfolactic Acid, 13C3",14.12,8585755,0,3234709,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_A,"Sulfolactic Acid, 13C3",14.37,8047012,0,3560592,-4.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_B,"Sulfolactic Acid, 13C3",14.59,4509519,0,1246184,-3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS5C1DCM_C,"Sulfolactic Acid, 13C3",14.2,7839949,0,2987773,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_A,"Sulfolactic Acid, 13C3",14.56,3144179,0,1243724,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_B,"Sulfolactic Acid, 13C3",14.56,3290395,0,1164364,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C315m_C,"Sulfolactic Acid, 13C3",14.06,0,0,0,#N/A,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_A,"Sulfolactic Acid, 13C3",14.12,7556584,0,3072193,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_B,"Sulfolactic Acid, 13C3",14.29,6119135,0,3246456,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3175m_C,"Sulfolactic Acid, 13C3",14.61,3769422,0,1198762,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_A,"Sulfolactic Acid, 13C3",14.54,2349269,0,920744,-2.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_B,"Sulfolactic Acid, 13C3",14.59,2442236,0,971465,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS6C3DCM_C,"Sulfolactic Acid, 13C3",14.32,9306848,0,3407383,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_A,"Sulfolactic Acid, 13C3",14.49,3731981,0,1208001,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_B,"Sulfolactic Acid, 13C3",14.62,4600278,0,1282983,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C115m_C,"Sulfolactic Acid, 13C3",14.5,3047896,0,1222412,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_A,"Sulfolactic Acid, 13C3",14.51,3136550,0,974906,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_B,"Sulfolactic Acid, 13C3",14.58,3317989,0,1111087,-3.5,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1175m_C,"Sulfolactic Acid, 13C3",14.61,2447391,0,864551,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_A,"Sulfolactic Acid, 13C3",14.5,3236524,0,974408,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_B,"Sulfolactic Acid, 13C3",14.5,3475891,0,1157796,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS7C1DCM_C,"Sulfolactic Acid, 13C3",14.32,4118402,0,1485493,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_A,"Sulfolactic Acid, 13C3",14.54,4589887,0,1530317,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_B,"Sulfolactic Acid, 13C3",14.59,2500347,0,881128,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C115m_C,"Sulfolactic Acid, 13C3",14.19,8573749,0,3240324,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_A,"Sulfolactic Acid, 13C3",14.14,5124469,0,2187797,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_B,"Sulfolactic Acid, 13C3",14.29,4826930,0,1755469,-3.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1175m_C,"Sulfolactic Acid, 13C3",14.17,5506360,0,2182124,-4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_A,"Sulfolactic Acid, 13C3",14.12,9563718,0,5636901,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_B,"Sulfolactic Acid, 13C3",14.21,7856019,0,4777068,-3.3,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS8C1DCM_C,"Sulfolactic Acid, 13C3",14.69,3156618,0,1105065,-3.7,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_A,"Sulfolactic Acid, 13C3",14.51,3151846,0,969448,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_B,"Sulfolactic Acid, 13C3",14.15,9076986,0,4927674,-4.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C215m_C,"Sulfolactic Acid, 13C3",14.58,2702482,0,951414,-3.4,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_A,"Sulfolactic Acid, 13C3",14.22,8621881,0,4549723,-3.6,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_B,"Sulfolactic Acid, 13C3",14.58,2847004,0,1205345,-2.9,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2175m_C,"Sulfolactic Acid, 13C3",14.67,2924957,0,1149587,-3.1,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_A,"Sulfolactic Acid, 13C3",14.17,7428098,0,2868769,-3.8,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_B,"Sulfolactic Acid, 13C3",14.59,2757314,0,1160935,-3.2,Internal Stds_neg
+Internal Stds_neg,180821_Smp_MS9C2DCM_C,"Sulfolactic Acid, 13C3",14.18,8325437,0,3867496,-3.9,Internal Stds_neg
