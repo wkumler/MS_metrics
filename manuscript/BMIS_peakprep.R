@@ -23,10 +23,10 @@ peak_data <- msnexp_filled %>%
   select(peakidx) %>%
   rownames_to_column("feature") %>%
   unnest_longer(peakidx) %>%
-  left_join(peak_data_long) %>%
+  left_join(peak_data_long, by = join_by(peakidx)) %>%
   mutate(filename=basename(fileNames(msnexp_filled))[sample]) %>%
   complete(feature, filename, fill = list(into=0)) %>%
-  left_join(file_data) %>%
+  left_join(file_data, by = join_by(filename)) %>%
   filter(str_detect(filename, "180821"))
 
 # Perform B-MIS ----
@@ -46,7 +46,7 @@ peak_data %>%
   select(feature, filename, into, depth) %>%
   filter(str_detect(filename, "_Poo_")) %>%
   filter(feature=="FT0532") %>%
-  full_join(pooled_IS_areas, multiple = "all") %>%
+  full_join(pooled_IS_areas, multiple = "all", by = join_by(filename)) %>%
   group_by(IS_name) %>%
   mutate(plot_area=into/IS_area*mean(IS_area)) %>%
   ggplot() +
@@ -60,7 +60,7 @@ peak_data %>%
   
 BMIS <- peak_data %>%
   filter(str_detect(filename, "_Poo_")) %>%
-  full_join(pooled_IS_areas, multiple = "all") %>%
+  full_join(pooled_IS_areas, multiple = "all", by = join_by(filename)) %>%
   group_by(feature, IS_name) %>%
   mutate(plot_area=into/IS_area*mean(IS_area)) %>%
   summarise(cv=sd(plot_area)/mean(plot_area)) %>%

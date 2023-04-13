@@ -418,7 +418,8 @@ clockplot_xy_spots <- clockplot_data %>%
   group_by(feature) %>%
   mutate(norm_area=rank(norm_area)) %>%
   group_by(feature, depth) %>%
-  summarise(mean_fold_change=mean(norm_area/50)) %>% # div by 50 bc 99 files
+  summarise(mean_fold_change=mean(norm_area/50), .groups = "drop") %>% 
+  # div by 50 bc 99 files and median 1:99 is 50
   pivot_wider(names_from=depth, values_from=mean_fold_change) %>%
   mutate(x=DCM-1) %>%           # cursed but works??
   mutate(y=`15m`+DCM/2-1.5) %>% # super fucking cursed
