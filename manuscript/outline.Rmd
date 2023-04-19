@@ -264,12 +264,11 @@ residuals_gp <- perf_peak_data %>%
 fig_legend <- cowplot::get_legend(peak_gp + theme(legend.position="right") + 
                                     guides(color=guide_legend(override.aes = list(lwd=2)), text="none"))
 
-comb_cowplot <- egg::ggarrange(peak_gp, residuals_gp, ncol = 1)
+comb_cowplot <- egg::ggarrange(peak_gp, residuals_gp, ncol = 1, draw = FALSE)
 
 comb_peakmetrics_gp <- cowplot::plot_grid(
   comb_cowplot, fig_legend, rel_widths = c(1, 0.25)
 ) + theme(plot.background = element_rect(fill = "white", color=NA))
-
 
 ggsave(plot = comb_peakmetrics_gp, 
        filename = "peakmetrics_singlechrom.png", 
@@ -316,11 +315,75 @@ pred_prob_class_color_hists_gp <- ggplot(pred_prob_class_color_hists_df) +
                     values = c("#f4bb23", "#a41118", "#0b505c", "#028e34", "grey50")) +
   labs(x="Predicted probability", y="# of mass features", fill="Manual\nclassification") +
   ggtitle("Still need to figure out y-axis breaking")
-
 ggsave(plot = pred_prob_class_color_hists_gp, 
        filename = "pred_prob_class_color_hists.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 3, units = "in", dpi = 300)
+
+# Manual facetting with egg and cowplot
+base_gp <- ggplot() +
+  aes(x=pred_prob, fill=feat_class) +
+  facet_wrap(~dataset, scales="free_y") +
+  scale_fill_manual(breaks = c("Good", "Bad", "Meh", "Stans only", "Unclassified"),
+                    values = c("#f4bb23", "#a41118", "#0b505c", "#028e34", "grey50")) +
+  labs(x="Predicted probability", y="# of mass features", fill="Manual\nclassification") +
+  theme_bw() +
+  theme(axis.text.y.right = element_blank(),
+        axis.ticks.y.right = element_blank(),
+        legend.position = "none")
+axis_breaks <- pred_prob_class_color_hists_df %>%
+  group_by(dataset) %>%
+  mutate(pred_prob=cut(pred_prob, breaks=seq(0, 1, 0.02))) %>%
+  count(pred_prob) %>%
+  slice(1) %>%
+  pull(n, dataset)
+falk_hist_gp <- base_gp + 
+  geom_histogram(breaks=seq(0, 1, 0.02), data = pred_prob_class_color_hists_df %>% 
+                   filter(dataset=="Falkor")) +
+  scale_y_continuous(breaks = c(0, 50, 100, 150, 195),
+                     labels = c(0, 50, 100, 150, axis_breaks["Falkor"])) +
+  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
+  annotate("rect", xmin=0, xmax=1, ymin=180, ymax=185, fill="white", color="black") +
+  annotate("rect", xmin=0, xmax=0.125, ymin=195, ymax=Inf, fill="white", color="grey90") +
+  coord_cartesian(ylim = c(0, 200), expand = FALSE) +
+  theme(axis.title.x = element_blank(), axis.text.x = element_blank())
+meso_hist_gp <- base_gp + 
+  geom_histogram(breaks=seq(0, 1, 0.02), data = pred_prob_class_color_hists_df %>% 
+                   filter(dataset=="MESOSCOPE")) +
+  scale_y_continuous(breaks = c(0, 50, 100, 150, 200, 240),
+                     labels = c(0, 50, 100, 150, 200, axis_breaks["MESOSCOPE"])) +
+  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
+  annotate("rect", xmin=0, xmax=1, ymin=220, ymax=230, fill="white", color="black") +
+  annotate("rect", xmin=0, xmax=0.125, ymin=240, ymax=Inf, fill="white", color="grey90") +
+  coord_cartesian(ylim = c(0, 250), expand = FALSE) +
+  theme(axis.title = element_blank(), axis.text.x = element_blank())
+culture_hist_gp <- base_gp + 
+  geom_histogram(breaks=seq(0, 1, 0.02), data = pred_prob_class_color_hists_df %>% 
+                   filter(dataset=="CultureData")) +
+  scale_y_continuous(breaks = c(0, 50, 100, 116),
+                     labels = c(0, 50, 100, axis_breaks["CultureData"])) +
+  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
+  annotate("rect", xmin=0, xmax=1, ymin=110, ymax=113, fill="white", color="black") +
+  annotate("rect", xmin=0, xmax=0.125, ymin=116, ymax=Inf, fill="white", color="grey90") +
+  coord_cartesian(ylim = c(0, 120), expand = FALSE)
+pttime_hist_gp <- base_gp + 
+  geom_histogram(breaks=seq(0, 1, 0.02), data = pred_prob_class_color_hists_df %>% 
+                   filter(dataset=="Pttime")) +
+  scale_y_continuous(breaks = c(0,100,200,300,400,510),
+                     labels = c(0,100,200,300,400,axis_breaks["Pttime"])) +
+  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
+  annotate("rect", xmin=0, xmax=1, ymin=470, ymax=485, fill="white", color="black") +
+  annotate("rect", xmin=0, xmax=0.125, ymin=510, ymax=Inf, fill="white", color="grey90") +
+  coord_cartesian(ylim = c(0, 520), expand = FALSE) +
+  theme(axis.title.y = element_blank())
+egg_grob <- egg::ggarrange(falk_hist_gp, meso_hist_gp, culture_hist_gp, pttime_hist_gp, draw = FALSE)
+egg_legend <- cowplot::get_legend(culture_hist_gp + theme(legend.position = "right"))
+egg_complete <- cowplot::plot_grid(egg_grob, egg_legend, rel_widths = c(1, 0.25)) +
+  theme(plot.background = element_rect(fill = "white", color=NA))
+ggsave(plot = egg_complete, 
+       filename = "manuscript/figures/pred_prob_class_color_hists.png", 
+       device = "png",
+       width = 6.5, height = 4, units = "in", dpi = 300)
 ```
 
 ![Figure 3: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good peak that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=70%}
