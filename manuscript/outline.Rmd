@@ -2,7 +2,7 @@
 title: "Outline"
 author: "William Kumler"
 date: "`r Sys.Date()`"
-output: html_document
+output: word_document
 ---
 
 ```{r setup, include=FALSE}
@@ -10,11 +10,11 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
+library(tidyverse)
+library(RaMS)
 ```
 
 ```{r load data}
-library(tidyverse)
-
 file_data <- read_csv("made_data_MS3000/file_data.csv") %>%
   mutate(depth=factor(depth, levels=c("15m", "DCM", "175m"))) %>%
   mutate(filename=basename(filename))
@@ -25,6 +25,8 @@ CultureData_features <- read_csv("made_data_CultureData/features_extracted.csv")
 ```
 
 ## Abstract
+
+TBD
 
 ## Introduction
 
@@ -59,12 +61,11 @@ Multiple advantages to a robust assessment of peak quality
   - Improves statistical power
     - Reduces the number of hypotheses tested for univariate analyses
     - Increases relative power of significant peaks for multivariate analyses
-  - Allows optimization of chromatography for untargeted approaches
-    - More peaks isn't better if the additional peaks are just noise
   - Allows optimization of peakpicking parameters for untargeted approaches
   - "Good" peaks should be independent of software choices while noise is noisy
   - Enables more consistent quality control across labs
   - Focuses calculation time/energy on best peaks rather than all equally
+  - Provides consistent, reproducible results via scripting instead of independent expert assessment
 
 A single comprehensive quality parameter is more useful than many independent ones
 
@@ -88,23 +89,96 @@ Can be used to check improvements in peakpicking/chromatography
 
 ### Sample collection
 
+TBD
+
 ### Sample processing
+
+TBD
 
 ### LC conditions
 
+Get from Laura and MW
+
 ### MS conditions
 
+Get from Laura and MW
+
 ### Peakpicking with XCMS
+
+Fill from the peakpicking_and_prep script or the msnexp_filled object
 
 ### Manual inspection and classification
 Gold standard: manual inspection by a human expert
 
   - Decision to view the entire feature rather than a single trace
+    - 100x less work
+    - More representative of typical MS efforts
   - Decision to color by treatments
+  - Decision to drop missed scans entirely
+
+```{r grab demo msdata, eval=!file.exists("manuscript/minEIC_df.csv")}
+msdata <- readRDS("made_data_MS3000/msdata.rds")
+
+set.seed(123)
+chosen_feats <- MS3000_features %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  group_by(feat_class) %>%
+  slice_sample(n=5) %>%
+  arrange(feat_class) %>%
+  mutate(feat_id=row_number())
+minEIC_df <- pmap(chosen_feats, function(...){
+  with(list(...), {
+    msdata$EIC[mz%between%pmppm(mean_mz, ppm=5)] %>%
+      filter(rt%between%(mean_rt/60+c(-1, 1))) %>%
+      mutate(feature, feat_class, feat_id)
+  })
+}) %>% 
+  bind_rows() %>%
+  filter(str_detect(filename, "180821")) %>%
+  left_join(file_data, by="filename") %>%
+  filter(samp_type=="Smp")
+write_csv(minEIC_df, "manuscript/minEIC_df.csv")
+```
 
 ```{r fig:some good some bad features}
+minEIC_df <- read_csv("manuscript/minEIC_df.csv")
 
+good_chroms_gp <- minEIC_df %>%
+  filter(feat_class=="Good") %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
+  facet_wrap(~feature, nrow = 1, scales = "free") +
+  scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        legend.position = "none", 
+        panel.grid = element_blank()) +
+  guides(color=guide_legend(override.aes = list(linewidth=2), title = "Sample depth:  "))
+bad_chroms_gp <- minEIC_df %>%
+  filter(feat_class=="Bad") %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
+  facet_wrap(~feature, nrow = 1, scales = "free") +
+  scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        legend.position = "none",
+        panel.grid = element_blank())
+chroms_legend <- cowplot::get_legend(good_chroms_gp + theme(legend.position = "bottom"))
+
+comb_cowplot <- cowplot::plot_grid(good_chroms_gp, bad_chroms_gp, chroms_legend, 
+                                   ncol = 1, rel_heights = c(1, 1, 0.15))
+ggsave(plot = comb_cowplot, 
+       filename = "somegood_somebad_depthcolor_chroms.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 3, units = "in", dpi = 300)
 ```
+
+![Figure 1: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
 
 ### Feature extraction
 Feature extraction - many possible metrics, calculated across features
@@ -115,21 +189,110 @@ Feature extraction - many possible metrics, calculated across features
     - Peak shape, peak SNR, isotope existence, number of missed scans
 
 ```{r how are raw peak shape metrics calculated}
+minEIC_df <- read_csv("manuscript/minEIC_df.csv")
 
+single_EIC <- minEIC_df %>%
+  filter(feature%in%c("FT0588", "FT0280")) %>%
+  filter(filename=="180821_Smp_MS10C215m_A.mzML")
+
+maybe_skews <- c(2.5, 3, 4, 5)
+skew_names <- c("Large skew", "Small skew", "Minimal skew", "Zero skew")
+names(maybe_skews) <- skew_names
+perf_peak_data <- single_EIC %>%
+  group_by(feature) %>%
+  select(feature, rt, int) %>%
+  mutate(rt=(rt-min(rt))/(max(rt)-min(rt))) %>%
+  mutate(int=(int-min(int))/(max(int)-min(int))) %>%
+  cbind(sapply(maybe_skews, function(x){
+    perf_peak <- dbeta(.$rt, shape1=x, shape2=5)
+    perf_peak/max(perf_peak)
+  })) %>%
+  rename(`Raw data`="int") %>%
+  mutate(feature=factor(feature, levels=c("FT0588", "FT0280"), 
+                        labels=c("Good peak", "Bad peak")))
+summary_stats <- perf_peak_data %>%
+  pivot_longer(-c(feature, rt, `Raw data`)) %>%
+  mutate(new_val=value-`Raw data`) %>%
+  group_by(feature, name) %>%
+  summarise(single_cor=round(cor(`Raw data`, value), 2), 
+            single_sd=round(sd(new_val), 2), 
+            .groups = "drop_last") %>%
+  mutate(name=factor(name, levels=skew_names)) %>%
+  mutate(x_coord=c(0.125+(as.numeric(name)-1)/4))
+
+peak_gp <- perf_peak_data %>%
+  pivot_longer(-c(rt, feature)) %>%
+  mutate(name=factor(name, levels=c("Raw data", skew_names))) %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=value, color=name), lwd=1) +
+  geom_rect(xmin=-Inf, xmax=Inf, ymax=-Inf, ymin=-.05, fill="white", color="grey90") +
+  annotate("text", x=0.5, y=-Inf, vjust=-2, label="Pearson's r:") +
+  facet_wrap(~feature) +
+  geom_text(aes(x=x_coord, y=-Inf, label=single_cor, color=name),
+             data = summary_stats, vjust=-.5, show.legend = FALSE) +
+  scale_color_manual(breaks = c("Raw data", skew_names),
+                     values = c("black", viridisLite::plasma(6)[2:5])) +
+  scale_y_continuous(limits = c(-0.3, 1), breaks = c(0, 0.5, 1.0)) +
+  labs(y="Normalized intensity", color=NULL) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        # strip.background = element_rect(fill="white"),
+        legend.position="none",
+        strip.text = element_text(size = 11))
+residuals_gp <- perf_peak_data %>%
+  pivot_longer(-c(rt, feature, `Raw data`)) %>%
+  mutate(new_val=value-`Raw data`) %>%
+  ggplot() +
+  geom_rect(xmin=-Inf, xmax=Inf, ymax=Inf, ymin=0.85, fill="white", color="grey90") +
+  geom_hline(yintercept = 0, lwd=1) +
+  geom_line(aes(x=rt, y=new_val, color=name), lwd=1) +
+  geom_text(aes(x=x_coord, y=Inf, label=single_sd, color=name),
+             data = summary_stats, vjust=3) +
+  annotate("text", x=0.5, y=Inf, vjust=1.5, label="Residual SD:") +
+  facet_grid(~feature) +
+  scale_color_manual(breaks = c("Raw data", skew_names),
+                     values = c("black", viridisLite::plasma(6)[2:5])) +
+  scale_y_continuous(breaks = c(-1, 0, 1), limits = c(-1.1, 1.3)) +
+  labs(x="Normalized retention time", y="Residuals", color=NULL) +
+  theme_bw() +
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        legend.position = "none")
+
+fig_legend <- cowplot::get_legend(peak_gp + theme(legend.position="right") + 
+                                    guides(color=guide_legend(override.aes = list(lwd=2)), text="none"))
+
+comb_cowplot <- egg::ggarrange(peak_gp, residuals_gp, ncol = 1)
+
+comb_peakmetrics_gp <- cowplot::plot_grid(
+  comb_cowplot, fig_legend, rel_widths = c(1, 0.25)
+) + theme(plot.background = element_rect(fill = "white", color=NA))
+
+
+ggsave(plot = comb_peakmetrics_gp, 
+       filename = "peakmetrics_singlechrom.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 4, units = "in", dpi = 300)
 ```
+
+![Figure 2: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=70%}
 
 ## Results
 
+### Predicted probability distributions
+
 ```{r colored histograms on all 4 datasets}
 # Train on MESOSCOPE/Falkor combined model
-# Raw metrics only
+# Raw data metrics only
 # Color by feature class
 both_min_model <- rbind(FT2040_features, MS3000_features) %>%
   select(feat_class, med_cor, med_SNR) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_class=feat_class=="Good") %>%
   glm(formula=feat_class~., family = binomial)
-bind_rows(lst(
+pred_prob_class_color_hists_df <- bind_rows(lst(
   Falkor=FT2040_features, MESOSCOPE=MS3000_features,
   CultureData=CultureData_features, Pttime=Pttime_features), 
   .id = "dataset") %>%
@@ -142,18 +305,27 @@ bind_rows(lst(
     feat_class=="Bad" & pred_class=="Bad" ~ "%TN",
     TRUE ~ "Incomparable"
   )) %>%
-  mutate(dataset=factor(dataset, levels=c("MESOSCOPE", "Falkor", "CultureData", "Pttime"))) %>%
-  ggplot() +
+  mutate(dataset=factor(dataset, levels=c("MESOSCOPE", "Falkor", "CultureData", "Pttime")))
+
+pred_prob_class_color_hists_gp <- ggplot(pred_prob_class_color_hists_df) +
   geom_histogram(aes(x=pred_prob, fill=feat_class), breaks=seq(0, 1, 0.02)) +
   facet_wrap(~dataset, ncol = 1, scales="free_y") +
   coord_cartesian(ylim = c(0, 200)) +
   geom_vline(xintercept = 0.9, color="black", linewidth=1) +
   scale_fill_manual(breaks = c("Good", "Bad", "Meh", "Stans only", "Unclassified"),
-                    values = c("#f4bb23", "#a41118", "#0b505c", "#028e34", "grey50"))
-# Add broken y-axis
-# Fix axis titles
-# Format nicely
+                    values = c("#f4bb23", "#a41118", "#0b505c", "#028e34", "grey50")) +
+  labs(x="Predicted probability", y="# of mass features", fill="Manual\nclassification") +
+  ggtitle("Still need to figure out y-axis breaking")
+
+ggsave(plot = pred_prob_class_color_hists_gp, 
+       filename = "pred_prob_class_color_hists.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 3, units = "in", dpi = 300)
 ```
+
+![Figure 3: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good peak that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=70%}
+
+### Model cross-validation with novel datasets
 
 ```{r FDR vs GPF cross-train triangle figure feature selection}
 # Dark/light green/blue triangle plot
@@ -172,7 +344,7 @@ all_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", "sd_pw",
                 "med_cor", "med_SNR", "med_missed_scans", "smp_to_blk", 
                 "smp_to_std", "shape_cor", "area_cor", "feat_class")
 
-lst(all_params, raw_data_params, xcms_params) %>%
+fdr_gpf_cross_train_df <- lst(all_params, raw_data_params, xcms_params) %>%
   imap(function(param_selection, param_name){
     lapply(dataset_versions, function(train_set){
       full_model <- get(train_set) %>% 
@@ -202,39 +374,62 @@ lst(all_params, raw_data_params, xcms_params) %>%
   ungroup() %>%
   mutate(cross_type=factor(cross_type, levels=c("Same", "Different"))) %>%
   pivot_wider(names_from=error_type, values_from = n) %>%
-  mutate(FDR=round(FP/(FP+TP)*100)) %>%
-  mutate(GPF=round(TP/(FN+TP)*100)) %>%
+  mutate(FDR=FP/(FP+TP)) %>%
+  mutate(GPF=TP/(FN+TP)) %>%
   pivot_longer(c(FDR, GPF)) %>%
   mutate(name=paste0("%", name)) %>%
   mutate(which_params=factor(which_params, 
-                             labels=c("All\nparams", "Default\nonly", "Raw\ndata params"),
+                             labels=c("All metrics", "XCMS metrics", "Raw data metrics"),
                              levels=c("all_params", "xcms_params", "raw_data_params"))) %>%
-  mutate(cross_type_num=as.numeric(cross_type)) %>%
+  mutate(cross_type_num=as.numeric(cross_type))
+
+train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
+train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
+fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
+  mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
+  mutate(name=factor(name, levels=c("%GPF", "%FDR"), labels=c("GPF", "FDR"))) %>%
   ggplot() +
-  geom_point(aes(x=cross_type, y=value, color=train_test, fill=train_test, shape=name)) +
+  geom_point(aes(x=cross_type, y=value, color=train_test, 
+                 fill=train_test, shape=name), size=5) +
   geom_smooth(aes(x=cross_type_num, y=value, group=name), 
               method = "lm", formula="y~x", color="black", se=FALSE) +
   facet_grid(~which_params) +
   scale_x_discrete(labels = c("Same\ndataset\n", "Different\ndataset\n"),
                    breaks = c("Same", "Different")) +
-  scale_color_manual(values = c("#0b505c", "#0d8299", "#184d1f", "#028e34"), 
-                     breaks = c("MS3000-MS3000", "MS3000-FT2040", "FT2040-FT2040", "FT2040-MS3000"),
+  scale_color_manual(values = c("#0b505c", "#184d1f", "#0d8299", "#028e34"), 
+                     breaks = train_test_labels,
                      aesthetics = c("color", "fill")) +
-  scale_shape_manual(breaks = c("%FDR", "%GPF"), values = c(25, 17)) +
-  coord_cartesian(ylim = c(0, 100)) +
-  theme_bw()
+  scale_shape_manual(breaks = c("GPF", "FDR"), values = c("\u25B2", "\u25BC")) +
+  coord_cartesian(ylim = c(0, 1)) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  theme_bw() +
+  theme() +
+  labs(x=NULL, y=NULL, color="Train-test", fill="Train-test", shape="Error type") +
+  guides(shape=guide_legend(order=1))
+
+ggsave(plot = fdr_gpf_cross_train_gp, 
+       filename = "fdr_gpf_cross_train.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
+![Figure 4: False discovery rate (%FDR) and fraction of good peaks found (GPF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those peaks the model categorized as "Good" using a threshold of 0.5, and higher %GPF indicates a larger fraction of the total good peaks were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gpf_cross_train.png){width=70%}
+
+### Full model probability depends strongly on training data, two-parameter model does not
+
 ```{r red/gold rank dotplot step-down method}
-# Make sure to include overplotting somehow?
 dataset_versions <- c("FT2040_features", "MS3000_features")
 raw_data_params <- c("med_cor", "med_SNR")
+xcms_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", 
+                 "sd_pw", "log_mean_area", "log_sd_area", "sn", 
+                 "f", "scale", "lmin", "feat_npeaks", "n_found", 
+                 "samps_found", "stans_found")
 all_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", "sd_pw",
                 "log_mean_area", "log_sd_area", "sn", "f", "scale", 
                 "lmin", "feat_npeaks", "n_found", "samps_found", "stans_found", 
                 "med_cor", "med_SNR", "med_missed_scans", "smp_to_blk", 
                 "smp_to_std", "shape_cor", "area_cor", "feat_class")
-dotplot_stepdown_data <- lst(all_params, raw_data_params) %>%
+dotplot_stepdown_data <- lst(all_params, xcms_params, raw_data_params) %>%
   imap(function(param_selection, param_name){
     lapply(dataset_versions, function(train_set){
       model_i <- get(train_set) %>% 
@@ -249,26 +444,38 @@ dotplot_stepdown_data <- lst(all_params, raw_data_params) %>%
         mutate(training_set=train_set)
     }) %>% bind_rows()
   }) %>% bind_rows()
+
 raw_prob_space_gp <- dotplot_stepdown_data %>%
   pivot_wider(names_from = training_set, values_from = pred_prob) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(which_params=factor(which_params, 
+                             levels=c("all_params", "xcms_params", "raw_data_params"),
+                             labels=c("All metrics", "XCMS metrics", "Raw data metrics"))) %>%
   ggplot() +
   geom_abline(slope = 1, intercept = 0, color="black", lwd=1) +
-  geom_point(aes(x=FT2040_features, y=MS3000_features, color=feat_class)) +
+  geom_point(aes(x=FT2040_features, y=MS3000_features, color=feat_class), alpha=0.2) +
   facet_wrap(~which_params, nrow = 1) +
   scale_fill_manual(values = c("#a41118", "#f4bb23"), breaks = c("Bad", "Good"), 
                     aesthetics = c("color", "fill")) +
   scale_x_continuous(breaks = c(0, 0.5, 1)) +
   scale_y_continuous(breaks = c(0, 0.5, 1)) +
-  labs(x="Falkor-trained model", y="MESO-trained model")
+  coord_fixed() +
+  labs(x="Falkor-trained model (predicted probability)", 
+       y="MESO-trained model\n(predicted probability)") +
+  theme_bw() +
+  theme(legend.position = "none",
+        strip.background = element_rect(fill="white"))
 rank_prob_space_gp <- dotplot_stepdown_data %>%
   group_by(training_set, which_params) %>%
   mutate(pred_prob=rank(pred_prob)) %>%
   pivot_wider(names_from = training_set, values_from = pred_prob) %>%
+  mutate(which_params=factor(which_params, 
+                             levels=c("all_params", "xcms_params", "raw_data_params"),
+                             labels=c("All metrics", "XCMS metrics", "Raw data metrics"))) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   ggplot() +
   geom_abline(slope = 1, intercept = 0, color="black", lwd=1) +
-  geom_point(aes(x=FT2040_features, y=MS3000_features, color=feat_class)) +
+  geom_point(aes(x=FT2040_features, y=MS3000_features, color=feat_class), alpha=0.2) +
   facet_wrap(~which_params, nrow = 1) +
   scale_fill_manual(values = c("#a41118", "#f4bb23"), breaks = c("Bad", "Good"), 
                     aesthetics = c("color", "fill")) +
@@ -276,10 +483,32 @@ rank_prob_space_gp <- dotplot_stepdown_data %>%
                      labels = c("Min rank", "Max rank")) +
   scale_y_continuous(breaks = c(0, nrow(MS3000_features)),
                      labels = c("Min\nrank", "Max\nrank")) +
-  labs(x="Falkor-trained model", y="MESO-trained model") +
-  theme(axis.text.x = element_text(hjust=c(0, 1)))
-plot(gridExtra::arrangeGrob(raw_prob_space_gp, rank_prob_space_gp))
+  labs(x="Falkor-trained model (ranked likelihood)", 
+       y="MESO-trained model\n(ranked likelihood)",
+       color=NULL) +
+  guides(color=guide_legend(override.aes = list(size=4, alpha=0.8))) +
+  coord_fixed() +
+  theme_bw() +
+  theme(axis.text.x = ggtext::element_markdown(hjust=c(0, 1)),
+        # strip.text = element_blank(),
+        strip.background = element_rect(fill="white"),
+        legend.position=c(0.875, 0.25),
+        legend.background = element_blank(),
+        legend.spacing.x = unit(0.003, units = "npc"))
+comb_prob_space_gp <- egg::ggarrange(raw_prob_space_gp, rank_prob_space_gp, draw = FALSE)
+ggsave(plot = comb_prob_space_gp, 
+       filename = "comb_prob_space.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 5, units = "in", dpi = 300)
 ```
+
+![Figure 5: Predicted likelihood of a feature being "Good" according to a model trained on the MESOSCOPE dataset vs a model trained on the Falkor dataset. The top row of plots show the exact likelihood predicted by the logistic model across three different subsets of parameters, while the bottom row shows the estimates ranked from least likely to most likely. Points are colored by their manually-assigned quality according to an expert.](figures/comb_prob_space.png){width=70%}
+
+Make sure labels are the same as above - probably stick with XCMS for specificity.
+
+Remember to add Pearson and Spearmen correlation coefficients in the corners!
+
+### Error rates on novel data with stricter likelihood threshold
 
 ```{r FDR vs GPF with additional datasets}
 # Currently a fairly simple figure, may need additional data?
@@ -306,32 +535,45 @@ pred_probs_all <- bind_rows(lst(
   group_by(dataset, error_type) %>%
   summarise(n=n(), .groups = 'drop') %>%
   complete(dataset, error_type, fill=list(n=0))
-pred_probs_all %>%
+error_type_all_datasets <- pred_probs_all %>%
   pivot_wider(names_from=error_type, values_from = n) %>%
-  mutate(`%FDR`=`%FP`/(`%FP`+`%TP`)*100) %>%
-  mutate(`%GPF`=`%TP`/(`%FN`+`%TP`)*100) %>%
-  mutate(`%GPF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `%GPF`)) %>%
-  pivot_longer(c(`%FDR`, `%GPF`)) %>%
-  mutate(desc=case_when(
+  mutate(`FDR`=`%FP`/(`%FP`+`%TP`)) %>%
+  mutate(`GPF`=`%TP`/(`%FN`+`%TP`)) %>%
+  mutate(`GPF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `GPF`)) %>%
+  pivot_longer(c(`FDR`, `GPF`)) %>%
+  drop_na()
+
+fdr_gpf_all_datasets_gp <- error_type_all_datasets %>%
+    mutate(desc=case_when(
     is.na(value) ~ NA,
-    name=="%FDR"~ paste0("frac(",`%FP`,",",`%FP`+`%TP`,")"),
-    name=="%GPF"~ paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")
+    name=="FDR"~ paste0("frac(",`%FP`,",",`%FP`+`%TP`,")"),
+    name=="GPF"~ paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")
   )) %>%
   mutate(vjust_custom=case_when(
     is.na(value) ~ NA,
-    name=="%FDR" & dataset=="Pttime" ~ 1.3,
-    name=="%FDR" ~ -0.3,
-    name=="%GPF" & dataset=="Falkor" ~ 1.3,
-    name=="%GPF" ~ -0.3,
+    name=="FDR" & dataset=="Pttime" ~ 1.3,
+    name=="FDR" ~ -0.3,
+    name=="GPF" ~ 1.3,
   )) %>%
-  drop_na() %>% 
-  mutate(name=factor(name, levels=c("%GPF", "%FDR"))) %>%
-  mutate(dataset=factor(dataset, levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"))) %>%
+  mutate(name=factor(name, levels=c("GPF", "FDR"),
+                     labels=c("Fraction of good peaks found (GPF)", 
+                              "False discovery rate (FDR)"))) %>%
+  mutate(dataset=factor(dataset, 
+                        levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"),
+                        labels= c("Falkor", "MESO-\nSCOPE", "Culture\nData", "Pttime"))) %>%
   ggplot(aes(x=dataset, y=value)) +
   geom_point(size=3) +
   geom_text(aes(label=desc, vjust=vjust_custom), parse=TRUE) +
   facet_wrap(~name, scales = "free_y", ncol = 1) +
-  scale_y_continuous(limits = c(0, NA))
+  scale_y_continuous(limits = c(0, NA), labels = scales::label_percent()) +
+  theme_bw() +
+  theme(axis.title = element_blank(),
+        strip.background = element_rect(fill="white"))
+
+ggsave(plot = fdr_gpf_all_datasets_gp, 
+       filename = "fdr_gpf_all_datasets.png", 
+       device = "png", path = "manuscript/figures",
+       width = 3, height = 4, units = "in", dpi = 300)
 
 # Confusion matrices for confirmation
 # pred_probs_all
@@ -344,13 +586,17 @@ pred_probs_all %>%
 #   theme(axis.title = element_blank())
 ```
 
-```{r clockplot BMIS}
-if(!file.exists("manuscript/MS3000_norm_areas.csv")){
-  source("manuscript/BMIS_peakprep.R")
-}
+![Figure 6: False discovery rate and proportion of total good peaks identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GPF is calculated by dividing the number of true positives by the total number of good peaks as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gpf_all_datasets.png){width=30%}
+
+Emphasize the use of a different threshold here!
+
+### Implications for biological conclusions
+
+```{r clockplot BMIS, eval=!file.exists("manuscript/MS3000_norm_areas.csv")}
+source("manuscript/BMIS_peakprep.R")
 ```
 
-```{r clockplot dataset munging}
+```{r clockplot dataset munging, eval=!file.exists("manuscript/MS3000_clockplot_coords.csv")}
 norm_area_data <- read_csv("manuscript/MS3000_norm_areas.csv")
 
 both_min_model <- rbind(FT2040_features, MS3000_features) %>%
@@ -366,9 +612,7 @@ best_feats <- MS3000_features %>%
 clockplot_data <- norm_area_data %>%
   right_join(best_feats, by = join_by(feature)) %>%
   left_join(file_data %>% select(filename, depth), by = join_by(filename))
-```
 
-```{r clockplot kw_dunn_tests}
 kw_pvals_all <- clockplot_data %>%
   nest(data=-c(feature, pred_class)) %>%
   mutate(tidyaov=map(
@@ -439,9 +683,20 @@ clockplot_complete_df <- clockplot_data %>%
   mutate(error_type=factor(error_type, levels=c("TP", "FP", "FN", "TN"),
                            labels=c("Good peak found", "Bad peak included",
                                     "Good peak missed", "Bad peak avoided")))
+
+write_csv(clockplot_complete_df, file = "manuscript/MS3000_clockplot_coords.csv")
 ```
 
-```{r clockplot create circular colormap}
+```{r clockplot}
+resp_class_levels <- c("All equal", 
+    "15m > DCM = 175m", "15m > DCM > 175m", "15m = DCM > 175m",
+    "DCM > 15m > 175m", "DCM > 15m = 175m", "DCM > 175m > 15m", 
+    "15m < DCM = 175m", "15m < DCM < 175m", "15m = DCM < 175m", 
+    "DCM < 15m < 175m", "DCM < 15m = 175m", "DCM < 175m < 15m", 
+    "Hard to tell")
+clockplot_complete_df <- read_csv(file = "manuscript/MS3000_clockplot_coords.csv") %>%
+  mutate(resp_class=factor(resp_class, levels=resp_class_levels))
+
 cmap_name <- "infinity"
 cmap_url <- paste0("https://raw.githubusercontent.com/1313e/CMasher/master/",
                    "cmasher/colormaps/", cmap_name, "/", cmap_name, "_norm.txt")
@@ -449,13 +704,12 @@ cmtable <- read.table(cmap_url)
 cmscale <- rgb(cmtable[,1], cmtable[,2], cmtable[,3])
 color_scale <- c("grey50", head(cmscale[seq(1, length(cmscale), length.out=13)], 12), "grey80")
 names(color_scale) <- resp_class_levels
-```
 
-```{r clockplot}
 clock_scale <- 0.66
 axis_xends <- c(-1/2, 1.1, -1/2)*clock_scale
 axis_yends <- c(sqrt(3)/2, 0, -sqrt(3)/2)*clock_scale
 axis_y_dodge <- c(2, 2, -2)*clock_scale/25
+
 clockplot_base_gp <- ggplot() +
   annotate("segment", x=c(0,0,0), y=c(0,0,0), 
            xend=axis_xends, yend=axis_yends,
@@ -467,27 +721,38 @@ clockplot_base_gp <- ggplot() +
            label=c("15m axis", "DCM axis", "175m axis"), 
            fill="#FFFFFFAA", label.size=0) +
   coord_fixed(xlim = c(-0.65, 1.3)*clock_scale, 
-              ylim = c(-1.2, 1.2)*clock_scale, 
+              ylim = c(-1, 1)*clock_scale, 
               expand=TRUE) +
   scale_color_manual(values = color_scale, breaks = names(color_scale), drop=FALSE) +
   theme_void() +
-  theme(legend.position = "right", legend.title = element_blank()) +
-  guides(colour = guide_legend(override.aes = list(size=4))) +
+  theme(legend.position = "right", 
+        legend.title = element_blank(),
+        plot.background = element_rect(fill="white", color="white")) +
+  guides(colour = guide_legend(override.aes = list(size=4, alpha=1), drop=FALSE)) +
   aes(x=x, y=y, color=resp_class, label=feature)
 
-# clockplot_base_gp +
-#   geom_point(alpha=0.8, data = clockplot_complete_df)
-
-clockplot_base_gp +
-  geom_point(aes(shape=error_type), alpha=0.8, size=2,
+clockplot_complete_gp <- clockplot_base_gp +
+  geom_point(aes(shape=error_type), alpha=0.5, size=2,
              data = clockplot_complete_df) +
   scale_shape_manual(breaks = c("Good peak found", "Bad peak included",
                                 "Good peak missed", "Bad peak avoided"), 
                      values = c(19, 3, 4, 1))
+
+ggsave(plot = clockplot_complete_gp, 
+       filename = "clockplot_complete.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 5, units = "in", dpi = 300)
 ```
 
+![Figure 7: Plot of metabolite response to depth shown across three axes using the rank-normalized median value at each depth as the coordinate for that axis. Each molecular feature corresponds to a point in the plot, and their position on the plot describes the shape of their depth profile. Compounds aligning with the 15m axis correspond to compounds with most of their abundance found in the surface ocean; points far to the right side correspond to compounds that are found only at the deep chlorophyll maximum; points found at the bottom of the plot are those compounds that increased more or less linearly with depth.](figures/clockplot_complete.png){width=90%}
+
+Make sure I include the threshold used for the above plot (in the legend?)
+
+Make sure I explain the statistical significance and the "Hard to tell" category
+
+See aobut including ONLY the good peaks in a separate plot (inset figure?)
+
 ```{r manual check on clockplot, eval=FALSE}
-library(RaMS)
 # msdata <- readRDS("made_data_MS3000/msdata.rds")
 feat_i <- "FT0828"
 row_data <- MS3000_features[MS3000_features$feature==feat_i,]
@@ -512,6 +777,8 @@ plot(gridExtra::arrangeGrob(eic_gp, bxp_gp))
 
 ## Discussion
 
+TBD
+
 ## Citations
 
 2020 review and demand for more robust peakpicking and description of noise sources
@@ -519,6 +786,7 @@ https://www.sciencedirect.com/science/article/pii/S0165993620302922
 
 2014 Comparative evaluation of preprocessing freeware on chromatography/mass spectrometry data for signature discovery
 https://www.sciencedirect.com/science/article/pii/S0021967314010450?via%3Dihub
+
   - XCMS is the most cited preprocessing tool currently in the metabolomics literature
   - Table comparing parameters across XCMS, MzMine, MetAlign
   - Selection by appearance in multiple replicates
