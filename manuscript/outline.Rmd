@@ -180,6 +180,14 @@ ggsave(plot = comb_cowplot,
 
 ![Figure 1: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
 
+Include the descriptor for what "FTXXXX" means. 
+
+Note that these were taken from the MESOSCOPE dataset.
+
+Explain the chromatograms (RT/int/ what "goodness" requires?)
+
+Explain that we grabbed the center of the peak +/- 1 (2?) minutes
+
 ### Feature extraction
 Feature extraction - many possible metrics, calculated across features
 
@@ -388,6 +396,8 @@ ggsave(plot = egg_complete,
 
 ![Figure 3: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good peak that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=70%}
 
+Explain what the different datasets are?
+
 ### Model cross-validation with novel datasets
 
 ```{r FDR vs GPF cross-train triangle figure feature selection}
@@ -477,6 +487,10 @@ ggsave(plot = fdr_gpf_cross_train_gp,
 ```
 
 ![Figure 4: False discovery rate (%FDR) and fraction of good peaks found (GPF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those peaks the model categorized as "Good" using a threshold of 0.5, and higher %GPF indicates a larger fraction of the total good peaks were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gpf_cross_train.png){width=70%}
+
+Dark blue and dark green are too similar, need to separate these better somehow. 
+
+Include conclusions in figure legend? Something like "slope of the line is much greater in All metrics and XCMS metrics, indicating overfitting"?
 
 ### Full model probability depends strongly on training data, two-parameter model does not
 
@@ -569,7 +583,7 @@ ggsave(plot = comb_prob_space_gp,
 
 Make sure labels are the same as above - probably stick with XCMS for specificity.
 
-Remember to add Pearson and Spearmen correlation coefficients in the corners!
+Remember to add Pearson and Spearman correlation coefficients in the corners!
 
 ### Error rates on novel data with stricter likelihood threshold
 
@@ -652,6 +666,8 @@ ggsave(plot = fdr_gpf_all_datasets_gp,
 ![Figure 6: False discovery rate and proportion of total good peaks identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GPF is calculated by dividing the number of true positives by the total number of good peaks as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gpf_all_datasets.png){width=30%}
 
 Emphasize the use of a different threshold here!
+
+Explain why there are no values for GPF in Pttime/CultureData?
 
 ### Implications for biological conclusions
 
