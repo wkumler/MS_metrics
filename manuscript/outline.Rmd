@@ -182,9 +182,15 @@ ggsave(plot = comb_cowplot,
 
 Include the descriptor for what "FTXXXX" means. 
 
+Include the molecular mass in the feature label? If known, include name?
+
+Put the actual good/bad label in the figure somewhere
+
+What's the importance of the different colors?
+
 Note that these were taken from the MESOSCOPE dataset.
 
-Explain the chromatograms (RT/int/ what "goodness" requires?)
+Explain the chromatograms (RT/int/ what "goodness" requires?) explain x/y axis in figure legend, maybe do in bulk across all at once?
 
 Explain that we grabbed the center of the peak +/- 1 (2?) minutes
 
@@ -286,7 +292,66 @@ ggsave(plot = comb_peakmetrics_gp,
 
 ![Figure 2: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=70%}
 
+Good figure, spacing between text and labels and data
+
 ## Results
+
+Data description
+
+  - Counts of MFs in each manually-assigned category
+  - Proportion of good/bad in each dataset
+  - Supplemental figure: class colored histograms with each metric?
+  - Supplemental figure: class colored pairs plot?
+
+Logistic regressions
+
+  - Predictions are strongly binomial for all and xcms, less so for two-parameter model
+    - Discuss why we dropped the p-value metric?
+  - Performance within a given dataset vs across datasets and model selection
+    - Introduce FDR and GPF metrics
+      - Motivated by actual questions
+      - FDR = 1-precision (what fraction are likely false?)
+      - GPF = recall/sensitivity (what percent did I recover?)
+    - Very low FDR (5-10%) and high GPF (75-90%) *within* datasets for all metrics and xcms metrics, worse for raw data (~20% FDR, ~75% GPF)
+    - Higher FDR and GPF *across* datasets for all and xcms, about the same for raw data, leaves them all performing about the same(!)
+    - Figure 4
+    - Overfitting concerns (line slope) on cross-dataset
+    - Step-down methodology and independence from training set (Figure 5)
+  - Model stability
+    - How similar are the model parameters to each other when trained on Falkor/MESO/both?
+      - Supplemental figure: 3x errorbar plots for Falkor/MESO/both model estimates +/- SEs
+    - What fraction of the dataset did we actually need to label? (Answer: basically the whole thing, possibly even more)
+      - Supplemental figure: subset-based training with individual dots for min (maybe full?) model estimates added to full model estimates +/- SE bars
+  - Threshold selection and FDR in CultureData/Pttime (Figure 6)
+    - Higher threshold more representative of real research/applications in situations where 50% chance of being a peak is too high
+    - Additional external validation for FDR that still shows increase, albeit small (0-1% -> 2-5%)
+    - Unable to check GPF without fully labelling the datasets
+
+Other ML strategies
+
+  - Comparison to RF things
+  - Comparison to glmnet things
+
+
+Biological implications
+
+  - Clockplot and univariate statistics
+    - Report proportions of MFs in each category?
+    - Many "bad" still have strong biology trend, not a sufficient measure on its own
+    - Missing out on some good peaks (far left clockplot)
+    - Do the FDR corrected p-value comparisons with more/less peaks by threshold
+    
+  - PERMANOVA table
+    - Better performance somehow with 90% threshold than manually labeled "good" peaks?
+    - Emphasize the lack of power when all peaks are included in the analysis with 1% and 0% thresholds
+  - Actual biology things
+    - Most metabolites track with biomass
+    - Surface-specific largely MAAs, some new?
+    - Degradation products or bacterial things accumulating at depth?
+
+
+
+
 
 ### Predicted probability distributions
 
@@ -398,6 +463,14 @@ ggsave(plot = egg_complete,
 
 Explain what the different datasets are?
 
+Make sure the break gap is consistent
+
+Maybe turn into two rows, one zoomed and one unzoomed?
+
+Differentiate the 0.9 line from the axis break line - don't like the vertical black line, looks like data
+
+Convert "meh" to "ambiguous"
+
 ### Model cross-validation with novel datasets
 
 ```{r FDR vs GPF cross-train triangle figure feature selection}
@@ -492,6 +565,14 @@ Dark blue and dark green are too similar, need to separate these better somehow.
 
 Include conclusions in figure legend? Something like "slope of the line is much greater in All metrics and XCMS metrics, indicating overfitting"?
 
+Is averaging the two points for the best fit line best? Lines sometimes have different slopes
+
+Is GPF worth using instead of more common jargon like 1-precision
+
+Maybe simpler metric
+
+Line feels a little heavy and too dark, put behind data, maybe make line grey instead of dark black
+
 ### Full model probability depends strongly on training data, two-parameter model does not
 
 ```{r red/gold rank dotplot step-down method}
@@ -581,9 +662,11 @@ ggsave(plot = comb_prob_space_gp,
 
 ![Figure 5: Predicted likelihood of a feature being "Good" according to a model trained on the MESOSCOPE dataset vs a model trained on the Falkor dataset. The top row of plots show the exact likelihood predicted by the logistic model across three different subsets of parameters, while the bottom row shows the estimates ranked from least likely to most likely. Points are colored by their manually-assigned quality according to an expert.](figures/comb_prob_space.png){width=70%}
 
-Make sure labels are the same as above - probably stick with XCMS for specificity.
+Make sure labels are the same as above - probably stick with XCMS for specificity. (Could just go in tables?)
 
 Remember to add Pearson and Spearman correlation coefficients in the corners!
+
+Maybe avoid "rank" phrasing? Instead of best/worst?
 
 ### Error rates on novel data with stricter likelihood threshold
 
@@ -668,6 +751,14 @@ ggsave(plot = fdr_gpf_all_datasets_gp,
 Emphasize the use of a different threshold here!
 
 Explain why there are no values for GPF in Pttime/CultureData?
+
+Render as a table and see how that looks instead?
+
+Include Pttime definition in the figure caption?
+
+Maybe include the facet captions as the y-axis label instead? Anitra doesn't love how it looks as-is
+
+
 
 ### Implications for biological conclusions
 
@@ -831,6 +922,10 @@ Make sure I explain the statistical significance and the "Hard to tell" category
 
 See aobut including ONLY the good peaks in a separate plot (inset figure?)
 
+Switch the shapes to make empty circles "good peaks missed"
+
+Add some internal circle to help render information about the overplotting in the center? Give a bar graph breakdown for the  things within the circle?
+
 ```{r manual check on clockplot, eval=FALSE}
 # msdata <- readRDS("made_data_MS3000/msdata.rds")
 feat_i <- "FT0828"
@@ -853,10 +948,122 @@ bxp_gp <- peak_data %>%
 plot(gridExtra::arrangeGrob(eic_gp, bxp_gp))
 ```
 
+Biological circumstances to test:
+1. Using ALL peaks produced by XCMS
+2. Using only the manually-categorized "Good" peaks
+3. Using the model-categorized "Good" peaks at threshold 0.99
+4. Using the model-categorized "Good" peaks at threshold 0.5
+5. Using the model-categorized "Good" peaks at threshold 0.01
+
+```{r}
+library(vegan)
+MS3000_metadata <- file_data %>%
+  filter(samp_type=="Smp") %>%
+  filter(str_detect(filename, "180821")) %>%
+  select(filename, depth) %>%
+  column_to_rownames("filename")
+norm_area_data <- read_csv("manuscript/MS3000_norm_areas.csv")
+
+both_min_model <- rbind(FT2040_features, MS3000_features) %>%
+  select(feat_class, med_cor, med_SNR) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+pred_probs <- MS3000_features %>%
+  mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+  select(feature, feat_class, pred_prob)
+
+wide_data <- norm_area_data %>%
+  group_by(feature) %>%
+  filter(var(norm_area)>0) %>%
+  # mutate(norm_area=rank(norm_area)) %>%
+  mutate(norm_area=scale(norm_area)[,1]) %>%
+  left_join(pred_probs) %>% 
+  pivot_wider(names_from = "filename", values_from = norm_area) %>%
+  column_to_rownames("feature")
+
+mat_data <- wide_data %>%
+  # filter(feat_class=="Good") %>%
+  # filter(pred_prob>0.9) %>% 
+  # filter(pred_prob>0.5) %>%
+  # filter(pred_prob>0.1) %>%
+  select(-feat_class, -pred_prob) %>%
+  data.matrix() %>%
+  t()
+
+adonis2(mat_data~depth, data = MS3000_metadata, method = "manhattan")
+nmds_output <- metaMDS(mat_data, k = 2, distance = "manhattan", trace = 0, 
+                       autotransform = FALSE, noshare = FALSE, wascores = FALSE)
+nmds_output$points %>%
+  as.data.frame() %>%
+  cbind(MS3000_metadata) %>%
+  rownames_to_column("filename") %>%
+  select(filename, starts_with("MDS"), depth) %>%
+  mutate(basename=str_extract(filename, "MS\\d+C\\d+.*(?=_[A-C])")) %>%
+  ggplot(aes(x=MDS1, y=MDS2)) +
+  geom_polygon(aes(fill=depth, color=depth, group=basename), alpha=0.5) +
+  annotate(geom = "label", x=Inf, y=Inf, 
+           label=paste("Stress =", round(nmds_output$stress, 2)),
+           hjust=1, vjust=1, label.r=unit(0, "in")) +
+  theme_minimal()
+```
+
+```{r}
+mat_all <- wide_data
+mat_good <- wide_data %>% filter(feat_class=="Good")
+mat_90 <- wide_data %>% filter(pred_prob>0.9)
+mat_50 <- wide_data %>% filter(pred_prob>0.5)
+mat_10 <- wide_data %>% filter(pred_prob>0.1)
+mat_01 <- wide_data %>% filter(pred_prob>0.01)
+
+mat_list <- lst(mat_good, mat_90, mat_50, mat_10, mat_01, mat_all)
+thresh_tests <- lapply(mat_list, function(mat_given){
+  mat_data <- mat_given %>%
+    select(-feat_class, -pred_prob) %>%
+    data.matrix() %>%
+    t()
+  perm_output <- adonis2(mat_data~depth, data = MS3000_metadata, method = "manhattan")
+  nmds_output <- metaMDS(mat_data, k = 2, distance = "manhattan", trace = 0,
+                         autotransform = FALSE, noshare = FALSE, wascores = FALSE)
+  nmds_gp <- nmds_output$points %>%
+    as.data.frame() %>%
+    cbind(MS3000_metadata) %>%
+    rownames_to_column("filename") %>%
+    select(filename, starts_with("MDS"), depth) %>%
+    mutate(basename=str_extract(filename, "MS\\d+C\\d+.*(?=_[A-C])")) %>%
+    ggplot(aes(x=MDS1, y=MDS2)) +
+    geom_polygon(aes(fill=depth, color=depth, group=basename), alpha=0.5) +
+    annotate(geom = "label", x=Inf, y=Inf, 
+             label=paste("Stress =", round(nmds_output$stress, 2)),
+             hjust=1, vjust=1, label.r=unit(0, "in")) +
+    theme_minimal()
+  list(perm_output, nmds_output, nmds_gp)
+}) %>% set_names(names(mat_list))
+
+imap(thresh_tests, function(thresh_i, thresh_name){
+  as.data.frame(thresh_i[[1]][1,]) %>% mutate(thresh_name)
+}) %>% bind_rows() %>%
+  select(thresh_name, R2, `F`, `Pr(>F)`) %>%
+  `rownames<-`(NULL) %>%
+  column_to_rownames("thresh_name") %>%
+  knitr::kable()
+
+lapply(thresh_tests, `[[`, 3) %>%
+  do.call(what=gridExtra::grid.arrange)
+```
+
+See which/why peaks differ between predicted and actual quality to start explaining why 90% threshold performs better than the "Good" cutoff
 
 ## Discussion
 
-TBD
+  - Fundamental tradeoff between GPF and FDR should be determined by the scientific question
+  - FDR and GPF rates are very rarely reported but critically important to include
+  - Full model and XCMS model are definitely overfit
+    - Steep performance drop on new data
+    - Disagreement based on training set
+  - Only tested on HILIC data, expectations for RP columns
+  - Using medians/means as summary statistics ignores differences between treatments (i.e. lots of blanks blows up the median): maybe better to use max/top3? Maybe better to implement independently for each sample class?
+  - XCMS alone does not provide enough information to distinguish good peaks from bad with much confidence
 
 ## Citations
 
@@ -881,6 +1088,12 @@ https://www.sciencedirect.com/science/article/pii/S0003267003006810?via%3Dihub
 
 
 ## Unstructured thoughts
+
+Journal target: BMC Bioinformatics
+Alternative: PLoS Comp Bio (Too high-impact? Not as many MS papers)
+Alternative: MDPI? That's where 255,000 was published
+Alternative II: Bioinformatics (very bio-focused)
+
 Pleas:
   - Report peak boundaries! If not max/min m/z then at least max/min RT
     - Helps with visualization and raw data feature extraction
