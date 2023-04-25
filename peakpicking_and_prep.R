@@ -21,7 +21,6 @@ dataset_version <- "Pttime"
 
 output_folder <- paste0("made_data_", dataset_version, "/")
 mzML_files <- list.files(paste0(output_folder, "mzMLs/"), full.names=TRUE)
-prefilter_versioned <- c(3, 1e6)
 
 if(dataset_version%in%c("FT2040", "MS3000")){
   file_data <- data.frame(filename=mzML_files) %>%
@@ -83,7 +82,7 @@ register(BPPARAM = SnowParam(workers = parallel::detectCores()-1,
 cwp <- CentWaveParam(
   ppm = 5, 
   peakwidth = c(20, 80), 
-  prefilter = prefilter_versioned, 
+  prefilter = c(3, 1e6), 
   snthresh = 0, 
   verboseColumns = TRUE, 
   extendLengthMSW = TRUE, 
