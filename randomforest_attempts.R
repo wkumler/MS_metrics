@@ -13,7 +13,7 @@ features_extracted <- read_csv(paste0(output_folder, "features_extracted.csv")) 
 
 # Using ALL features up to this point ----
 feature_subset <- features_extracted %>%
-  select(-feat_id, -feat_class) %>%
+  select(-feature, -feat_class) %>%
   data.matrix()
 rfmodel <- randomForest(feature_subset, y=factor(features_extracted$feat_class), 
                         importance=TRUE, proximity = TRUE, keep.forest = TRUE)
