@@ -626,8 +626,87 @@ ggsave(plot = sampled_model_est_gp,
        width = 6.5, height = 5, units = "in", dpi = 300)
 ```
 
-Given the reasonably compelling evidence above favoring the two-parameter model on novel datasets, we applied this trained model on two additional datasets that differed significantly from the training data. 
+Given the reasonably compelling evidence above favoring the two-parameter model on novel datasets, we applied this trained model on two additional datasets that differed significantly from the training data. The CultureData samples were produced in the Ingalls lab like the MESOSCOPE and Falkor samples, but represent data from a variety of phytoplankton and bacterial cultures in fresh and salt water rather than environmental samples. The Pttime dataset was discovered on Metabolomics Workbench [@MW id] and consists of Phaeodactylum triconutum cultures collected at a variety of timepoints from both pelleted cells and the released exudate. This dataset was chosen because of the similar LC-MS setup used as a benchmark comparison for the performance other labs with similar setups may expect to achieve. Each of these datasets were only fractionally labeled, with those peaks above the 0.9 likelihood threshold according to the two-parameter model reviewed manually and categorized. 
 
+This stricter threshold was used 
+
+```{r FDR vs GPF with additional datasets}
+# Currently a fairly simple figure, may need additional data?
+both_min_model <- rbind(FT2040_features, MS3000_features) %>%
+  select(feat_class, med_cor, med_SNR) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+pred_probs_all <- bind_rows(lst(
+  Falkor=FT2040_features, MESOSCOPE=MS3000_features,
+  CultureData=CultureData_features, Pttime=Pttime_features), 
+  .id = "dataset") %>%
+  mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+  mutate(pred_class=ifelse(pred_prob>0.9, "Good", "Bad")) %>%
+  mutate(error_type=case_when(
+    feat_class=="Good" & pred_class=="Good" ~ "%TP",
+    feat_class=="Good" & pred_class=="Bad" ~ "%FN",
+    feat_class=="Bad" & pred_class=="Good" ~ "%FP",
+    feat_class=="Bad" & pred_class=="Bad" ~ "%TN",
+    TRUE ~ "Incomparable"
+  )) %>%
+  mutate(dataset=factor(dataset, levels=c("MESOSCOPE", "Falkor", "CultureData", "Pttime"))) %>%
+  filter(error_type!="Incomparable") %>%
+  group_by(dataset, error_type) %>%
+  summarise(n=n(), .groups = 'drop') %>%
+  complete(dataset, error_type, fill=list(n=0))
+error_type_all_datasets <- pred_probs_all %>%
+  pivot_wider(names_from=error_type, values_from = n) %>%
+  mutate(`FDR`=`%FP`/(`%FP`+`%TP`)) %>%
+  mutate(`GPF`=`%TP`/(`%FN`+`%TP`)) %>%
+  mutate(`GPF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `GPF`)) %>%
+  pivot_longer(c(`FDR`, `GPF`)) %>%
+  drop_na()
+
+fdr_gpf_all_datasets_gp <- error_type_all_datasets %>%
+    mutate(desc=case_when(
+    is.na(value) ~ NA,
+    name=="FDR"~ paste0("frac(",`%FP`,",",`%FP`+`%TP`,")"),
+    name=="GPF"~ paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")
+  )) %>%
+  mutate(vjust_custom=case_when(
+    is.na(value) ~ NA,
+    name=="FDR" & dataset=="Pttime" ~ 1.3,
+    name=="FDR" ~ -0.3,
+    name=="GPF" ~ 1.3,
+  )) %>%
+  mutate(name=factor(name, levels=c("GPF", "FDR"),
+                     labels=c("Fraction of good peaks found (GPF)", 
+                              "False discovery rate (FDR)"))) %>%
+  mutate(dataset=factor(dataset, 
+                        levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"),
+                        labels= c("Falkor", "MESO-\nSCOPE", "Culture\nData", "Pttime"))) %>%
+  ggplot(aes(x=dataset, y=value)) +
+  geom_point(size=3) +
+  geom_text(aes(label=desc, vjust=vjust_custom), parse=TRUE) +
+  facet_wrap(~name, scales = "free_y", ncol = 1) +
+  scale_y_continuous(limits = c(0, NA), labels = scales::label_percent()) +
+  theme_bw() +
+  theme(axis.title = element_blank(),
+        strip.background = element_rect(fill="white"))
+
+ggsave(plot = fdr_gpf_all_datasets_gp, 
+       filename = "fdr_gpf_all_datasets.png", 
+       device = "png", path = "manuscript/figures",
+       width = 3, height = 4, units = "in", dpi = 300)
+
+# Confusion matrices for confirmation
+# pred_probs_all
+# pred_probs_all %>%
+#   ggplot(aes(x=error_type, y=n)) +
+#   geom_col(color="#0b505c", fill="#0b505c") +
+#   geom_text(aes(label=n), vjust=-0.2, color="#0b505c") +
+#   facet_wrap(~dataset, nrow=1) +
+#   theme_bw() +
+#   theme(axis.title = element_blank())
+```
+
+![Figure 6: False discovery rate and proportion of total good peaks identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GPF is calculated by dividing the number of true positives by the total number of good peaks as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gpf_all_datasets.png){width=30%}
 
 
 
