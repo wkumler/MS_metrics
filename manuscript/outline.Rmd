@@ -337,6 +337,7 @@ Biological implications
 
   - Clockplot and univariate statistics
     - Report proportions of MFs in each category?
+    - Big central thing where all the noise ended up
     - Many "bad" still have strong biology trend, not a sufficient measure on its own
     - Missing out on some good peaks (far left clockplot)
     - Do the FDR corrected p-value comparisons with more/less peaks by threshold
