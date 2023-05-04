@@ -44,7 +44,7 @@ all_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", "sd_pw",
 
 ## Abstract
 
-Chromatographic peakpicking continues to represent a significant bottleneck in automated LC-MS workflows. Uncontrolled false discovery rates and the lack of manually-calibrated quality metrics require researchers to visually evaluate individual peaks, requiring large amounts of time and breaking replicability. Here, we manually labeled two oceanographic particulate metabolite datasets to assess the performance of individual peak quality metrics and constructed a predictive model calibrated to the likelihood that visual inspection by an MS expert would include a given mass feature in the downstream analysis. A simple logistic regression model built on two metrics calculated from the raw MS data reduced the fraction of false positives in the analysis from 80-90% down to 1-5% and showed minimal overfitting when applied to novel datasets. We then explored the implications of this quality thresholding on the conclusions obtained by the downstream analysis, concluding that the poor performance of peakpicking algorithms significantly reduces the power of both univariate and multivariate statistical analyses in detecting environmental differences.
+Chromatographic peakpicking continues to represent a significant bottleneck in automated LC-MS workflows. Uncontrolled false discovery rates and the lack of manually-calibrated quality metrics require researchers to visually evaluate individual peaks, requiring large amounts of time and breaking replicability. Here, we manually labeled two oceanographic particulate metabolite datasets to assess the performance of individual peak quality metrics and constructed a predictive model calibrated to the likelihood that visual inspection by an MS expert would include a given mass feature in the downstream analysis. A simple logistic regression model built on two metrics calculated from the raw MS data reduced the fraction of false positives in the analysis from 80-90% down to 1-5% and showed minimal overfitting when applied to novel datasets. We then explored the implications of this quality thresholding on the conclusions obtained by the downstream analysis, concluding that the poor performance of peakpicking algorithms significantly reduces the power of both univariate and multivariate statistical analyses in detecting environmental differences. We finally show that depth is a major driver of variability in the metabolome in high-quality environmental metabolomics datasets and identify several interesting metabolite groups for future investigation.
 
 ## Introduction
 
@@ -310,6 +310,8 @@ pred_probs %>%
 
 An average of 3,300 molecular features (MFs) were reported by XCMS across the 4 datasets, with the fewest (1495) in the Falkor data and the most in the Pttime samples (7781). In the Falkor and MESOSCOPE datasets that were fully labeled by an MS expert, approximately 70% (69% and 73%, respectively) of the features were given a "Bad" designation, corresponding to noise peaks that the expert would not have included in a downstream analysis. In both, 5% of the MFs were unable to be assigned confidently to either "Good" or "Bad" classes and 10% were identified as appearing only in the standards, leaving only ~15% of the features classified as "Good" (16% and 12%, respectively). 
 
+
+
 ### Logistic regression performance
 
 We used three different multiple logistic regression models to predict the likelihood of each MF being categorized as "Good". The first model included all metrics calculated as described above in Methods, the second contained only those parameters immediately available from the XCMS output without revisiting the raw data (the four core peak metrics *m/z*, RT, peak width, area and their standard deviations plus the mysterious lmin, f, and scale values as well as the fraction of peaks, samples, and standards found), and the final model was a simple two-parameter model using only the peak shape and novel SNR metrics. In all three cases, the majority of MFs were estimated to have a less than 1% chance of being good. The full model and the XCMS model both displayed a strongly bimodal distribution, with a large number of peaks also exceeding a 99% chance of being good, while the two-parameter model had a flatter distribution with fewer high-confidence MF assignments and more intermediate values (Fig. 3).
@@ -545,96 +547,9 @@ ggsave(plot = comb_prob_space_gp,
 
 ![Figure 5: Predicted likelihood of a feature being "Good" according to a model trained on the MESOSCOPE dataset vs a model trained on the Falkor dataset. The top row of plots show the exact likelihood predicted by the logistic model across three different subsets of parameters, while the bottom row shows the estimates ranked from least likely to most likely. Points are colored by their manually-assigned quality according to an expert.](figures/comb_prob_space.png){width=90%}
 
-We also looked at the estimates produced by the two models and compared them with the combined model trained on the combined datasets to assess the model stability directly. A majority of the time, the estimates from the two models disagreed by more than 2x the standard error of the estimate and frequently disagreed by that amount depending on the other parameters included in the model. Some parameters disagreed not only in magnitude but also in sign, with the Falkor-trained full model increasing peak goodness likelihood with larger ppm variation and a wider peak width, while the MESOSCOPE-trained full model had negative estimates for each of these parameters. Notably, the peak shape and novel SNR parameters in the two-parameter model were among the most robust to training model variation, potentially explaining the consistency described above (Supp. figure X).
+We also looked at the estimates produced by the two models and compared them with the combined model trained on the combined datasets to assess the model stability directly. A majority of the time, the estimates from the two models disagreed by more than 2x the standard error of the estimate and frequently disagreed by that amount depending on the other parameters included in the model. Some parameters disagreed not only in magnitude but also in sign, with the Falkor-trained full model increasing peak goodness likelihood with larger ppm variation and a wider peak width, while the MESOSCOPE-trained full model had negative estimates for each of these parameters. Notably, the peak shape and novel SNR parameters in the two-parameter model were among the most robust to training model variation, potentially explaining the consistency described above (Supp. figure 1).
 
-```{r model stability dotplot errorbars supp figure}
-both_features <- rbind(FT2040_features, MS3000_features)
-dataset_versions_both <- c(dataset_versions, "both_features")
-model_param_estimates <- lst(all_params, xcms_params, raw_data_params) %>%
-  imap(function(param_selection, param_name){
-    lapply(dataset_versions_both, function(train_set){
-      model_params <- get(train_set) %>% 
-        filter(feat_class%in%c("Good", "Bad")) %>%
-        select(feat_class, all_of(param_selection)) %>%
-        mutate(feat_class=feat_class=="Good") %>%
-        glm(formula=feat_class~., family = binomial) %>%
-        broom::tidy() %>%
-        mutate(train_set)
-    }) %>% bind_rows() %>% mutate(param_name)
-  }) %>% bind_rows()
-suppfig_model_param_estimates_gp <- model_param_estimates %>%
-  mutate(param_name=str_remove(param_name, "_params")) %>%
-  ggplot(aes(x=param_name, color=train_set)) +
-  geom_hline(yintercept = 0) +
-  geom_point(aes(y=estimate), position = position_dodge(width=0.2)) +
-  geom_errorbar(aes(ymin=estimate-2*std.error, ymax=estimate+2*std.error),
-                position = position_dodge(width=0.2), width=0.3) +
-  facet_wrap(~term, scales="free_y", ncol = 4) +
-  theme_bw() +
-  theme(legend.position = "top", axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
-ggsave(plot = suppfig_model_param_estimates_gp, 
-       filename = "suppfig_model_param_estimates.png", 
-       device = "png", path = "manuscript/supplement",
-       width = 6.5, height = 9, units = "in", dpi = 300)
-```
-
-We also tested the robustness of the model under a smaller training set, emulating a situation in which only a fraction of the data was available or only a portion of the mass features had been labeled. This allowed us to test the required sample size for the different models, with a larger sample size presumably required for the models with more parameters. Because no parameter was present in all 3 models, we looked at the top 2 most significant parameters from each model: average *m/z* and peak shape for the full model, average peakwidth and the standard deviation in retention time for the XCMS model, and peak shape and SNR for the two-parameter model. For the XCMS and two-parameter model, we found reasonably good convergence in a dataset containing half the mass features with most values falling within two standard errors of the estimate, while the full model required closer to 80% of the mass features to produce estimates consistent with the original model (Supp. figure X).
-
-```{r subsampling model stability supp figure}
-set.seed(123)
-both_data <- rbind(MS3000_features, FT2040_features) %>%
-  filter(feat_class%in%c("Good", "Bad")) %>%
-  mutate(feat_class=feat_class=="Good")
-
-best_estimates <- model_param_estimates %>%
-  filter(train_set=="both_features") %>%
-  filter(term!="(Intercept)") %>%
-  group_by(param_name) %>%
-  arrange(p.value) %>%
-  slice(1:2)
-
-frac_data <- map(c(0.2, 0.5, 0.8), function(sample_fraction){
-  replicate(10, {
-    train_set <- slice_sample(both_data, prop = sample_fraction)
-    lst(all_params, xcms_params, raw_data_params) %>%
-      imap(function(param_selection, param_name){
-        train_set %>%
-          select(feat_class, all_of(param_selection)) %>%
-          glm(formula=feat_class~., family = binomial) %>%
-          broom::tidy() %>%
-          mutate(param_name)
-    }) %>% bind_rows()
-  }, simplify = FALSE) %>% bind_rows() %>%
-    mutate(sample_fraction)
-}) %>% bind_rows()
-
-sample_model_estimates <- best_estimates %>%
-  select(term, train_set, param_name) %>%
-  left_join(frac_data, multiple = "all")
-
-gplist <- c("all_params", "xcms_params", "raw_data_params") %>%
-  lapply(function(which_params){
-    ggplot() +
-      geom_hline(yintercept = 0) +
-      geom_rect(aes(xmin=-Inf, xmax=Inf, ymin=estimate-std.error*2, 
-                    ymax=estimate+std.error*2),
-                fill="grey80", data=best_estimates %>% filter(param_name==which_params)) +
-      geom_rect(aes(xmin=-Inf, xmax=Inf, ymin=estimate-std.error, 
-                    ymax=estimate+std.error),
-                fill="grey50", data=best_estimates %>% filter(param_name==which_params)) +
-      geom_point(aes(x=sample_fraction, y=estimate), 
-                 data=sample_model_estimates %>% filter(param_name==which_params),
-                 alpha=0.5) +
-      ggh4x::facet_grid2(param_name~term, scales = "free_y", independent = "y") +
-      scale_x_continuous(breaks = c(0, 0.2, 0.5, 0.8, 1), limits = c(0, 1)) +
-      theme_bw()
-  })
-sampled_model_est_gp <- do.call(what = egg::ggarrange, c(gplist, ncol=1, draw=FALSE))
-ggsave(plot = sampled_model_est_gp, 
-       filename = "sampled_model_est.png", 
-       device = "png", path = "manuscript/supplement",
-       width = 6.5, height = 5, units = "in", dpi = 300)
-```
+We also tested the robustness of the model under a smaller training set, emulating a situation in which only a fraction of the data was available or only a portion of the mass features had been labeled. This allowed us to test the required sample size for the different models, with a larger sample size presumably required for the models with more parameters. Because no parameter was present in all 3 models, we looked at the top 2 most significant parameters from each model: average *m/z* and peak shape for the full model, average peakwidth and the standard deviation in retention time for the XCMS model, and peak shape and SNR for the two-parameter model. For the XCMS and two-parameter model, we found reasonably good convergence in a dataset containing half the mass features with most values falling within two standard errors of the estimate, while the full model required closer to 80% of the mass features to produce estimates consistent with the original model (Supp. figure 2).
 
 ### Performance of a stricter threshold on novel datasets
 
@@ -726,119 +641,19 @@ ggsave(plot = fdr_gpf_all_datasets_gp,
 
 ### Regularized regression and random forests perform about the same
 
-None of the advanced ML models significantly improved performance when cross-validated between the MESOSCOPE and Falkor datasets when measured by both initial performance and the performance drop when applied across datasets. All three regularized regression models had similar behavior, with ridge regression (α = 0) had the lowest rates for both GPF and FDR, with lasso (α = 1) obtaining higher ones and representing a less-stringent Type II error acceptance while, as expected, the elastic net (α = 0.5) fell in between the two (Supp. figure X). The random forest model had perfect predictive capacity when tested internally on the training data (FDR=0%, GPF=100%, for both MESOSCOPE and Falkor) but showed a significant drop in improvement when applied across datasets (Supp. figure X). In each case, the performance drop when applied to a novel dataset was more extreme than the simple two-parameter model described above.
-
-```{r elastic net and random forest}
-library(glmnet)
-net_cross_train_df <- lst(ridge=0, elastic=0.5, lasso=1) %>%
-  imap(function(alpha_selection, alpha_name){
-    lapply(dataset_versions, function(train_set){
-      net_x <- get(train_set) %>% 
-        filter(feat_class%in%c("Good", "Bad")) %>%
-        select(-feat_class, -feature) %>%
-        data.matrix()
-      net_y <- get(train_set) %>% 
-        filter(feat_class%in%c("Good", "Bad")) %>%
-        mutate(feat_class=feat_class=="Good") %>%
-        pull(feat_class)
-      net_model <- cv.glmnet(x=net_x, y=net_y, family="binomial", alpha=alpha_selection)
-      
-      lapply(dataset_versions, function(test_set){
-        get(test_set) %>%
-          select(-feat_class, -feature) %>%
-          mutate(pred_prob=predict(object=net_model, newx = data.matrix(.), 
-                                   type = "response")[,"lambda.1se"]) %>%
-          mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
-          mutate(feat_class=get(test_set)$feat_class) %>%
-          select(feat_class, pred_class) %>%
-          mutate(train_test=paste(train_set, test_set, sep = "-")) %>%
-          mutate(train_test=str_remove_all(train_test, "_features")) %>%
-          mutate(cross_type=ifelse(train_set==test_set, "Same", "Different"))
-      }) %>% bind_rows()
-    }) %>% bind_rows() %>% mutate(which_alpha=alpha_name)
-  }) %>% bind_rows()
-library(randomForest)
-rf_cross_train_df <- lapply(dataset_versions, function(train_set){
-  rf_x <- get(train_set) %>% 
-    select(-medtop3_cor, -max_cor, -log_med_cor, -max_SNR) %>%
-    select(med_SNR, med_cor, feat_class, feature) %>%
-    filter(feat_class%in%c("Good", "Bad")) %>%
-    select(-feat_class, -feature)
-  rf_y <- get(train_set) %>% 
-    filter(feat_class%in%c("Good", "Bad")) %>%
-    pull(feat_class) %>%
-    factor()
-  rfmodel <- randomForest(rf_x, rf_y)
-
-  lapply(dataset_versions, function(test_set){
-    get(test_set) %>%
-      select(-feat_class, -feature) %>%
-      mutate(pred_class=predict(object=rfmodel, newdata = ., type = "response")) %>%
-      mutate(feat_class=get(test_set)$feat_class) %>%
-      select(feat_class, pred_class) %>%
-      mutate(train_test=paste(train_set, test_set, sep = "-")) %>%
-      mutate(train_test=str_remove_all(train_test, "_features")) %>%
-      mutate(cross_type=ifelse(train_set==test_set, "Same", "Different"))
-      }) %>% bind_rows()
-    }) %>% bind_rows() %>%
-  mutate(which_alpha="rf")
-
-fdr_gpf_cross_train_df <- net_cross_train_df %>%
-  rbind(rf_cross_train_df) %>%
-    mutate(error_type=case_when(
-    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
-    feat_class=="Bad" & pred_class=="Good" ~ "FP",
-    feat_class=="Good" & pred_class=="Bad" ~ "FN",
-    feat_class=="Good" & pred_class=="Good" ~ "TP"
-  )) %>%
-  drop_na() %>%
-  group_by(train_test, which_alpha, cross_type) %>%
-  count(error_type) %>%
-  ungroup() %>%
-  mutate(cross_type=factor(cross_type, levels=c("Same", "Different"))) %>%
-  pivot_wider(names_from=error_type, values_from = n, values_fill = 0) %>%
-  mutate(FDR=FP/(FP+TP)) %>%
-  mutate(GPF=TP/(FN+TP)) %>%
-  mutate(cross_type_num=as.numeric(cross_type))
-train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
-train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
-fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
-  mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
-  mutate(which_alpha=factor(which_alpha, levels=c("ridge", "elastic", "lasso", "rf"),
-                            labels=c("Ridge: α=0", "Elastic: α=0.5", "Lasso: α=1", "Random forest"))) %>%
-  pivot_longer(c(FDR, GPF)) %>%
-  ggplot() +
-  geom_smooth(aes(x=cross_type_num, y=value, group=name), 
-              method = "lm", formula="y~x", color="black", se=FALSE) +
-  geom_point(aes(x=cross_type, y=value, color=train_test, 
-                 fill=train_test, shape=name), size=5, alpha=0.8) +
-  facet_grid(~which_alpha) +
-  scale_x_discrete(labels = c("Same\ndataset\n", "Different\ndataset\n"),
-                   breaks = c("Same", "Different")) +
-  scale_color_manual(values = c("#0b505c", "#184d1f", "#0d8299", "#028e34"), 
-                     breaks = train_test_labels,
-                     aesthetics = c("color", "fill")) +
-  scale_shape_manual(breaks = c("GPF", "FDR"), values = c("\u25B2", "\u25BC")) +
-  coord_cartesian(ylim = c(0, 1)) +
-  scale_y_continuous(labels = scales::label_percent()) +
-  theme_bw() +
-  theme() +
-  labs(x=NULL, y=NULL, color="Train-test", fill="Train-test", shape="Error type") +
-  guides(shape=guide_legend(order=1))
-
-ggsave(plot = fdr_gpf_cross_train_gp, 
-       filename = "regregrf_fdrgpf_cross_train.png", 
-       device = "png", path = "manuscript/supplement",
-       width = 6.5, height = 3, units = "in", dpi = 300)
-```
+None of the advanced ML models significantly improved performance when cross-validated between the MESOSCOPE and Falkor datasets when measured by both initial performance and the performance drop when applied across datasets. All three regularized regression models had similar behavior, with ridge regression (α = 0) had the lowest rates for both GPF and FDR, with lasso (α = 1) obtaining higher ones and representing a less-stringent Type II error acceptance while, as expected, the elastic net (α = 0.5) fell in between the two (Supp. figure 3). The random forest model had perfect predictive capacity when tested internally on the training data (FDR=0%, GPF=100%, for both MESOSCOPE and Falkor) but showed a significant drop in improvement when applied across datasets (Supp. figure 3). In each case, the performance drop when applied to a novel dataset was more extreme than the simple two-parameter model described above.
 
 ### Implications for biological conclusions
+
+#### Univariate techniques
 
 [Figure 7] shows the distribution of all mass features identified by XCMS and their categorization according to both the biochemical response to depth as well as the classifications assigned by the MS expert and the two-parameter model at a 50% likelihood threshold.
 
 The abundance of noise peaks located at the center of the plot and therefore lacking much biological trend with depth validates the conventional heuristic of relying on downstream statistical tests to separate signal from noise (with the assumption that noise will be fixed across all samples and unaffected by environmental structuring of samples). However, it is also clear that there are both some good peaks that do not have trends with depth (and are therefore interesting for bucking the biomass signal) as well as a good number of bad peaks that do change across sample depths. These bad peaks that have biological signals appear to be frequently due to the tail of a peak being integrated as a separate molecular feature, which then retains the biological signal of the actual feature.
 
-Most metabolites track with biomass and are consistently abundant through the surface and DCM but drop off at depth, as prior measurements of particulate carbon and beam attenuation have shown [@benedetto]. However, several groups of compounds diverge intriguingly from this bulk biomass trend, with some molecules found almost exclusively at the surface and others found to increase with depth rather than decrease. Several mass features that were found most exclusively at the surface were putatively identified as mycosporine-like amino acids (MAAs), which have been shown to have UV photoprotective properties.[@ref] Although we were unable to calculate their exact concentrations due to a lack of authentic standards, peak areas were approximately 100 to 1000 times higher at 15 meters than their values averaged between the DCM and 175 meter samples. The abundance of MAAs in this particular category indicates that there may be other MAA molecules with this depth pattern that have not yet been characterized also among these unknowns.
+Although the identification of bad peaks predominantly improves univariate analysis by removing those features from consideration in individual molecular narratives, filtering out the bad peaks should also improve the power of the individual analyses by reducing the number of hypotheses that must then be corrected for later. Multiple hypothesis testing corrections rely on the number and shape of the p-value distribution to make estimates of the "true" p-values for each compound, and removing a large number of noise peaks will result in lower p-values for those peaks that are flagged as good.
+
+Most metabolites track with biomass and are consistently abundant through the surface and DCM but drop off at depth, as prior measurements of particulate carbon and beam attenuation have shown [@benedetto]. However, several groups of compounds diverge intriguingly from this bulk biomass trend, with some molecules found almost exclusively at the surface and others found to increase with depth rather than decrease. Several mass features that were found dominantly at the surface were putatively identified as mycosporine-like amino acids (MAAs), which have been shown to have UV photoprotective properties.[@ref] Although we were unable to calculate their exact concentrations due to a lack of authentic standards, peak areas were approximately 100 to 1000 times higher at 15 meters than their values averaged between the DCM and 175 meter samples. The abundance of MAAs in this particular category indicates that there may be other MAA molecules with this depth pattern that have not yet been characterized also among these unknowns.
 
 ```{r clockplot BMIS, eval=!file.exists("manuscript/MS3000_norm_areas.csv")}
 library(xcms)
@@ -1055,3 +870,368 @@ ggsave(plot = clockplot_complete_gp,
 ```
 
 ![Figure 7: Plot of metabolite response to depth shown across three axes using the rank-normalized median value at each depth as the coordinate for that axis. Each molecular feature corresponds to a point in the plot, and their position on the plot describes the shape of their depth profile. Compounds aligning with the 15m axis correspond to compounds with most of their abundance found in the surface ocean; points far to the right side correspond to compounds that are found only at the deep chlorophyll maximum; points found at the bottom of the plot are those compounds that increased more or less linearly with depth.](figures/clockplot_complete.png){width=90%}
+
+#### Multivariate techniques
+
+Multivariate statistics also benefit from the reduced FDR when applying the two-parameter model. For the PERMANOVAs, we found that the proportion of variance explained (R$^2$) and the pseudo-F statistic increased monotonically with the likelihood threshold used to subset the data (Table 1).
+
+```{r multivariate setup}
+set.seed(123)
+MS3000_metadata <- file_data %>%
+  filter(samp_type=="Smp") %>%
+  filter(str_detect(filename, "180821")) %>%
+  select(filename, depth) %>%
+  column_to_rownames("filename")
+norm_area_data <- read_csv("manuscript/MS3000_norm_areas.csv")
+both_min_model <- rbind(FT2040_features, MS3000_features) %>%
+  select(feat_class, med_cor, med_SNR) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  glm(formula=feat_class~., family = binomial)
+pred_probs <- MS3000_features %>%
+  mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+  select(feature, feat_class, pred_prob)
+wide_data <- norm_area_data %>%
+  group_by(feature) %>%
+  filter(var(norm_area)>0) %>%
+  # mutate(norm_area=rank(norm_area)) %>%
+  mutate(norm_area=scale(norm_area)[,1]) %>%
+  left_join(pred_probs, by="feature") %>% 
+  pivot_wider(names_from = "filename", values_from = norm_area) %>%
+  column_to_rownames("feature")
+
+mat_all <- wide_data
+mat_good <- wide_data %>% filter(feat_class=="Good")
+mat_90 <- wide_data %>% filter(pred_prob>0.9)
+mat_50 <- wide_data %>% filter(pred_prob>0.5)
+mat_10 <- wide_data %>% filter(pred_prob>0.1)
+mat_01 <- wide_data %>% filter(pred_prob>0.01)
+mat_list <- lst(mat_good, mat_90, mat_50, mat_10, mat_01, mat_all)
+```
+
+```{r PERMANOVA results}
+thresh_tests <- imap(mat_list, function(mat_given, mat_name){
+  mat_data <- mat_given %>%
+    select(-feat_class, -pred_prob) %>%
+    data.matrix() %>%
+    t()
+  perm_out <- vegan::adonis2(mat_data~depth, data = MS3000_metadata, method = "manhattan")
+  as.data.frame(perm_out[1,]) %>% 
+    mutate(thresh_name=mat_name) %>%
+    mutate(n=ncol(mat_data))
+}) %>% 
+  set_names(names(mat_list)) %>%
+  bind_rows() %>%
+  select(thresh_name, n, R2, `F`, `Pr(>F)`) %>%
+  `rownames<-`(NULL) %>%
+  column_to_rownames("thresh_name") %>%
+  knitr::kable()
+```
+
+In each test, the permutational p-value obtained was less than 0.001, indicating that the differences between samples due to depth were unlikely to be due to chance in all cases. However, the pseudo-F was much larger with higher thresholds, scaling from around 8.5 when thresholding at a 1% likelihood to 42 when thresholded at a 90% likelihood. 
+
+|         |    n|   R2|    F| Pr(>F)|
+|:--------|----:|----:|----:|------:|
+|mat_good |  249| 0.44| 38.0|  0.001|
+|mat_90   |   75| 0.46| 42.0|  0.001|
+|mat_50   |  287| 0.34| 25.3|  0.001|
+|mat_10   |  516| 0.25| 16.0|  0.001|
+|mat_01   | 1129| 0.15|  8.5|  0.001|
+|mat_all  | 2086| 0.10|  5.5|  0.001|
+
+*Table 1: Number of mass features (n), variance explained (R2), pseudo-F statistic (F), and permutational p-value (Pr(>F)) estimates obtained from performing a permutational MANOVA on subsets of the full mass feature selection according to variable likelihood thresholds. [Needs cleaning, will fix]*
+
+We also tested the inclusion of all the features identified with XCMS (corresponding to a 0% threshold) and the results when only the manually-identified "Good" features were included. The default XCMS output continued the trend observed above, as expected, with the least variance explained and the lowest R$^2$ value. Subsetting for the "Good" peaks only, however, did not actually return the highest F-ratio or R$^2$, instead falling between the 50% and 90% thresholds for these two metrics. In large part this is due to the much smaller number of features: 249 features were manually labeled as Good, while only 75 exceeded the 90% likelihood threshold.
+
+The relative power of identifying only the very best peaks was also illustrated visually with non-metric multidimensional scaling (NMDS) plots (Supp. figure 4). In these common exploratory plots, the features with likelihoods above 50% strongly separated by depth while lower thresholds disguised the true signal and had higher stress values. Performing an NMDS on the manually-identified Good peaks resulted in output nearly indistinguishable from those of the 90% and 50% thresholds, while the 0.1 and 0.01 thresholds looked almost identical to the same analysis performed on all the XCMS features.
+
+## Discussion
+
+### Simple logistic regression models show good performance and minimal overfitting
+
+  - Recap performance metrics
+    - Discuss the relative performance and compare to assumptions in lit for
+      - Large peak area
+      - Has an isotope
+      - p-values
+    - Discuss use of summary statistics and the potential need for a blocked model by sample type
+  - Emphasize the best performance of the two-parameter model
+    - Full model and XCMS model definitely overfit, same for regularized/random forest
+    - XCMS alone does not provide enough information to accurately distinguish good from noise
+      - Likely true for all peakpickers
+      - Plea: report mz/rt bounding box for individual peaks so additional metrics can be calculated
+    - These params very simple (and fast!) to estimate
+      - Easy to do better with fancier models (e.g. loess smoothing for SNR)
+    - Why do all the models seem to approach ~25% FDR and ~75% GPF on the novel datasets?
+  - Limited to HILIC data at the moment but does seem to perform well across labs
+
+### Unable to create strict control of the FDR but a single threshold still makes life easier
+
+  - Initial goal: set an FDR, choose a likelihood threshold based on it
+    - Not doable here but maybe in future work?
+    - Pivoted to recommending step-down manual labelling
+  - Plea: report your FDR! Especially if you're manually labelling!
+    - Necessary for error propagation anyway
+  - Future work: alter chromatography/peakpicking params to maximize # of peaks above 0.9 threshold
+  
+### Biological results do depend on the threshold used
+
+  - Large amounts of noise reduce the power of both univariate and multivariate stats
+    - Trade-off with loss of interesting signals at higher thresholds (cmpds on clockplot left)
+    - Possible to get wildly different results with different thresholds (% variance explained)
+    - Manual evaluation for interesting signals still strongly recommended
+  - Depth is a major driver of metabolome composition in the gyre
+  - Majority of metabolites track with biomass metrics
+  - Some interesting metabolites diverge from dominant biomass trend
+    - Some new MAAs in clockplot top left? (Still need to check this w MSMS)
+    - Degradation products / bacterial specialties at bottom?
+
+## Conclusions
+
+TBD
+
+## Acknowledgements
+
+## References
+
+## Supplement
+
+```{r model stability dotplot errorbars supp figure}
+both_features <- rbind(FT2040_features, MS3000_features)
+dataset_versions_both <- c(dataset_versions, "both_features")
+model_param_estimates <- lst(all_params, xcms_params, raw_data_params) %>%
+  imap(function(param_selection, param_name){
+    lapply(dataset_versions_both, function(train_set){
+      model_params <- get(train_set) %>% 
+        filter(feat_class%in%c("Good", "Bad")) %>%
+        select(feat_class, all_of(param_selection)) %>%
+        mutate(feat_class=feat_class=="Good") %>%
+        glm(formula=feat_class~., family = binomial) %>%
+        broom::tidy() %>%
+        mutate(train_set)
+    }) %>% bind_rows() %>% mutate(param_name)
+  }) %>% bind_rows()
+suppfig_model_param_estimates_gp <- model_param_estimates %>%
+  mutate(param_name=str_remove(param_name, "_params")) %>%
+  ggplot(aes(x=param_name, color=train_set)) +
+  geom_hline(yintercept = 0) +
+  geom_point(aes(y=estimate), position = position_dodge(width=0.2)) +
+  geom_errorbar(aes(ymin=estimate-2*std.error, ymax=estimate+2*std.error),
+                position = position_dodge(width=0.2), width=0.3) +
+  facet_wrap(~term, scales="free_y", ncol = 4) +
+  theme_bw() +
+  theme(legend.position = "top", axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+ggsave(plot = suppfig_model_param_estimates_gp, 
+       filename = "suppfig_model_param_estimates.png", 
+       device = "png", path = "manuscript/supplement",
+       width = 6.5, height = 9, units = "in", dpi = 300)
+```
+
+![Supplemental figure 1: Model parameter estimates for each of the metrics in the full model, additionally broken down by their inclusion in the two-parameter (raw_data) and XCMS-exclusively models. Colors correspond to the dataset used to train the logistic regression model, with "both" indicating a combined model using all manually-labeled features across both datasets. <Explanations of the actual facet names forthcoming.>](supplement/suppfig_model_param_estimates.png){width=90%}
+
+```{r subsampling model stability supp figure}
+set.seed(123)
+both_data <- rbind(MS3000_features, FT2040_features) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good")
+
+best_estimates <- model_param_estimates %>%
+  filter(train_set=="both_features") %>%
+  filter(term!="(Intercept)") %>%
+  group_by(param_name) %>%
+  arrange(p.value) %>%
+  slice(1:2)
+
+frac_data <- map(c(0.2, 0.5, 0.8), function(sample_fraction){
+  replicate(10, {
+    train_set <- slice_sample(both_data, prop = sample_fraction)
+    lst(all_params, xcms_params, raw_data_params) %>%
+      imap(function(param_selection, param_name){
+        train_set %>%
+          select(feat_class, all_of(param_selection)) %>%
+          glm(formula=feat_class~., family = binomial) %>%
+          broom::tidy() %>%
+          mutate(param_name)
+    }) %>% bind_rows()
+  }, simplify = FALSE) %>% bind_rows() %>%
+    mutate(sample_fraction)
+}) %>% bind_rows()
+
+sample_model_estimates <- best_estimates %>%
+  select(term, train_set, param_name) %>%
+  left_join(frac_data, multiple = "all", by=join_by(term, param_name))
+
+gplist <- c("all_params", "xcms_params", "raw_data_params") %>%
+  lapply(function(which_params){
+    ggplot() +
+      geom_hline(yintercept = 0) +
+      geom_rect(aes(xmin=-Inf, xmax=Inf, ymin=estimate-std.error*2, 
+                    ymax=estimate+std.error*2),
+                fill="grey80", data=best_estimates %>% filter(param_name==which_params)) +
+      geom_rect(aes(xmin=-Inf, xmax=Inf, ymin=estimate-std.error, 
+                    ymax=estimate+std.error),
+                fill="grey50", data=best_estimates %>% filter(param_name==which_params)) +
+      geom_point(aes(x=sample_fraction, y=estimate), 
+                 data=sample_model_estimates %>% filter(param_name==which_params),
+                 alpha=0.5) +
+      ggh4x::facet_grid2(param_name~term, scales = "free_y", independent = "y") +
+      scale_x_continuous(breaks = c(0, 0.2, 0.5, 0.8, 1), limits = c(0, 1)) +
+      theme_bw()
+  })
+sampled_model_est_gp <- do.call(what = egg::ggarrange, c(gplist, ncol=1, draw=FALSE))
+ggsave(plot = sampled_model_est_gp, 
+       filename = "sampled_model_est.png", 
+       device = "png", path = "manuscript/supplement",
+       width = 6.5, height = 5, units = "in", dpi = 300)
+```
+
+![Supplemental figure 2: Robustness of the two most significant metrics across the full (all_params), XCMS-only (xcms_params), and two-parameter (raw_data_params) models. The x-axis corresponds to the fraction of the data used to train the model and the y-coordinate shows the estimated value for the specified term in the subset across 10-fold replicated subsampling. The grey bar in the background corresponds to the estimate of the full model +/- 1SE (thinner dark grey bar) and 2SE (thicker light grey bar).](supplement/sampled_model_est.png){width=90%}
+
+```{r elastic net and random forest}
+set.seed(123)
+net_cross_train_df <- lst(ridge=0, elastic=0.5, lasso=1) %>%
+  imap(function(alpha_selection, alpha_name){
+    lapply(dataset_versions, function(train_set){
+      net_x <- get(train_set) %>% 
+        filter(feat_class%in%c("Good", "Bad")) %>%
+        select(-feat_class, -feature) %>%
+        data.matrix()
+      net_y <- get(train_set) %>% 
+        filter(feat_class%in%c("Good", "Bad")) %>%
+        mutate(feat_class=feat_class=="Good") %>%
+        pull(feat_class)
+      net_model <- glmnet::cv.glmnet(x=net_x, y=net_y, family="binomial", alpha=alpha_selection)
+      
+      lapply(dataset_versions, function(test_set){
+        get(test_set) %>%
+          select(-feat_class, -feature) %>%
+          mutate(pred_prob=predict(object=net_model, newx = data.matrix(.), 
+                                   type = "response")[,"lambda.1se"]) %>%
+          mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+          mutate(feat_class=get(test_set)$feat_class) %>%
+          select(feat_class, pred_class) %>%
+          mutate(train_test=paste(train_set, test_set, sep = "-")) %>%
+          mutate(train_test=str_remove_all(train_test, "_features")) %>%
+          mutate(cross_type=ifelse(train_set==test_set, "Same", "Different"))
+      }) %>% bind_rows()
+    }) %>% bind_rows() %>% mutate(which_alpha=alpha_name)
+  }) %>% bind_rows()
+rf_cross_train_df <- lapply(dataset_versions, function(train_set){
+  rf_x <- get(train_set) %>% 
+    select(-medtop3_cor, -max_cor, -log_med_cor, -max_SNR) %>%
+    select(med_SNR, med_cor, feat_class, feature) %>%
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    select(-feat_class, -feature)
+  rf_y <- get(train_set) %>% 
+    filter(feat_class%in%c("Good", "Bad")) %>%
+    pull(feat_class) %>%
+    factor()
+  rfmodel <- randomForest::randomForest(rf_x, rf_y)
+
+  lapply(dataset_versions, function(test_set){
+    get(test_set) %>%
+      select(-feat_class, -feature) %>%
+      mutate(pred_class=predict(object=rfmodel, newdata = ., type = "response")) %>%
+      mutate(feat_class=get(test_set)$feat_class) %>%
+      select(feat_class, pred_class) %>%
+      mutate(train_test=paste(train_set, test_set, sep = "-")) %>%
+      mutate(train_test=str_remove_all(train_test, "_features")) %>%
+      mutate(cross_type=ifelse(train_set==test_set, "Same", "Different"))
+      }) %>% bind_rows()
+    }) %>% bind_rows() %>%
+  mutate(which_alpha="rf")
+
+fdr_gpf_cross_train_df <- net_cross_train_df %>%
+  rbind(rf_cross_train_df) %>%
+    mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  drop_na() %>%
+  group_by(train_test, which_alpha, cross_type) %>%
+  count(error_type) %>%
+  ungroup() %>%
+  mutate(cross_type=factor(cross_type, levels=c("Same", "Different"))) %>%
+  pivot_wider(names_from=error_type, values_from = n, values_fill = 0) %>%
+  mutate(FDR=FP/(FP+TP)) %>%
+  mutate(GPF=TP/(FN+TP)) %>%
+  mutate(cross_type_num=as.numeric(cross_type))
+train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
+train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
+fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
+  mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
+  mutate(which_alpha=factor(which_alpha, levels=c("ridge", "elastic", "lasso", "rf"),
+                            labels=c("Ridge: α=0", "Elastic: α=0.5", "Lasso: α=1", "Random forest"))) %>%
+  pivot_longer(c(FDR, GPF)) %>%
+  ggplot() +
+  geom_smooth(aes(x=cross_type_num, y=value, group=name), 
+              method = "lm", formula="y~x", color="black", se=FALSE) +
+  geom_point(aes(x=cross_type, y=value, color=train_test, 
+                 fill=train_test, shape=name), size=5, alpha=0.8) +
+  facet_grid(~which_alpha) +
+  scale_x_discrete(labels = c("Same\ndataset\n", "Different\ndataset\n"),
+                   breaks = c("Same", "Different")) +
+  scale_color_manual(values = c("#0b505c", "#184d1f", "#0d8299", "#028e34"), 
+                     breaks = train_test_labels,
+                     aesthetics = c("color", "fill")) +
+  scale_shape_manual(breaks = c("GPF", "FDR"), values = c("\u25B2", "\u25BC")) +
+  coord_cartesian(ylim = c(0, 1)) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  theme_bw() +
+  theme() +
+  labs(x=NULL, y=NULL, color="Train-test", fill="Train-test", shape="Error type") +
+  guides(shape=guide_legend(order=1))
+
+ggsave(plot = fdr_gpf_cross_train_gp, 
+       filename = "regregrf_fdrgpf_cross_train.png", 
+       device = "png", path = "manuscript/supplement",
+       width = 6.5, height = 3, units = "in", dpi = 300)
+```
+
+![Supplemental figure 3: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets.](supplement/regregrf_fdrgpf_cross_train.png){width=90%}
+
+```{r NMDS results}
+thresh_NMDS_df <- imap(mat_list, function(mat_given, mat_name){
+  mat_data <- mat_given %>%
+    select(-feat_class, -pred_prob) %>%
+    data.matrix() %>%
+    t()
+  nmds_output <- vegan::metaMDS(mat_data, k = 2, distance = "manhattan", trace = 0,
+                         autotransform = FALSE, noshare = FALSE, wascores = FALSE)
+  nmds_gp <- nmds_output$points %>%
+    as.data.frame() %>%
+    cbind(MS3000_metadata) %>%
+    rownames_to_column("filename") %>%
+    mutate(mat_name) %>%
+    mutate(stress=nmds_output$stress)
+}) %>% 
+  bind_rows() %>%
+  select(mat_name, filename, starts_with("MDS"), depth, stress) %>%
+  mutate(basename=str_extract(filename, "MS\\d+C\\d+.*(?=_[A-C])")) %>%
+  mutate(mat_name=factor(
+    mat_name, levels=c("mat_good", "mat_90", "mat_50", "mat_10", "mat_01", "mat_all"),
+    labels=c("Only good", paste("Threshold", c(0.9, 0.5, 0.1, 0.01)), "All features")
+  )) %>%
+  mutate(stress=format(stress, digits=2))
+thresh_NMDS_gp <- thresh_NMDS_df %>%
+  ggplot() +
+  geom_vline(xintercept = 0) +
+  geom_hline(yintercept = 0) +
+  geom_polygon(aes(x=MDS1, y=MDS2, fill=depth, color=depth, group=basename), alpha=0.5) +
+  geom_label(aes(label=stress), x=Inf, y=Inf, 
+             label.r = unit(0, "in"), hjust=1, vjust=1,
+             data=thresh_NMDS_df %>% distinct(mat_name, stress)) +
+  facet_wrap(~mat_name, scales = "free", ncol=3) +
+  scale_color_manual(values=viridis::viridis(9, direction = -1)[c(2,5,8)], 
+                     breaks = c("15m", "DCM", "175m"),
+                     aesthetics = c("color", "fill")) +
+  theme_bw() +
+  theme(aspect.ratio = 1)
+ggsave(plot = thresh_NMDS_gp, filename = "thresh_NMDS_plots.png", 
+       device = "png", path = "manuscript/supplement",
+       width = 6.5, height = 4, units = "in", dpi = 300)
+```
+
+![Supplemental figure 4: NMDS plots of metabolite similarity according to sample depth across multiple likelihood thresholds. Triplicate samples are represented by the vertices of the triangles and colored by the depth from which they were sampled (DCM = deep chlorophyll maximum, ~110m). "Only good" refers to those features manually labeled as "Good". NMDS stress values are reported to 3 significant figures in the upper right of the plot.](supplement/thresh_NMDS_plots.png){width=90%}

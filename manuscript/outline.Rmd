@@ -341,7 +341,6 @@ Biological implications
     - Many "bad" still have strong biology trend, not a sufficient measure on its own
     - Missing out on some good peaks (far left clockplot)
     - Do the FDR corrected p-value comparisons with more/less peaks by threshold
-    
   - PERMANOVA table
     - Better performance somehow with 90% threshold than manually labeled "good" peaks?
     - Emphasize the lack of power when all peaks are included in the analysis with 1% and 0% thresholds
@@ -1057,14 +1056,7 @@ See which/why peaks differ between predicted and actual quality to start explain
 
 ## Discussion
 
-  - Fundamental tradeoff between GPF and FDR should be determined by the scientific question
-  - FDR and GPF rates are very rarely reported but critically important to include
-  - Full model and XCMS model are definitely overfit
-    - Steep performance drop on new data
-    - Disagreement based on training set
-  - Only tested on HILIC data, expectations for RP columns
-  - Using medians/means as summary statistics ignores differences between treatments (i.e. lots of blanks blows up the median): maybe better to use max/top3? Maybe better to implement independently for each sample class?
-  - XCMS alone does not provide enough information to distinguish good peaks from bad with much confidence
+See the actual manuscript
 
 ## Citations
 
@@ -1103,8 +1095,6 @@ Pleas:
 Brags:
   - Built the classifier tool in R, very fast, uses RaMS
   - Did the PCA things, sometimes successful
-
-In a Bayesian framework, the base rate (likelihood of being a real peak) is critically important for any downstream analysis.
 
 
 ## Supplement
