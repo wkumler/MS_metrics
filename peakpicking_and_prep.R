@@ -215,7 +215,7 @@ write.csv(peak_bounds, paste0(output_folder, "peak_bounds.csv"), row.names = FAL
 # Extract relevant msdata from each for export and use later ----
 feature_df <- peak_bounds %>%
   group_by(feature) %>%
-  summarize(min_mz=min(mzmin), max_mz=max(mzmin), 
+  summarize(min_mz=min(mzmin), max_mz=max(mzmax), 
             min_rt=min(rtmin), max_rt=max(rtmax)) %>%
   mutate(mean_mz=(min_mz+max_mz)/2)
 
