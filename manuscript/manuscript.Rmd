@@ -73,215 +73,6 @@ An area particularly ripe for LC-MS analysis is that of the open ocean. Low comp
 
 In this paper, we use open ocean marine metabolite LC-MS samples to develop and test a variety of chromatographic peak metrics. Here, we construct and validate multiple predictive models of peak quality based on metrics both common in the literature and custom implementations we've found useful in our own analysis. This allows us to connect the physical, chemical, and biological measurements taken regularly around the globe to a molecular-scale perspective of particular organic matter in the ocean by linking the chemical currencies that fuel the planet to the environments in which they're found.
 
-## Methods
-
-### Sample collection
-
-Environmental samples were collected from the North Pacific Subtropical Gyre near Station ALOHA during two research cruises that targeted strong mesoscale eddy features during June/July 2017 and March/April 2018, traversing an area between 28 °N, 156 °W and 23 °N, 161 °W. An eddy dipole off the coast of Hawaii was detected using sea-level anomaly (SLA) satellite data and targeted for both a transect across the cyclonic and anticyclonic poles of the eddy dipole. The cyclonic pole of the eddy had a maximum negative SLA anomaly of -15 cm in 2017 and -20 cm in 2018, while the anticyclonic center reached +24 cm in 2017 and +21 cm in 2018. The 2017 cruise samples were taken along a transect across the eddy dipole while the 208 cruise targeted only the center of each eddy.
-
-Environmental samples were obtained using the onboard CTD rosette to collect water from 15 meters, the deep chlorophyll maximum (DCM), and 175 meters during the 2017 MESOSCOPE cruise and from 25 meters and the DCM during the 2018 Falkor cruise. The DCM was determined visually from fluorometer data during the CTD downcast and Niskin bottles were tripped during the return trip to the surface. Seawater from each depth was sampled in triplicate by firing one Niskin bottle for each sample. Samples were brought to the surface and decanted into prewashed (3x with DI, 3x with sampled seawater) polycarbonate bottles for filtration. Samples were filtered by peristaltic pump onto 142mm 0.2 µm Durapore filters held by polycarbonate filter holders on a Masterflex tubing line. Pressures were kept as low as possible while still producing a reasonable rate of flow through the filter, approximately 250-500 mL per minute. Samples were then removed from the filter holder using solvent-washed tweezers and placed into pre-combusted aluminum foil packets that were then flash-frozen in liquid nitrogen before being stored at -80 °C until extraction. A methodological blank was also collected by running filtrate through a new filter and then treated identically to the samples.
-
-Culture samples used as the validation sets for this paper were obtained from existing [blah] and have been previously described by [@Bryn] and [@Pttime paper?].
-
-### Sample processing
-
-Extraction of the environmental samples followed a modified Bligh & Dyer approach as detailed in [@BMIS]. Briefly, filters were added to PTFE centrifuge tubes with a 1:1 mix of 100 µm and 400 µm silica beads, approximately 2mL -20 °C Optima-grade DCM, and approximately 3mL -20 °C 1:1 methanol/water solution (both also Optima-grade). Extraction standards were added during this step. The samples were then bead-beaten three times, followed by triplicate washes with fresh methanol/water mixture. Samples were then dried down under clean nitrogen gas and warmed using a Fisher-Scientific Reacti-Therm module. Dried aqueous fractions were re-dissolved in 380 µL of Optima-grade water and amended with 20 µL isotope-labeled injection standards. Additional internal standards were added at this point to measure the variability introduced by chromatography and ionization, and the reconstituted fraction was syringe-filtered to remove any potential clogging material. This aqueous fraction was then aliquoted into an HPLC vial for injection on the HILIC column and diluted 1:1 with Optima-grade water. A pooled sample was created by combining 20 µL of each sample into the same HPLC vial, and a 1:1 dilution with water half-strength sample was aliquot from that to assess matrix effects and obscuring variation [@BMIS]. Also run alongside the environmental samples were two mixes of authentic standards in water and in an aliquot of the pooled sample at a variety of concentrations for quality control, annotation, and absolute concentration calculations. HPLC vials containing the samples were frozen at -80 °C until thawing shortly before injection. 
-
-The CultureData samples were re-run from the frozen aliquots for this paper. The Pttime sample processing is documented [on MW? in their paper?].
-
-### LC conditions
-
-For the MESOSCOPE, Falkor, and CultureData samples a SeQuant ZIC-pHILIC column (5 um particle size, 2.1 mm x 150 mm, from Millipore) was used with 10 mM ammonium carbonate in 85:15 acetonitrile to water (Solvent A) and 10 mM ammonium carbonate in 85:15 water to acetonitrile (Solvent B) at a flow rate of 0.15 mL/min. The column was held at 100% A for 2 minutes, ramped to 64% B over 18 minutes, ramped to 100% B over 1 minute, held at 100% B for 5 minutes, and equilibrated at 100% A for 25 minutes (50 minutes total). The column was maintained at 30 °C. The injection volume was 2 µL for samples and standard mixes. When starting a batch, the column was equilibrated at the starting conditions for at least 30 minutes. To improve the performance of the HILIC column, we maintained the same injection volume, kept the instrument running water blanks between samples as necessary, and injected standards in a representative matrix (the pooled sample) in addition to standards in water. After each batch, the column was flushed with 10 mM ammonium carbonate in 85:15 water to acetonitrile for 20 to 30 minutes. LC conditions for the Pttime samples are documented [on MW? in their paper?].
-
-### MS conditions
-
-Environmental metabolomic data was collected on a Thermo Q Exactive HF hybrid Orbitrap (QE) mass spectrometer. The capillary and auxiliary gas heater temperatures were maintained at 320°C and 100°C, respectively. The S-lens RF level was kept at 65, the H-ESI voltage was set to 3.3 kV and sheath gas, auxiliary gas, and sweep gas flow rates were set at 16, 3, and 1, respectively. Polarity switching was used with a scan range of 60 to 900 m/z and a resolution of 60,000. Calibration was performed every 3-4 days at a target mass of 200 m/z. DDA data was collected from the pooled samples for high-confidence annotation of knowns and unknowns. All files were then converted to an open-source mzML format and centroided via Proteowizard’s msConvert tool. For the Pttime samples, files were pulled directly from Metabolomics Workbench via Project ID [blah] and used in their existing mzXML format.
-
-### Peakpicking, alignment, and grouping with XCMS
-
-The R package XCMS was used to perform peakpicking, retention time correction, and peak correspondence. Files were loaded and run separately for each dataset (Falkor, MESOSCOPE, CultureData, and Pttime) using the new "OnDiskMSnExp" infrastructure. Default parameters for the CentWave peakpicking algorithm were used except for: ppm, which was set to 5; peakwidth, which was widened to 20-80 seconds; prefilter, for which the intensity threshold was raised to $10^6$; and integrate, which was set to 2 instead of 1. snthresh was set to zero because there are known issues with background estimation in this algorithm [@myers2017], and both verboseColumns and the extendLengthMSW parameter were set to TRUE. For retention time correction, the Obiwarp method was used except for the CultureData dataset, which was visually inspected and determined not to require correction. For the Obiwarp algorithm, the binsize was reduced to 0.1 but all other parameters were left at their defaults or equivalents. 
-
-Peak grouping was performed on the two environmental datasets and the Pttime data with a bandwidth of 12, a minFraction of 0.1, binSize of 0.001, and minSamples of 2 but otherwise default arguments. CultureData's minFraction was raised to 0.4 but was otherwise identical. Sample groups were constructed to consist of the biological replicates for all datasets. After peak grouping, peak filling was performed using the fillChromPeaks function with the ppm parameter set to 2.5. Finally, mass features with a retention time less than 30 seconds or larger than 20 minutes were removed to avoid interference from the initial and final solvent washes. [Check this with Laura]
-
-### Manual inspection and classification
-
-After the full XCMS workflow was completed, the molecular features were visually inspected by a single qualified MS expert. For the Falkor and MESOSCOPE datasets, every molecular feature was inspected, while only those features with a predicted probability of 0.9 or higher according to the two-parameter model produced below were for the CultureData and Pttime datasets. Inspection consisted of plotting the raw intensity values against the corrected retention-time values for all data points within the *m/z* x RT bounding box determined by the most extreme values for the given feature. For this step, we decided to plot the entire feature across all files simultaneously rather than viewing each sample individually to both accelerate labelling and to more accurately represent what MS experts typically do when assessing the quality of a given peak. [Fig 1.] We also decided to ignore missing values and linearly interpolate between known data points rather than filling with zeroes. These EICs were then shown to an MS expert for classification into one of 4 categories: Good, Bad, Ambiguous, or Stans only if the peak appeared to only show up in the standards. A few randomly-chosen features from the manually-assigned Good and Bad classifications are shown in [Fig. 1].
-
-
-```{r grab demo msdata, eval=!file.exists("manuscript/minEIC_df.csv")}
-msdata <- readRDS("made_data_MS3000/msdata.rds")
-
-set.seed(123)
-chosen_feats <- MS3000_features %>%
-  filter(feat_class%in%c("Good", "Bad")) %>%
-  group_by(feat_class) %>%
-  slice_sample(n=5) %>%
-  arrange(feat_class) %>%
-  mutate(feat_id=row_number())
-minEIC_df <- pmap(chosen_feats, function(...){
-  with(list(...), {
-    msdata$EIC[mz%between%pmppm(mean_mz, ppm=5)] %>%
-      filter(rt%between%(mean_rt/60+c(-1, 1))) %>%
-      mutate(feature, feat_class, feat_id)
-  })
-}) %>% 
-  bind_rows() %>%
-  filter(str_detect(filename, "180821")) %>%
-  left_join(file_data, by="filename") %>%
-  filter(samp_type=="Smp")
-write_csv(minEIC_df, "manuscript/minEIC_df.csv")
-```
-
-```{r fig:some good some bad features}
-minEIC_df <- read_csv("manuscript/minEIC_df.csv")
-
-good_chroms_gp <- minEIC_df %>%
-  filter(feat_class=="Good") %>%
-  ggplot() +
-  geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
-  facet_wrap(~feature, nrow = 1, scales = "free") +
-  scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
-  theme_bw() +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title = element_blank(),
-        legend.position = "none", 
-        panel.grid = element_blank()) +
-  guides(color=guide_legend(override.aes = list(linewidth=2), title = "Sample depth:  "))
-bad_chroms_gp <- minEIC_df %>%
-  filter(feat_class=="Bad") %>%
-  ggplot() +
-  geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
-  facet_wrap(~feature, nrow = 1, scales = "free") +
-  scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
-  theme_bw() +
-  theme(axis.text = element_blank(),
-        axis.ticks = element_blank(),
-        axis.title = element_blank(),
-        legend.position = "none",
-        panel.grid = element_blank())
-chroms_legend <- cowplot::get_legend(good_chroms_gp + theme(legend.position = "bottom"))
-
-comb_cowplot <- cowplot::plot_grid(good_chroms_gp, bad_chroms_gp, chroms_legend, 
-                                   ncol = 1, rel_heights = c(1, 1, 0.15))
-ggsave(plot = comb_cowplot, 
-       filename = "somegood_somebad_depthcolor_chroms.png", 
-       device = "png", path = "manuscript/figures",
-       width = 6.5, height = 3, units = "in", dpi = 300)
-```
-
-![Figure 1: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
-
-### Peak feature extraction and metric calculation
-
-Our process of feature engineering was divided into three categories of features: those that could be calculated using a single peak trace, those that required access to the entire file, and those that could only be calculated across multiple files. [Rewrite without the "three categories" business ugh] For metrics belonging to the first two categories, summary statistics were used (mean/median, standard deviation) to create a single consensus value for the mass feature as a whole. Missing values were ignored during these summary statistic calculations by setting na.rm=TRUE. Distributions were visually inspected and highly abnormal metrics were transformed using log-scaling if necessary. Using a pairs plot, highly correlated (above a Pearson's r ~ .9) had one of the correlated metrics removed.
-
-The first category consisted largely of information produced directly by XCMS: the very typical *m/z* ratios, retention times, peak widths, and integrated areas as well as the less common and poorly-documented sn, f, scale, and lmin parameters. Although we requested additional parameters from XCMS with the verboseColumns = TRUE argument, all of the values returned were NAs and could not be used in the model building so were dropped. The total number of peaks found was calculated as the number of peaks divided by the total number of files, and the total number of files in which a peak was initially detected was calculated by subtracting the number of NAs in the peak baseline estimate (which is NA if the peak was filled in) from the total number of files and then dividing by the number of files to normalize across datasets. This calculation were performed for the Falkor, MESOSCOPE, and CultureData datasets to estimate the proportion of sample and standard files in which a given peak was found, but could not be supplied for the Pttime dataset because no standard files were available. The sn metric contained a large number of zero values to begin with that then became negative infinities when log-scaled, so we replaced those values with zeroes and functionally equated an sn of 0 with an sn of 1.
-
-We also calculated several metrics from the raw mz/rt/int values. Using the R package RaMS we extracted the data points falling within each individual peak's mz and retention time bounding box (values between the XCMS-reported min and max) separately for each file. The data points were then linearly scaled to fall within the 0-1 range by subtracting the minimum RT and dividing by the maximum RT, then each scaled RT was fit to a beta distribution with α values of 2.5, 3, 4, and 5, and a fixed β value of 5. This approach allowed us to approximate a bell curve with increasing degrees of right-skewness and the beta distribution was chosen because it is constrained between 0 and 1 and simple and speedy to generate in R. For each α value, Pearson's correlation coefficient was calculated between the beta distribution and the raw data, with the highest value returned as a metric for how peak-shaped the data were [Fig. 2]. The beta distribution with the highest *r* was also then used to estimate the noise level within the peak by also scaling both the beta distribution densities and the raw data intensity values as described above, then subtracting the scaled beta distribution from the scaled intensity values, producing the residuals of the fit [Fig. 2]. The signal-to-noise ratio (SNR) was calculated by dividing the maximum original peak height by the standard deviation of the residuals multiplied by the maximum height of the original peak. This method of SNR calculation allowed us to rapidly estimate the noise within the peak itself rather than relying on background estimation using data points outside the peak, which may not exist or may be influenced by additional molecular signals. [@myers?] If there were fewer than 5 data points, a missing value was returned and dropped in subsequent summary calculations. Accessing the raw data values also allowed us to calculate the proportion of "missed" scans in a peak for which a retention time exists at other masses in the same sample but for which no data was produced at the selected *m/z* ratio.
-
-```{r how are raw peak shape metrics calculated}
-minEIC_df <- read_csv("manuscript/minEIC_df.csv")
-
-single_EIC <- minEIC_df %>%
-  filter(feature%in%c("FT0588", "FT0280")) %>%
-  filter(filename=="180821_Smp_MS10C215m_A.mzML")
-
-maybe_skews <- c(2.5, 3, 4, 5)
-skew_names <- c("Large skew", "Small skew", "Minimal skew", "Zero skew")
-names(maybe_skews) <- skew_names
-perf_peak_data <- single_EIC %>%
-  group_by(feature) %>%
-  select(feature, rt, int) %>%
-  mutate(rt=(rt-min(rt))/(max(rt)-min(rt))) %>%
-  mutate(int=(int-min(int))/(max(int)-min(int))) %>%
-  cbind(sapply(maybe_skews, function(x){
-    perf_peak <- dbeta(.$rt, shape1=x, shape2=5)
-    perf_peak/max(perf_peak)
-  })) %>%
-  rename(`Raw data`="int") %>%
-  mutate(feature=factor(feature, levels=c("FT0588", "FT0280"), 
-                        labels=c("Good peak", "Bad peak")))
-summary_stats <- perf_peak_data %>%
-  pivot_longer(-c(feature, rt, `Raw data`)) %>%
-  mutate(new_val=value-`Raw data`) %>%
-  group_by(feature, name) %>%
-  summarise(single_cor=round(cor(`Raw data`, value), 2), 
-            single_sd=round(sd(new_val), 2), 
-            .groups = "drop_last") %>%
-  mutate(name=factor(name, levels=skew_names)) %>%
-  mutate(x_coord=c(0.125+(as.numeric(name)-1)/4))
-
-peak_gp <- perf_peak_data %>%
-  pivot_longer(-c(rt, feature)) %>%
-  mutate(name=factor(name, levels=c("Raw data", skew_names))) %>%
-  ggplot() +
-  geom_line(aes(x=rt, y=value, color=name), lwd=1) +
-  geom_rect(xmin=-Inf, xmax=Inf, ymax=-Inf, ymin=-.05, fill="white", color="grey90") +
-  annotate("text", x=0.5, y=-Inf, vjust=-2, label="Pearson's r:") +
-  facet_wrap(~feature) +
-  geom_text(aes(x=x_coord, y=-Inf, label=single_cor, color=name),
-             data = summary_stats, vjust=-.5, show.legend = FALSE) +
-  scale_color_manual(breaks = c("Raw data", skew_names),
-                     values = c("black", viridisLite::plasma(6)[2:5])) +
-  scale_y_continuous(limits = c(-0.3, 1), breaks = c(0, 0.5, 1.0)) +
-  labs(y="Normalized intensity", color=NULL) +
-  theme_bw() +
-  theme(axis.text.x = element_blank(),
-        axis.title.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        # strip.background = element_rect(fill="white"),
-        legend.position="none",
-        strip.text = element_text(size = 11))
-residuals_gp <- perf_peak_data %>%
-  pivot_longer(-c(rt, feature, `Raw data`)) %>%
-  mutate(new_val=value-`Raw data`) %>%
-  ggplot() +
-  geom_rect(xmin=-Inf, xmax=Inf, ymax=Inf, ymin=0.85, fill="white", color="grey90") +
-  geom_hline(yintercept = 0, lwd=1) +
-  geom_line(aes(x=rt, y=new_val, color=name), lwd=1) +
-  geom_text(aes(x=x_coord, y=Inf, label=single_sd, color=name),
-             data = summary_stats, vjust=3) +
-  annotate("text", x=0.5, y=Inf, vjust=1.5, label="Residual SD:") +
-  facet_grid(~feature) +
-  scale_color_manual(breaks = c("Raw data", skew_names),
-                     values = c("black", viridisLite::plasma(6)[2:5])) +
-  scale_y_continuous(breaks = c(-1, 0, 1), limits = c(-1.1, 1.3)) +
-  labs(x="Normalized retention time", y="Residuals", color=NULL) +
-  theme_bw() +
-  theme(strip.background = element_blank(),
-        strip.text = element_blank(),
-        legend.position = "none")
-
-fig_legend <- cowplot::get_legend(peak_gp + theme(legend.position="right") + 
-                                    guides(color=guide_legend(override.aes = list(lwd=2)), text="none"))
-
-comb_cowplot <- egg::ggarrange(peak_gp, residuals_gp, ncol = 1, draw = FALSE)
-
-comb_peakmetrics_gp <- cowplot::plot_grid(
-  comb_cowplot, fig_legend, rel_widths = c(1, 0.25)
-) + theme(plot.background = element_rect(fill = "white", color=NA))
-
-ggsave(plot = comb_peakmetrics_gp, 
-       filename = "peakmetrics_singlechrom.png", 
-       device = "png", path = "manuscript/figures",
-       width = 6.5, height = 4, units = "in", dpi = 300)
-```
-
-![Figure 2: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=70%}
-
-We additionally estimated the existence of a $^{13}$C isotope using a similar method to extract the raw mz/rt/int values within the peak bounding box, then searched the same RT values at an *m/z* delta of +1.003355. In places where more than 5 data points existed at both the original mass and the $^{13}$C mass, we again used Pearson's correlation coefficient to estimate the similarity between the two mass traces and used a trapezoidal Riemann sum to estimate the area of the original and isotope peaks. The overall feature isotope shape similarity was calculated by taking the median of the correlation coefficients. We also calculated the correlation coefficient of the ratio of the $\frac{^{13}C}{^{12}C}$ across multiple files, expecting that a true isotope would have a fixed $\frac{^{13}C}{^{12}C}$ ratio. Both the isotope shape similarity and the isotope area correlation were used as metrics in the downstream analysis. Peaks for which no isotope signal was detected or had too few scans to calculate the above metrics were imputed with NA values that were again dropped in the calculation of summary statistics.
-
-Finally, we calculated several metrics using a design-of-experiments (DoE) approach for the Falkor and MESOSCOPE datasets which were expected to have a large difference in metabolite composition between those samples collected at the surface (15-25 meters) and those collected deeper in the water column. We used ANOVAs to compare the integrated peak area with depth and extracted the p-values of each test, which became an additional potential peak quality metric. We also calculated the difference between the mean sample area and the mean blank area and the difference between the mean sample area and the mean area of the standards which also became metrics. When there were too many missing values to perform the ANOVA or sample averages, we replaced the calculated statistic with a value a single order of magnitude outside the most extreme value.
-
-### Statistics
-
-We also tested whether the performance could be improved with elastic net regression or random forest models. These models handle correlated variables better than ordinary least squares regression, so we also included several additional implementations of the peak shape and novel SNR parameters when summarizing across multiple files, using a max and a median of the top-three best values rather than just the overall median as well as a log-transformed version of the median peak shape calculated as $median(log_{10}(1-r))$ where $r$ is Pearson's correlation coefficient, as described above (Figure 2). Cross-validation was used to select the optimal tuning parameter $\lambda$ with `glmnet` package's `cv.glmnet` for an elastic net penalty (α) of 0, 0.5, and 1. Random forests were implemented using the randomForest package with default settings and a factor-type response vector to ensure classification was used rather than regression.
-
-We explored the implications of applying this model to the MESOSCOPE dataset at a variety of thresholds. In univariate space, we used nonparametric Kruskal-Wallis analyses of variance to measure the difference between the surface (15m), DCM (~110m), and 175m samples because the metabolite peak areas could not be assumed to be normally distributed. These univariate tests were then controlled for multiply hypothesis testing using R's `p.adjust` function with method `fdr`.[@ref] We also performed post-hoc Dunn tests provided by the `rstatix` package to categorize the response to depth for those mass features for which the KW test was significant, with responses falling into one of the 14 classes possible when permuting the sign and significance of the Dunn test.[@ref] p-values obtained from the Dunn tests were not FDR controlled because it was used as a categorization tool rather than a null hypothesis test. In multivariate space, we used a permutational MANOVA (PERMANOVA) [@ref] provided by the vegan package's `adonis2` function to test for multivariate differences in structure of the metabolome with depth.[@ref] We ran multiple PERMANOVAs with a different subset of mass features included each time, corresponding to using the output from XCMS directly, likelihood thresholds of 0.01, 0.1, 0.5, 0.9, and finally only those peaks manually annotated as good.
-
-All analyses were run in R, version 4.2.2, and code is available on the Github at https://github.com/wkumler/MS_metrics.[@ref]
-
 ## Results
 
 ```{r summary stats for pred_prob histograms, include=FALSE}
@@ -1000,6 +791,215 @@ The relative power of identifying only the very best peaks was also illustrated 
 ## Conclusions
 
 TBD
+
+## Methods
+
+### Sample collection
+
+Environmental samples were collected from the North Pacific Subtropical Gyre near Station ALOHA during two research cruises that targeted strong mesoscale eddy features during June/July 2017 and March/April 2018, traversing an area between 28 °N, 156 °W and 23 °N, 161 °W. An eddy dipole off the coast of Hawaii was detected using sea-level anomaly (SLA) satellite data and targeted for both a transect across the cyclonic and anticyclonic poles of the eddy dipole. The cyclonic pole of the eddy had a maximum negative SLA anomaly of -15 cm in 2017 and -20 cm in 2018, while the anticyclonic center reached +24 cm in 2017 and +21 cm in 2018. The 2017 cruise samples were taken along a transect across the eddy dipole while the 208 cruise targeted only the center of each eddy.
+
+Environmental samples were obtained using the onboard CTD rosette to collect water from 15 meters, the deep chlorophyll maximum (DCM), and 175 meters during the 2017 MESOSCOPE cruise and from 25 meters and the DCM during the 2018 Falkor cruise. The DCM was determined visually from fluorometer data during the CTD downcast and Niskin bottles were tripped during the return trip to the surface. Seawater from each depth was sampled in triplicate by firing one Niskin bottle for each sample. Samples were brought to the surface and decanted into prewashed (3x with DI, 3x with sampled seawater) polycarbonate bottles for filtration. Samples were filtered by peristaltic pump onto 142mm 0.2 µm Durapore filters held by polycarbonate filter holders on a Masterflex tubing line. Pressures were kept as low as possible while still producing a reasonable rate of flow through the filter, approximately 250-500 mL per minute. Samples were then removed from the filter holder using solvent-washed tweezers and placed into pre-combusted aluminum foil packets that were then flash-frozen in liquid nitrogen before being stored at -80 °C until extraction. A methodological blank was also collected by running filtrate through a new filter and then treated identically to the samples.
+
+Culture samples used as the validation sets for this paper were obtained from existing [blah] and have been previously described by [@Bryn] and [@Pttime paper?].
+
+### Sample processing
+
+Extraction of the environmental samples followed a modified Bligh & Dyer approach as detailed in [@BMIS]. Briefly, filters were added to PTFE centrifuge tubes with a 1:1 mix of 100 µm and 400 µm silica beads, approximately 2mL -20 °C Optima-grade DCM, and approximately 3mL -20 °C 1:1 methanol/water solution (both also Optima-grade). Extraction standards were added during this step. The samples were then bead-beaten three times, followed by triplicate washes with fresh methanol/water mixture. Samples were then dried down under clean nitrogen gas and warmed using a Fisher-Scientific Reacti-Therm module. Dried aqueous fractions were re-dissolved in 380 µL of Optima-grade water and amended with 20 µL isotope-labeled injection standards. Additional internal standards were added at this point to measure the variability introduced by chromatography and ionization, and the reconstituted fraction was syringe-filtered to remove any potential clogging material. This aqueous fraction was then aliquoted into an HPLC vial for injection on the HILIC column and diluted 1:1 with Optima-grade water. A pooled sample was created by combining 20 µL of each sample into the same HPLC vial, and a 1:1 dilution with water half-strength sample was aliquot from that to assess matrix effects and obscuring variation [@BMIS]. Also run alongside the environmental samples were two mixes of authentic standards in water and in an aliquot of the pooled sample at a variety of concentrations for quality control, annotation, and absolute concentration calculations. HPLC vials containing the samples were frozen at -80 °C until thawing shortly before injection. 
+
+The CultureData samples were re-run from the frozen aliquots for this paper. The Pttime sample processing is documented [on MW? in their paper?].
+
+### LC conditions
+
+For the MESOSCOPE, Falkor, and CultureData samples a SeQuant ZIC-pHILIC column (5 um particle size, 2.1 mm x 150 mm, from Millipore) was used with 10 mM ammonium carbonate in 85:15 acetonitrile to water (Solvent A) and 10 mM ammonium carbonate in 85:15 water to acetonitrile (Solvent B) at a flow rate of 0.15 mL/min. The column was held at 100% A for 2 minutes, ramped to 64% B over 18 minutes, ramped to 100% B over 1 minute, held at 100% B for 5 minutes, and equilibrated at 100% A for 25 minutes (50 minutes total). The column was maintained at 30 °C. The injection volume was 2 µL for samples and standard mixes. When starting a batch, the column was equilibrated at the starting conditions for at least 30 minutes. To improve the performance of the HILIC column, we maintained the same injection volume, kept the instrument running water blanks between samples as necessary, and injected standards in a representative matrix (the pooled sample) in addition to standards in water. After each batch, the column was flushed with 10 mM ammonium carbonate in 85:15 water to acetonitrile for 20 to 30 minutes. LC conditions for the Pttime samples are documented [on MW? in their paper?].
+
+### MS conditions
+
+Environmental metabolomic data was collected on a Thermo Q Exactive HF hybrid Orbitrap (QE) mass spectrometer. The capillary and auxiliary gas heater temperatures were maintained at 320°C and 100°C, respectively. The S-lens RF level was kept at 65, the H-ESI voltage was set to 3.3 kV and sheath gas, auxiliary gas, and sweep gas flow rates were set at 16, 3, and 1, respectively. Polarity switching was used with a scan range of 60 to 900 m/z and a resolution of 60,000. Calibration was performed every 3-4 days at a target mass of 200 m/z. DDA data was collected from the pooled samples for high-confidence annotation of knowns and unknowns. All files were then converted to an open-source mzML format and centroided via Proteowizard’s msConvert tool. For the Pttime samples, files were pulled directly from Metabolomics Workbench via Project ID [blah] and used in their existing mzXML format.
+
+### Peakpicking, alignment, and grouping with XCMS
+
+The R package XCMS was used to perform peakpicking, retention time correction, and peak correspondence. Files were loaded and run separately for each dataset (Falkor, MESOSCOPE, CultureData, and Pttime) using the new "OnDiskMSnExp" infrastructure. Default parameters for the CentWave peakpicking algorithm were used except for: ppm, which was set to 5; peakwidth, which was widened to 20-80 seconds; prefilter, for which the intensity threshold was raised to $10^6$; and integrate, which was set to 2 instead of 1. snthresh was set to zero because there are known issues with background estimation in this algorithm [@myers2017], and both verboseColumns and the extendLengthMSW parameter were set to TRUE. For retention time correction, the Obiwarp method was used except for the CultureData dataset, which was visually inspected and determined not to require correction. For the Obiwarp algorithm, the binsize was reduced to 0.1 but all other parameters were left at their defaults or equivalents. 
+
+Peak grouping was performed on the two environmental datasets and the Pttime data with a bandwidth of 12, a minFraction of 0.1, binSize of 0.001, and minSamples of 2 but otherwise default arguments. CultureData's minFraction was raised to 0.4 but was otherwise identical. Sample groups were constructed to consist of the biological replicates for all datasets. After peak grouping, peak filling was performed using the fillChromPeaks function with the ppm parameter set to 2.5. Finally, mass features with a retention time less than 30 seconds or larger than 20 minutes were removed to avoid interference from the initial and final solvent washes. [Check this with Laura]
+
+### Manual inspection and classification
+
+After the full XCMS workflow was completed, the molecular features were visually inspected by a single qualified MS expert. For the Falkor and MESOSCOPE datasets, every molecular feature was inspected, while only those features with a predicted probability of 0.9 or higher according to the two-parameter model produced below were for the CultureData and Pttime datasets. Inspection consisted of plotting the raw intensity values against the corrected retention-time values for all data points within the *m/z* x RT bounding box determined by the most extreme values for the given feature. For this step, we decided to plot the entire feature across all files simultaneously rather than viewing each sample individually to both accelerate labelling and to more accurately represent what MS experts typically do when assessing the quality of a given peak. [Fig 1.] We also decided to ignore missing values and linearly interpolate between known data points rather than filling with zeroes. These EICs were then shown to an MS expert for classification into one of 4 categories: Good, Bad, Ambiguous, or Stans only if the peak appeared to only show up in the standards. A few randomly-chosen features from the manually-assigned Good and Bad classifications are shown in [Fig. 1].
+
+
+```{r grab demo msdata, eval=!file.exists("manuscript/minEIC_df.csv")}
+msdata <- readRDS("made_data_MS3000/msdata.rds")
+
+set.seed(123)
+chosen_feats <- MS3000_features %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  group_by(feat_class) %>%
+  slice_sample(n=5) %>%
+  arrange(feat_class) %>%
+  mutate(feat_id=row_number())
+minEIC_df <- pmap(chosen_feats, function(...){
+  with(list(...), {
+    msdata$EIC[mz%between%pmppm(mean_mz, ppm=5)] %>%
+      filter(rt%between%(mean_rt/60+c(-1, 1))) %>%
+      mutate(feature, feat_class, feat_id)
+  })
+}) %>% 
+  bind_rows() %>%
+  filter(str_detect(filename, "180821")) %>%
+  left_join(file_data, by="filename") %>%
+  filter(samp_type=="Smp")
+write_csv(minEIC_df, "manuscript/minEIC_df.csv")
+```
+
+```{r fig:some good some bad features}
+minEIC_df <- read_csv("manuscript/minEIC_df.csv")
+
+good_chroms_gp <- minEIC_df %>%
+  filter(feat_class=="Good") %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
+  facet_wrap(~feature, nrow = 1, scales = "free") +
+  scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        legend.position = "none", 
+        panel.grid = element_blank()) +
+  guides(color=guide_legend(override.aes = list(linewidth=2), title = "Sample depth:  "))
+bad_chroms_gp <- minEIC_df %>%
+  filter(feat_class=="Bad") %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
+  facet_wrap(~feature, nrow = 1, scales = "free") +
+  scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
+  theme_bw() +
+  theme(axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank(),
+        legend.position = "none",
+        panel.grid = element_blank())
+chroms_legend <- cowplot::get_legend(good_chroms_gp + theme(legend.position = "bottom"))
+
+comb_cowplot <- cowplot::plot_grid(good_chroms_gp, bad_chroms_gp, chroms_legend, 
+                                   ncol = 1, rel_heights = c(1, 1, 0.15))
+ggsave(plot = comb_cowplot, 
+       filename = "somegood_somebad_depthcolor_chroms.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 3, units = "in", dpi = 300)
+```
+
+![Figure 1: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
+
+### Peak feature extraction and metric calculation
+
+Our process of feature engineering was divided into three categories of features: those that could be calculated using a single peak trace, those that required access to the entire file, and those that could only be calculated across multiple files. [Rewrite without the "three categories" business ugh] For metrics belonging to the first two categories, summary statistics were used (mean/median, standard deviation) to create a single consensus value for the mass feature as a whole. Missing values were ignored during these summary statistic calculations by setting na.rm=TRUE. Distributions were visually inspected and highly abnormal metrics were transformed using log-scaling if necessary. Using a pairs plot, highly correlated (above a Pearson's r ~ .9) had one of the correlated metrics removed.
+
+The first category consisted largely of information produced directly by XCMS: the very typical *m/z* ratios, retention times, peak widths, and integrated areas as well as the less common and poorly-documented sn, f, scale, and lmin parameters. Although we requested additional parameters from XCMS with the verboseColumns = TRUE argument, all of the values returned were NAs and could not be used in the model building so were dropped. The total number of peaks found was calculated as the number of peaks divided by the total number of files, and the total number of files in which a peak was initially detected was calculated by subtracting the number of NAs in the peak baseline estimate (which is NA if the peak was filled in) from the total number of files and then dividing by the number of files to normalize across datasets. This calculation were performed for the Falkor, MESOSCOPE, and CultureData datasets to estimate the proportion of sample and standard files in which a given peak was found, but could not be supplied for the Pttime dataset because no standard files were available. The sn metric contained a large number of zero values to begin with that then became negative infinities when log-scaled, so we replaced those values with zeroes and functionally equated an sn of 0 with an sn of 1.
+
+We also calculated several metrics from the raw mz/rt/int values. Using the R package RaMS we extracted the data points falling within each individual peak's mz and retention time bounding box (values between the XCMS-reported min and max) separately for each file. The data points were then linearly scaled to fall within the 0-1 range by subtracting the minimum RT and dividing by the maximum RT, then each scaled RT was fit to a beta distribution with α values of 2.5, 3, 4, and 5, and a fixed β value of 5. This approach allowed us to approximate a bell curve with increasing degrees of right-skewness and the beta distribution was chosen because it is constrained between 0 and 1 and simple and speedy to generate in R. For each α value, Pearson's correlation coefficient was calculated between the beta distribution and the raw data, with the highest value returned as a metric for how peak-shaped the data were [Fig. 2]. The beta distribution with the highest *r* was also then used to estimate the noise level within the peak by also scaling both the beta distribution densities and the raw data intensity values as described above, then subtracting the scaled beta distribution from the scaled intensity values, producing the residuals of the fit [Fig. 2]. The signal-to-noise ratio (SNR) was calculated by dividing the maximum original peak height by the standard deviation of the residuals multiplied by the maximum height of the original peak. This method of SNR calculation allowed us to rapidly estimate the noise within the peak itself rather than relying on background estimation using data points outside the peak, which may not exist or may be influenced by additional molecular signals. [@myers?] If there were fewer than 5 data points, a missing value was returned and dropped in subsequent summary calculations. Accessing the raw data values also allowed us to calculate the proportion of "missed" scans in a peak for which a retention time exists at other masses in the same sample but for which no data was produced at the selected *m/z* ratio.
+
+```{r how are raw peak shape metrics calculated}
+minEIC_df <- read_csv("manuscript/minEIC_df.csv")
+
+single_EIC <- minEIC_df %>%
+  filter(feature%in%c("FT0588", "FT0280")) %>%
+  filter(filename=="180821_Smp_MS10C215m_A.mzML")
+
+maybe_skews <- c(2.5, 3, 4, 5)
+skew_names <- c("Large skew", "Small skew", "Minimal skew", "Zero skew")
+names(maybe_skews) <- skew_names
+perf_peak_data <- single_EIC %>%
+  group_by(feature) %>%
+  select(feature, rt, int) %>%
+  mutate(rt=(rt-min(rt))/(max(rt)-min(rt))) %>%
+  mutate(int=(int-min(int))/(max(int)-min(int))) %>%
+  cbind(sapply(maybe_skews, function(x){
+    perf_peak <- dbeta(.$rt, shape1=x, shape2=5)
+    perf_peak/max(perf_peak)
+  })) %>%
+  rename(`Raw data`="int") %>%
+  mutate(feature=factor(feature, levels=c("FT0588", "FT0280"), 
+                        labels=c("Good peak", "Bad peak")))
+summary_stats <- perf_peak_data %>%
+  pivot_longer(-c(feature, rt, `Raw data`)) %>%
+  mutate(new_val=value-`Raw data`) %>%
+  group_by(feature, name) %>%
+  summarise(single_cor=round(cor(`Raw data`, value), 2), 
+            single_sd=round(sd(new_val), 2), 
+            .groups = "drop_last") %>%
+  mutate(name=factor(name, levels=skew_names)) %>%
+  mutate(x_coord=c(0.125+(as.numeric(name)-1)/4))
+
+peak_gp <- perf_peak_data %>%
+  pivot_longer(-c(rt, feature)) %>%
+  mutate(name=factor(name, levels=c("Raw data", skew_names))) %>%
+  ggplot() +
+  geom_line(aes(x=rt, y=value, color=name), lwd=1) +
+  geom_rect(xmin=-Inf, xmax=Inf, ymax=-Inf, ymin=-.05, fill="white", color="grey90") +
+  annotate("text", x=0.5, y=-Inf, vjust=-2, label="Pearson's r:") +
+  facet_wrap(~feature) +
+  geom_text(aes(x=x_coord, y=-Inf, label=single_cor, color=name),
+             data = summary_stats, vjust=-.5, show.legend = FALSE) +
+  scale_color_manual(breaks = c("Raw data", skew_names),
+                     values = c("black", viridisLite::plasma(6)[2:5])) +
+  scale_y_continuous(limits = c(-0.3, 1), breaks = c(0, 0.5, 1.0)) +
+  labs(y="Normalized intensity", color=NULL) +
+  theme_bw() +
+  theme(axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        # strip.background = element_rect(fill="white"),
+        legend.position="none",
+        strip.text = element_text(size = 11))
+residuals_gp <- perf_peak_data %>%
+  pivot_longer(-c(rt, feature, `Raw data`)) %>%
+  mutate(new_val=value-`Raw data`) %>%
+  ggplot() +
+  geom_rect(xmin=-Inf, xmax=Inf, ymax=Inf, ymin=0.85, fill="white", color="grey90") +
+  geom_hline(yintercept = 0, lwd=1) +
+  geom_line(aes(x=rt, y=new_val, color=name), lwd=1) +
+  geom_text(aes(x=x_coord, y=Inf, label=single_sd, color=name),
+             data = summary_stats, vjust=3) +
+  annotate("text", x=0.5, y=Inf, vjust=1.5, label="Residual SD:") +
+  facet_grid(~feature) +
+  scale_color_manual(breaks = c("Raw data", skew_names),
+                     values = c("black", viridisLite::plasma(6)[2:5])) +
+  scale_y_continuous(breaks = c(-1, 0, 1), limits = c(-1.1, 1.3)) +
+  labs(x="Normalized retention time", y="Residuals", color=NULL) +
+  theme_bw() +
+  theme(strip.background = element_blank(),
+        strip.text = element_blank(),
+        legend.position = "none")
+
+fig_legend <- cowplot::get_legend(peak_gp + theme(legend.position="right") + 
+                                    guides(color=guide_legend(override.aes = list(lwd=2)), text="none"))
+
+comb_cowplot <- egg::ggarrange(peak_gp, residuals_gp, ncol = 1, draw = FALSE)
+
+comb_peakmetrics_gp <- cowplot::plot_grid(
+  comb_cowplot, fig_legend, rel_widths = c(1, 0.25)
+) + theme(plot.background = element_rect(fill = "white", color=NA))
+
+ggsave(plot = comb_peakmetrics_gp, 
+       filename = "peakmetrics_singlechrom.png", 
+       device = "png", path = "manuscript/figures",
+       width = 6.5, height = 4, units = "in", dpi = 300)
+```
+
+![Figure 2: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=70%}
+
+We additionally estimated the existence of a $^{13}$C isotope using a similar method to extract the raw mz/rt/int values within the peak bounding box, then searched the same RT values at an *m/z* delta of +1.003355. In places where more than 5 data points existed at both the original mass and the $^{13}$C mass, we again used Pearson's correlation coefficient to estimate the similarity between the two mass traces and used a trapezoidal Riemann sum to estimate the area of the original and isotope peaks. The overall feature isotope shape similarity was calculated by taking the median of the correlation coefficients. We also calculated the correlation coefficient of the ratio of the $\frac{^{13}C}{^{12}C}$ across multiple files, expecting that a true isotope would have a fixed $\frac{^{13}C}{^{12}C}$ ratio. Both the isotope shape similarity and the isotope area correlation were used as metrics in the downstream analysis. Peaks for which no isotope signal was detected or had too few scans to calculate the above metrics were imputed with NA values that were again dropped in the calculation of summary statistics.
+
+Finally, we calculated several metrics using a design-of-experiments (DoE) approach for the Falkor and MESOSCOPE datasets which were expected to have a large difference in metabolite composition between those samples collected at the surface (15-25 meters) and those collected deeper in the water column. We used ANOVAs to compare the integrated peak area with depth and extracted the p-values of each test, which became an additional potential peak quality metric. We also calculated the difference between the mean sample area and the mean blank area and the difference between the mean sample area and the mean area of the standards which also became metrics. When there were too many missing values to perform the ANOVA or sample averages, we replaced the calculated statistic with a value a single order of magnitude outside the most extreme value.
+
+### Statistics
+
+We also tested whether the performance could be improved with elastic net regression or random forest models. These models handle correlated variables better than ordinary least squares regression, so we also included several additional implementations of the peak shape and novel SNR parameters when summarizing across multiple files, using a max and a median of the top-three best values rather than just the overall median as well as a log-transformed version of the median peak shape calculated as $median(log_{10}(1-r))$ where $r$ is Pearson's correlation coefficient, as described above (Figure 2). Cross-validation was used to select the optimal tuning parameter $\lambda$ with `glmnet` package's `cv.glmnet` for an elastic net penalty (α) of 0, 0.5, and 1. Random forests were implemented using the randomForest package with default settings and a factor-type response vector to ensure classification was used rather than regression.
+
+We explored the implications of applying this model to the MESOSCOPE dataset at a variety of thresholds. In univariate space, we used nonparametric Kruskal-Wallis analyses of variance to measure the difference between the surface (15m), DCM (~110m), and 175m samples because the metabolite peak areas could not be assumed to be normally distributed. These univariate tests were then controlled for multiply hypothesis testing using R's `p.adjust` function with method `fdr`.[@ref] We also performed post-hoc Dunn tests provided by the `rstatix` package to categorize the response to depth for those mass features for which the KW test was significant, with responses falling into one of the 14 classes possible when permuting the sign and significance of the Dunn test.[@ref] p-values obtained from the Dunn tests were not FDR controlled because it was used as a categorization tool rather than a null hypothesis test. In multivariate space, we used a permutational MANOVA (PERMANOVA) [@ref] provided by the vegan package's `adonis2` function to test for multivariate differences in structure of the metabolome with depth.[@ref] We ran multiple PERMANOVAs with a different subset of mass features included each time, corresponding to using the output from XCMS directly, likelihood thresholds of 0.01, 0.1, 0.5, 0.9, and finally only those peaks manually annotated as good.
+
+All analyses were run in R, version 4.2.2, and code is available on the Github at https://github.com/wkumler/MS_metrics.[@ref]
 
 ## Acknowledgements
 
