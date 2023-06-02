@@ -95,8 +95,8 @@ simple_feats <- peak_data %>%
             pooled_cv_rob=cv(into[samp_type=="Poo"], robust=TRUE)
             ) %>%
   mutate(sn=ifelse(is.infinite(sn), 0, sn)) %>%
-  mutate(pooled_cv=ifelse(is.na(pooled_cv), 1, pooled_cv)) %>%
-  mutate(pooled_cv_rob=ifelse(is.na(pooled_cv_rob), 1, pooled_cv_rob))
+  mutate(pooled_cv=ifelse(is.na(pooled_cv), median(pooled_cv, na.rm=TRUE), pooled_cv)) %>%
+  mutate(pooled_cv_rob=ifelse(is.na(pooled_cv_rob), median(pooled_cv, na.rm=TRUE), pooled_cv_rob))
 write.csv(simple_feats, paste0(output_folder, "simple_feats.csv"), row.names = FALSE)
 
 # Calculate peak shape metrics from EICs ----
