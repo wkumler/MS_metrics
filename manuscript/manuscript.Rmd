@@ -11,7 +11,7 @@ bibliography: refs.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
+knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
@@ -21,11 +21,11 @@ library(RaMS)
 
 ```{r run analysis, eval=FALSE}
 for(dataset_version in c("FT2040", "MS3000", "CultureData", "Pttime")){
-  source("peakpicking_and_prep.R")
+  print(paste("Processing", dataset_version))
+  # source("peakpicking_and_prep.R")
   source("feature_extraction.R")
 }
 ```
-
 
 ```{r load data}
 file_data <- read_csv("made_data_MS3000/file_data.csv") %>%
@@ -42,12 +42,13 @@ raw_data_params <- c("med_cor", "med_SNR")
 xcms_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", 
                  "sd_pw", "log_mean_area", "log_sd_area", "sn", 
                  "f", "scale", "lmin", "feat_npeaks", "n_found", 
-                 "samps_found", "stans_found")
+                 "samps_found", "stans_found", "pooled_cv", "pooled_cv_rob")
 all_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", "sd_pw",
                 "log_mean_area", "log_sd_area", "sn", "f", "scale", 
                 "lmin", "feat_npeaks", "n_found", "samps_found", "stans_found", 
                 "med_cor", "med_SNR", "med_missed_scans", "smp_to_blk", 
-                "smp_to_std", "shape_cor", "area_cor", "feat_class")
+                "smp_to_std", "pooled_cv", "pooled_cv_rob", "shape_cor", 
+                "area_cor")
 ```
 
 ## Abstract

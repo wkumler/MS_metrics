@@ -55,7 +55,7 @@ peak_data <- msnexp_filled %>%
   unnest_longer(peakidx) %>%
   rename_with(~paste0("feat_", .x), .cols = -peakidx) %>%
   dplyr::rename(feature="feat_id") %>%
-  left_join(peak_data_long) %>%
+  left_join(peak_data_long, by = join_by(peakidx)) %>%
   mutate(filename=basename(fileNames(msnexp_filled))[sample]) %>%
   complete(feature, filename)
 
@@ -74,7 +74,7 @@ n_files <- nrow(file_data)
 n_samps <- sum(file_data$samp_type=="Smp")
 n_stans <- sum(file_data$samp_type=="Std")
 simple_feats <- peak_data %>%
-  left_join(file_data) %>%
+  left_join(file_data, by="filename") %>%
   group_by(feature) %>%
   fill(starts_with("feat"), .direction = "downup") %>%
   summarise(mean_mz=unique(feat_mzmed), 
@@ -94,7 +94,9 @@ simple_feats <- peak_data %>%
             pooled_cv=cv(into[samp_type=="Poo"]),
             pooled_cv_rob=cv(into[samp_type=="Poo"], robust=TRUE)
             ) %>%
-  mutate(sn=ifelse(is.infinite(sn), 0, sn))
+  mutate(sn=ifelse(is.infinite(sn), 0, sn)) %>%
+  mutate(pooled_cv=ifelse(is.na(pooled_cv), 1, pooled_cv)) %>%
+  mutate(pooled_cv_rob=ifelse(is.na(pooled_cv_rob), 1, pooled_cv_rob))
 write.csv(simple_feats, paste0(output_folder, "simple_feats.csv"), row.names = FALSE)
 
 # Calculate peak shape metrics from EICs ----
@@ -351,18 +353,18 @@ stan_diffs <- read_csv(paste0(output_folder, "stan_diffs.csv"))
 feat_isodata <- read_csv(paste0(output_folder, "feat_isodata.csv"))
 classified_feats <- read_csv(paste0(output_folder, "classified_feats.csv")) %>%
   select(feature, feat_class) %>%
-  right_join(data.frame(feature=simple_feats$feature)) %>%
+  right_join(data.frame(feature=simple_feats$feature), by="feature") %>%
   mutate(feat_class=ifelse(is.na(feat_class), "Unclassified", feat_class)) %>%
   arrange(feature)
 
 features_extracted <- simple_feats %>%
-  left_join(peakshape_mets) %>% 
-  left_join(med_missed_scans) %>% 
+  left_join(peakshape_mets, by="feature") %>% 
+  left_join(med_missed_scans, by="feature") %>% 
   # left_join(depth_diffs) %>% 
-  left_join(blank_diffs) %>% 
-  left_join(stan_diffs) %>% 
-  left_join(feat_isodata) %>% 
-  left_join(classified_feats) %>%
+  left_join(blank_diffs, by="feature") %>% 
+  left_join(stan_diffs, by="feature") %>% 
+  left_join(feat_isodata, by="feature") %>% 
+  left_join(classified_feats, by="feature") %>%
   filter(mean_rt%between%c(30, 1200))
 if(dataset_version=="Pttime"){
   features_extracted <- select(-c(samps_found, stans_found, smp_to_blk, smp_to_std,
