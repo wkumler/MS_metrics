@@ -113,9 +113,9 @@ An average of 3,300 molecular features (MFs) were reported by XCMS across the 4 
 
 ### Logistic regression performance
 
-According to all three logistic regression models (see Methods), the majority of MFs were estimated to have a less than 1% chance of being good. The full model (containing all possible peak metrics) and the XCMS model (built on only those metrics calculated from the XCMS output) both displayed a strongly bimodal distribution, with a large number of peaks also exceeding a 99% chance of being good, while the two-parameter model (consisting of the novel SNR metric and the peak shape correlation metric) had a flatter distribution with fewer high-confidence MF assignments and more intermediate values (Fig. 3).
+According to all three logistic regression models (see Methods), the majority of MFs were estimated to have a less than 1% chance of being good. The full model (containing all possible peak metrics) and the XCMS model (built on only those metrics calculated from the XCMS output) both displayed a strongly bimodal distribution, with a large number of peaks also exceeding a 99% chance of being good, while the two-parameter model (consisting of the novel SNR metric and the peak shape correlation metric) had a flatter distribution with fewer high-confidence MF assignments and more intermediate values (Figure 1).
 
-```{r fig3 pred_prob_class_color_hists}
+```{r Fig1 pred_prob_class_color_hists}
 base_gp <- ggplot() +
   aes(x=pred_prob_min, fill=feat_class) +
   facet_wrap(~dataset, scales="free_y") +
@@ -181,11 +181,11 @@ ggsave(plot = egg_complete,
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
 
-![Figure 3: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good peak that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=90%}
+![Figure 1: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good peak that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=90%}
 
-The full model performed very well when tested internally on the same dataset both during 80/20 cross validation and when using the full dataset, with FDR values in the 5-10% range and 80-90% GPF values implying that a large majority of the good peaks passed the threshold with very little noise included. The XCMS metrics performed slightly worse, with FDR values in the 10-15% range and GPF values closer to 75%. The two-parameter model performed worst when tested internally, with an FDR of about 20% and %GPF also around 75% (Figure 4). However, when the models were trained on a different dataset than the one they were used to predict classifications for, all models had similar performance with %FDR around 10-25 and %GPF around 60-80. The model trained on MESOSCOPE and tested on Falkor had consistently higher values, indicating that it was favoring more peaks recovered at the cost of a higher FDR, while the reverse was true for the model trained on Falkor and tested on MESOSCOPE (Figure 4). 
+The full model performed very well when tested internally on the same dataset both during 80/20 cross validation and when using the full dataset, with FDR values in the 5-10% range and 80-90% GPF values implying that a large majority of the good peaks passed the threshold with very little noise included. The XCMS metrics performed slightly worse, with FDR values in the 10-15% range and GPF values closer to 75%. The two-parameter model performed worst when tested internally, with an FDR of about 20% and %GPF also around 75% (Figure 2). However, when the models were trained on a different dataset than the one they were used to predict classifications for, all models had similar performance with %FDR around 10-25 and %GPF around 60-80. The model trained on MESOSCOPE and tested on Falkor had consistently higher values, indicating that it was favoring more peaks recovered at the cost of a higher FDR, while the reverse was true for the model trained on Falkor and tested on MESOSCOPE (Figure 2). 
 
-```{r FDR vs GPF cross-train triangle figure feature selection}
+```{r Fig2 FDR vs GPF cross-train triangle figure feature selection}
 fdr_gpf_cross_train_df <- lst(all_params, raw_data_params, xcms_params) %>%
   imap(function(param_selection, param_name){
     lapply(dataset_versions, function(train_set){
@@ -255,13 +255,13 @@ ggsave(plot = fdr_gpf_cross_train_gp,
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-![Figure 4: False discovery rate (%FDR) and fraction of good peaks found (GPF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those peaks the model categorized as "Good" using a threshold of 0.5, and higher %GPF indicates a larger fraction of the total good peaks were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gpf_cross_train.png){width=90%}
+![Figure 2: False discovery rate (%FDR) and fraction of good peaks found (GPF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those peaks the model categorized as "Good" using a threshold of 0.5, and higher %GPF indicates a larger fraction of the total good peaks were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gpf_cross_train.png){width=90%}
 
 ### Model stability under different training sets
 
-We found that the predictions made from a Falkor-trained dataset consistently differed from a MESOSCOPE-trained dataset for the full and XCMS-only models. In the raw probability space, the two-parameter models had the highest $r$ value of 0.996, while the full models and the XCMS-trained models had $r$ values of 0.856 and 0.896, respectively. When compared in ranked space, we found an intensification of the effect described previously, with an even higher $r$ for the two-parameter model of 0.998 but lower $r$ values for the full and XCMS-trained model of 0.818 and 0.849, respectively (Figure 5).
+We found that the predictions made from a Falkor-trained dataset consistently differed from a MESOSCOPE-trained dataset for the full and XCMS-only models. In the raw probability space, the two-parameter models had the highest $r$ value of 0.996, while the full models and the XCMS-trained models had $r$ values of 0.856 and 0.896, respectively. When compared in ranked space, we found an intensification of the effect described previously, with an even higher $r$ for the two-parameter model of 0.998 but lower $r$ values for the full and XCMS-trained model of 0.818 and 0.849, respectively (Figure 3).
 
-```{r red/gold rank dotplot step-down method}
+```{r Fig3 red/gold rank dotplot step-down method}
 dotplot_stepdown_data <- lst(all_params, xcms_params, raw_data_params) %>%
   imap(function(param_selection, param_name){
     lapply(dataset_versions, function(train_set){
@@ -342,7 +342,7 @@ ggsave(plot = comb_prob_space_gp,
        width = 6.5, height = 5, units = "in", dpi = 300)
 ```
 
-![Figure 5: Predicted likelihood of a feature being "Good" according to a model trained on the MESOSCOPE dataset vs a model trained on the Falkor dataset. The top row of plots show the exact likelihood predicted by the logistic model across three different subsets of parameters, while the bottom row shows the estimates ranked from least likely to most likely. Points are colored by their manually-assigned quality according to an expert.](figures/comb_prob_space.png){width=90%}
+![Figure 3: Predicted likelihood of a feature being "Good" according to a model trained on the MESOSCOPE dataset vs a model trained on the Falkor dataset. The top row of plots show the exact likelihood predicted by the logistic model across three different subsets of parameters, while the bottom row shows the estimates ranked from least likely to most likely. Points are colored by their manually-assigned quality according to an expert.](figures/comb_prob_space.png){width=90%}
 
 A majority of the time, the estimates from the two models disagreed by more than 2x the standard error of the estimate. Some parameters disagreed not only in magnitude but also in sign, with the Falkor-trained full model increasing peak goodness likelihood with larger ppm variation and a wider peak width, while the MESOSCOPE-trained full model had negative estimates for each of these parameters. Notably, the peak shape and novel SNR parameters used in the two-parameter model were among the most robust to training model variation, potentially explaining the consistency described above (Supp. figure 1).
 
@@ -352,12 +352,11 @@ When testing model stability under a smaller sample size, we found reasonably go
 
 None of the penalized regression models significantly improved cross-validated performance between the MESOSCOPE and Falkor datasets when measured by both initial performance and the performance drop when applied across datasets. All three regularized regression models had similar behavior, with ridge regression (α = 0) had the lowest rates for both GPF and FDR, with lasso (α = 1) obtaining higher ones and representing a less-stringent false negative acceptance while, as expected, the elastic net (α = 0.5) fell in between the two (Supp. figure 3). The random forest model, interestingly, had perfect predictive capacity when tested internally on the training data (FDR=0%, GPF=100%, for both MESOSCOPE and Falkor) but showed a significant drop in improvement when applied across datasets (Supp. figure 3). In each case, the performance drop when applied to a novel dataset was more extreme than the simple two-parameter model described above.
 
-
 ### Performance of a stricter threshold on novel datasets
 
 We settled on a 90% likelihood threshold for application to novel datasets because it struck a balance between the number of peaks we estimated to be necessary for robust testing while still remaining reasonable to manually label. For the CultureData dataset, we obtained 1,790 total mass features, 192 of which had predicted likelihoods above 0.9. Of these, 151 were identified manually as "Good", 21 were given "Ambiguous" designations, and only 3 were flagged as "Bad", with the remaining 17 appearing only in the standards. For the Pttime dataset, 7,781 were obtained with 400 flagged by the model as "Good". 348 were truly good peaks, 35 were ambiguous, and 17 were "Bad". No standards were run during this analysis, so there were no features in that category.
 
-With the stricter threshold, we obtained FDR values consistently below 5% even on the novel datasets, with values of 1.0%, 0.0% (truly zero false positives), 2.0%, and 4.6% for Falkor, MESOSCOPE, CultureData, and Pttime respectively [Figure 6]. Of course, this low error rate required that we miss out on additional potentially valuable features, with only a fraction of the total good peaks making it past this threshold. In both the Falkor and MESOSCOPE datasets, less than half of the good peaks were labeled as such, with actual values of 39.4% and 26.5%, respectively. Since we did not label the complete dataset for CultureData and Pttime, we cannot accurately calculate the %GPF but expect it to be in a similar range (Figure 6).
+With the stricter threshold, we obtained FDR values consistently below 5% even on the novel datasets, with values of 1.0%, 0.0% (truly zero false positives), 2.0%, and 4.6% for Falkor, MESOSCOPE, CultureData, and Pttime respectively (Figure 4). Of course, this low error rate required that we miss out on additional potentially valuable features, with only a fraction of the total good peaks making it past this threshold. In both the Falkor and MESOSCOPE datasets, less than half of the good peaks were labeled as such, with actual values of 39.4% and 26.5%, respectively. Since we did not label the complete dataset for CultureData and Pttime, we cannot accurately calculate the %GPF but expect it to be in a similar range (Figure 4).
 
 ```{r FDR vs GPF with additional datasets}
 # Currently a fairly simple figure, may need additional data?
@@ -437,7 +436,7 @@ ggsave(plot = fdr_gpf_all_datasets_gp,
 #   theme(axis.title = element_blank())
 ```
 
-![Figure 6: False discovery rate and proportion of total good peaks identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GPF is calculated by dividing the number of true positives by the total number of good peaks as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gpf_all_datasets.png){width=30%}
+![Figure 4: False discovery rate and proportion of total good peaks identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GPF is calculated by dividing the number of true positives by the total number of good peaks as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gpf_all_datasets.png){width=30%}
 
 ### Implications for biological conclusions
 
@@ -600,9 +599,9 @@ clockplot_complete_df <- clockplot_data %>%
 write_csv(clockplot_complete_df, file = "manuscript/MS3000_clockplot_coords.csv")
 ```
 
-A majority of the features (1,323 of 1,832 total) in the original, non-thresholded MESOSCOPE dataset had no significant trend with depth, with FDR-controlled Kruskal-Wallis p-values exceeding 0.05 (Figure 7). The largest category that did have a trend with depth was the 15m = DCM > 175m category, containing 118 molecular features, with largest peak areas distributed evenly between the 15 meter and deep chlorophyll maximum (DCM) samples, while the 175 meter samples had significantly smaller areas. The similar but statistically distinct categories of 15m > DCM > 175m and DCM > 15m > 175m had 68 and 35 features, respectively, and together indicate that many molecules are highly abundant throughout the surface ocean down to the DCM layer and decrease in concentration thereafter. A surprising number of features were also found to have DCM minima (DCM < 15m = 175m, 26 features) or linear increases with depth (15m < DCM < 175m, 12 features) given the few environmental parameters that have these trends (Figure 7).
+A majority of the features (1,323 of 1,832 total) in the original, non-thresholded MESOSCOPE dataset had no significant trend with depth, with FDR-controlled Kruskal-Wallis p-values exceeding 0.05 (Figure 5). The largest category that did have a trend with depth was the 15m = DCM > 175m category, containing 118 molecular features, with largest peak areas distributed evenly between the 15 meter and deep chlorophyll maximum (DCM) samples, while the 175 meter samples had significantly smaller areas. The similar but statistically distinct categories of 15m > DCM > 175m and DCM > 15m > 175m had 68 and 35 features, respectively, and together indicate that many molecules are highly abundant throughout the surface ocean down to the DCM layer and decrease in concentration thereafter. A surprising number of features were also found to have DCM minima (DCM < 15m = 175m, 26 features) or linear increases with depth (15m < DCM < 175m, 12 features) given the few environmental parameters that have these trends (Figure 7).
 
-A different story emerged, however, when the bad peaks were removed from this analysis. Good features were most commonly found to have their highest concentrations at the DCM or the surface, rather than being fixed with respect to depth. Of the 182 good peaks, less than a fifth had no trend with depth (44/249) and a majority had unequivocally lowest values in the 175 meter samples (those with 15m/DCM > 175m, 145 features). The two-parameter model, when applied with a 50% likelihood threshold, also recovered this general feature distribution and classified many of the features with no significant depth signal as likely to be bad (Figure 7B, currently in Slack?).
+A different story emerged, however, when the bad peaks were removed from this analysis. Good features were most commonly found to have their highest concentrations at the DCM or the surface, rather than being fixed with respect to depth. Of the 182 good peaks, less than a fifth had no trend with depth (44/249) and a majority had unequivocally lowest values in the 175 meter samples (those with 15m/DCM > 175m, 145 features). The two-parameter model, when applied with a 50% likelihood threshold, also recovered this general feature distribution and classified many of the features with no significant depth signal as likely to be bad [Figure 7B, currently in Slack?].
 
 Additionally, a large number of features manually identified as bad nonetheless had significant differences with depth. This was surprising because we had assumed that bad peaks corresponded to instrument noise, which we did not expect to have any biological trend. Further investigation of a few randomly selected bad features with a biological difference revealed the reason behind this: most of those investigated were actually tails of other peaks. Integrating just the tail of a peak retains the biological signal of the full peak while still looking visually like instrument noise, thereby introducing pseudoreplication in the feature space.
 
@@ -610,7 +609,7 @@ The model did fail to recover some interesting biological variation, however. Tw
 
 [MAA paragraph?] Several mass features that were found dominantly at the surface were putatively identified as mycosporine-like amino acids (MAAs), which have been shown to have UV photoprotective properties.[@ref] Although we were unable to calculate their exact concentrations due to a lack of authentic standards, peak areas were approximately 100 to 1000 times higher in the 15 meter samples than the values averaged between the DCM and 175 meter samples. The abundance of MAAs in this particular category indicates that there may be other MAA molecules with this depth pattern that have not yet been characterized also among these unknowns.
 
-```{r clockplot}
+```{r Fig5 clockplot}
 resp_class_levels <- c("All equal", 
     "15m > DCM = 175m", "15m > DCM > 175m", "15m = DCM > 175m",
     "DCM > 15m > 175m", "DCM > 15m = 175m", "DCM > 175m > 15m", 
@@ -667,7 +666,7 @@ ggsave(plot = clockplot_complete_gp,
        width = 6.5, height = 5, units = "in", dpi = 300)
 ```
 
-![Figure 7: Plot of metabolite response to depth shown across three axes using the rank-normalized median value at each depth as the coordinate for that axis. Each molecular feature corresponds to a point in the plot, and their position on the plot describes the shape of their depth profile. Compounds aligning with the 15m axis correspond to compounds with most of their abundance found in the surface ocean; points far to the right side correspond to compounds that are found only at the deep chlorophyll maximum; points found at the bottom of the plot are those compounds that increased more or less linearly with depth.](figures/clockplot_complete.png){width=90%}
+![Figure 5: Plot of metabolite response to depth shown across three axes using the rank-normalized median value at each depth as the coordinate for that axis. Each molecular feature corresponds to a point in the plot, and their position on the plot describes the shape of their depth profile. Compounds aligning with the 15m axis correspond to compounds with most of their abundance found in the surface ocean; points far to the right side correspond to compounds that are found only at the deep chlorophyll maximum; points found at the bottom of the plot are those compounds that increased more or less linearly with depth.](figures/clockplot_complete.png){width=90%}
 
 #### Multivariate techniques
 
@@ -743,7 +742,7 @@ We also tested the inclusion of all the features identified with XCMS (correspon
 
 The relative power of identifying only the very best peaks was also illustrated visually with non-metric multidimensional scaling (NMDS) plots (Figure XX). In these common exploratory plots, the features with likelihoods above 50% strongly separated by depth while lower thresholds disguised the true signal and had higher stress values. Performing an NMDS on the manually-identified Good peaks resulted in output nearly indistinguishable from those of the 90% and 50% thresholds, while the 0.1 and 0.01 thresholds looked almost identical to the same analysis performed on all the XCMS features.
 
-```{r NMDS results}
+```{r Fig6 NMDS results}
 thresh_NMDS_df <- imap(mat_list, function(mat_given, mat_name){
   mat_data <- mat_given %>%
     select(-feat_class, -pred_prob) %>%
@@ -785,7 +784,7 @@ ggsave(plot = thresh_NMDS_gp, filename = "thresh_NMDS_plots.png",
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
 
-![Figure XX: NMDS plots of metabolite similarity according to sample depth across multiple likelihood thresholds. Triplicate samples are represented by the vertices of the triangles and colored by the depth from which they were sampled (DCM = deep chlorophyll maximum, ~110m). "Only good" refers to those features manually labeled as "Good". NMDS stress values are reported to 3 significant figures in the upper right of the plot.](figures/thresh_NMDS_plots.png){width=90%}
+![Figure 6: NMDS plots of metabolite similarity according to sample depth across multiple likelihood thresholds. Triplicate samples are represented by the vertices of the triangles and colored by the depth from which they were sampled (DCM = deep chlorophyll maximum, ~110m). "Only good" refers to those features manually labeled as "Good". NMDS stress values are reported to 3 significant figures in the upper right of the plot.](figures/thresh_NMDS_plots.png){width=90%}
 
 ## Discussion
 
@@ -879,7 +878,7 @@ Peak grouping was performed on the two environmental datasets and the Pttime dat
 
 ### Manual inspection and classification
 
-After the full XCMS workflow was completed, the molecular features were visually inspected by a single qualified MS expert. For the Falkor and MESOSCOPE datasets, every molecular feature was inspected, while only those features with a predicted probability of 0.9 or higher according to the two-parameter model produced below were inspected for the CultureData and Pttime datasets. Inspection consisted of plotting the raw intensity values against the corrected retention-time values for all data points within the *m/z* x RT bounding box determined by the most extreme values for the given feature. For this step, we decided to plot the entire feature across all files simultaneously rather than viewing each sample individually to both accelerate labeling and to more accurately represent what MS experts typically do when assessing the quality of a given peak. [Fig 1.] We also decided to ignore missing values and linearly interpolate between known data points rather than filling with zeroes. These EICs were then shown to an MS expert for classification into one of 4 categories: Good, Bad, Ambiguous, or Stans only if the peak appeared to only show up in the standards. A few randomly-chosen features from the manually-assigned Good and Bad classifications are shown in [Fig. 1].
+After the full XCMS workflow was completed, the molecular features were visually inspected by a single qualified MS expert. For the Falkor and MESOSCOPE datasets, every molecular feature was inspected, while only those features with a predicted probability of 0.9 or higher according to the two-parameter model produced below were inspected for the CultureData and Pttime datasets. Inspection consisted of plotting the raw intensity values against the corrected retention-time values for all data points within the *m/z* x RT bounding box determined by the most extreme values for the given feature. For this step, we decided to plot the entire feature across all files simultaneously rather than viewing each sample individually to both accelerate labeling and to more accurately represent what MS experts typically do when assessing the quality of a given peak (Figure 7). We also decided to ignore missing values and linearly interpolate between known data points rather than filling with zeroes. These EICs were then shown to an MS expert for classification into one of 4 categories: Good, Bad, Ambiguous, or Stans only if the peak appeared to only show up in the standards. A few randomly-chosen features from the manually-assigned Good and Bad classifications are shown in Figure 7.
 
 
 ```{r grab demo msdata, eval=!file.exists("manuscript/minEIC_df.csv")}
@@ -906,7 +905,7 @@ minEIC_df <- pmap(chosen_feats, function(...){
 write_csv(minEIC_df, "manuscript/minEIC_df.csv")
 ```
 
-```{r fig:some good some bad features}
+```{r Fig7 some good some bad features}
 minEIC_df <- read_csv("manuscript/minEIC_df.csv")
 
 good_chroms_gp <- minEIC_df %>%
@@ -944,17 +943,17 @@ ggsave(plot = comb_cowplot,
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-![Figure 1: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
+![Figure 7: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
 
 ### Peak feature extraction and metric calculation
 
-Our process of feature engineering was divided into three categories of features: those that could be calculated using a single peak trace, those that required access to the entire file, and those that could only be calculated across multiple files. [Rewrite without the "three categories" business ugh] For metrics belonging to the first two categories, summary statistics were used (mean/median, standard deviation) to create a single consensus value for the mass feature as a whole. Missing values were ignored during these summary statistic calculations by setting na.rm=TRUE. Distributions were visually inspected and highly abnormal metrics were transformed using log-scaling if necessary. Using a pairs plot, highly correlated (above a Pearson's r ~ .9) had one of the correlated metrics removed.
+Our process of feature engineering was divided into three categories of features: those that could be calculated using a single peak trace, those that required access to the entire file, and those that could only be calculated across multiple files. [Rewrite without the "three categories" business ugh] For metrics belonging to the first two categories, summary statistics were used (mean/median, standard deviation) to create a single consensus value for the mass feature as a whole. Missing values were ignored during these summary statistic calculations by setting na.rm=TRUE. Distributions were visually inspected and highly abnormal metrics were transformed using log-scaling if necessary. Using a pairs plot, highly correlated (above a Pearson's r ~ 0.9) had one of the correlated metrics removed.
 
 The first category consisted largely of information produced directly by XCMS: the very typical *m/z* ratios, retention times, peak widths, and integrated areas as well as the less common and poorly-documented sn, f, scale, and lmin parameters. Although we requested additional parameters from XCMS with the verboseColumns = TRUE argument, all of the values returned were NAs and could not be used in the model building so were dropped. The total number of peaks found was calculated as the number of peaks divided by the total number of files, and the total number of files in which a peak was initially detected was calculated by subtracting the number of NAs in the peak baseline estimate (which is NA if the peak was filled in) from the total number of files and then dividing by the number of files to normalize across datasets. This calculation were performed for the Falkor, MESOSCOPE, and CultureData datasets to estimate the proportion of sample and standard files in which a given peak was found, but could not be supplied for the Pttime dataset because no standard files were available. The sn metric contained a large number of zero values to begin with that then became negative infinities when log-scaled, so we replaced those values with zeroes and functionally equated an sn of 0 with an sn of 1.
 
-We also calculated several metrics from the raw mz/rt/int values. Using the R package RaMS we extracted the data points falling within each individual peak's mz and retention time bounding box (values between the XCMS-reported min and max) separately for each file. The data points were then linearly scaled to fall within the 0-1 range by subtracting the minimum RT and dividing by the maximum RT, then each scaled RT was fit to a beta distribution with α values of 2.5, 3, 4, and 5, and a fixed β value of 5. This approach allowed us to approximate a bell curve with increasing degrees of right-skewness and the beta distribution was chosen because it is constrained between 0 and 1 and simple and speedy to generate in R. For each α value, Pearson's correlation coefficient was calculated between the beta distribution and the raw data, with the highest value returned as a metric for how peak-shaped the data were [Fig. 2]. The beta distribution with the highest *r* was also then used to estimate the noise level within the peak by also scaling both the beta distribution densities and the raw data intensity values as described above, then subtracting the scaled beta distribution from the scaled intensity values, producing the residuals of the fit [Fig. 2]. The signal-to-noise ratio (SNR) was calculated by dividing the maximum original peak height by the standard deviation of the residuals multiplied by the maximum height of the original peak. This method of SNR calculation allowed us to rapidly estimate the noise within the peak itself rather than relying on background estimation using data points outside the peak, which may not exist or may be influenced by additional molecular signals.[@Myers2017b] If there were fewer than 5 data points, a missing value was returned and dropped in subsequent summary calculations. Accessing the raw data values also allowed us to calculate the proportion of "missed" scans in a peak for which a retention time exists at other masses in the same sample but for which no data was produced at the selected *m/z* ratio.
+We also calculated several metrics from the raw mz/rt/int values. Using the R package RaMS we extracted the data points falling within each individual peak's mz and retention time bounding box (values between the XCMS-reported min and max) separately for each file. The data points were then linearly scaled to fall within the 0-1 range by subtracting the minimum RT and dividing by the maximum RT, then each scaled RT was fit to a beta distribution with α values of 2.5, 3, 4, and 5, and a fixed β value of 5. This approach allowed us to approximate a bell curve with increasing degrees of right-skewness and the beta distribution was chosen because it is constrained between 0 and 1 and simple and speedy to generate in R. For each α value, Pearson's correlation coefficient was calculated between the beta distribution and the raw data, with the highest value returned as a metric for how peak-shaped the data were (Figure 8). The beta distribution with the highest *r* was also then used to estimate the noise level within the peak by also scaling both the beta distribution densities and the raw data intensity values as described above, then subtracting the scaled beta distribution from the scaled intensity values, producing the residuals of the fit (Figure 8). The signal-to-noise ratio (SNR) was calculated by dividing the maximum original peak height by the standard deviation of the residuals multiplied by the maximum height of the original peak. This method of SNR calculation allowed us to rapidly estimate the noise within the peak itself rather than relying on background estimation using data points outside the peak, which may not exist or may be influenced by additional molecular signals.[@Myers2017b] If there were fewer than 5 data points, a missing value was returned and dropped in subsequent summary calculations. Accessing the raw data values also allowed us to calculate the proportion of "missed" scans in a peak for which a retention time exists at other masses in the same sample but for which no data was produced at the selected *m/z* ratio.
 
-```{r how are raw peak shape metrics calculated}
+```{r Fig8 how are raw peak shape metrics calculated}
 minEIC_df <- read_csv("manuscript/minEIC_df.csv")
 
 single_EIC <- minEIC_df %>%
@@ -1042,7 +1041,7 @@ ggsave(plot = comb_peakmetrics_gp,
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
 
-![Figure 2: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=70%}
+![Figure 8: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=70%}
 
 We additionally estimated the existence of a $^{13}$C isotope using a similar method to extract the raw mz/rt/int values within the peak bounding box, then searched the same RT values at an *m/z* delta of +1.003355. In places where more than 5 data points existed at both the original mass and the $^{13}$C mass, we again used Pearson's correlation coefficient to estimate the similarity between the two mass traces and used a trapezoidal Riemann sum to estimate the area of the original and isotope peaks. The overall feature isotope shape similarity was calculated by taking the median of the correlation coefficients. We also calculated the correlation coefficient of the ratio of the $\frac{^{13}C}{^{12}C}$ across multiple files, expecting that a true isotope would have a fixed $\frac{^{13}C}{^{12}C}$ ratio. Both the isotope shape similarity and the isotope area correlation were used as metrics in the downstream analysis. Peaks for which no isotope signal was detected or had too few scans to calculate the above metrics were imputed with NA values that were again dropped in the calculation of summary statistics.
 
@@ -1094,7 +1093,29 @@ LC: Liquid Chromatography
 
 MS: Mass Spectrometry
 
-## Acknowledgements
+## Declarations
+### Ethics approval and consent to participate
+
+Not applicable
+
+### Consent for publication
+
+Not applicable
+
+### Availability of data and materials
+
+The raw mzML files are all available on Metabolomics Workbench. Falkor, MESOSCOPE, and CultureData can be found under Project ID [blah] and accessed directly using the Project ID http://dx.doi.org/[blah], while Pttime is located under Project ID PR001317 and can be accessed directly using its Project DOI: http://dx.doi.org/10.21228/M8GH6P. Code and other raw data is available on the GitHub repository at https://github.com/wkumler/MS_metrics. The manuscript has been rendered as a single R Markdown document with analyses contained within for reproducibility.
+
+### Competing interests
+
+The authors declare that they have no competing interests
+
+### Funding
+
+[TBD, get from Anitra. eScience?]
+
+### Authors' contributions
+### Acknowledgements
 
 ## References
 
