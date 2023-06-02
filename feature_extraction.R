@@ -34,7 +34,7 @@ trapz <- function(x, y) {
 # dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
-dataset_version <- "Pttime"
+# dataset_version <- "Pttime"
 output_folder <- paste0("made_data_", dataset_version, "/")
 
 file_data <- read_csv(paste0(output_folder, "file_data.csv")) %>%
@@ -62,6 +62,14 @@ peak_data <- msnexp_filled %>%
 
 
 # Simple feature extraction - those provided by XCMS directly ----
+
+cv <- function(vec, robust=FALSE){
+  if(robust){
+    mad(vec, na.rm=TRUE)/median(vec, na.rm = TRUE)
+  } else {
+    sd(vec, na.rm = TRUE)/mean(vec, na.rm=TRUE)
+  }
+}
 n_files <- nrow(file_data)
 n_samps <- sum(file_data$samp_type=="Smp")
 n_stans <- sum(file_data$samp_type=="Std")
@@ -82,7 +90,9 @@ simple_feats <- peak_data %>%
             feat_npeaks=n()/n_files,
             n_found=(n_files-sum(is.na(intb)))/n_files,
             samps_found=1-sum(is.na(intb) & samp_type=="Smp")/n_samps,
-            stans_found=1-sum(is.na(intb) & samp_type=="Std")/n_stans
+            stans_found=1-sum(is.na(intb) & samp_type=="Std")/n_stans,
+            pooled_cv=cv(into[samp_type=="Poo"]),
+            pooled_cv_rob=cv(into[samp_type=="Poo"], robust=TRUE)
             ) %>%
   mutate(sn=ifelse(is.infinite(sn), 0, sn))
 write.csv(simple_feats, paste0(output_folder, "simple_feats.csv"), row.names = FALSE)
@@ -355,7 +365,8 @@ features_extracted <- simple_feats %>%
   left_join(classified_feats) %>%
   filter(mean_rt%between%c(30, 1200))
 if(dataset_version=="Pttime"){
-  features_extracted <- select(-c(samps_found, stans_found, smp_to_blk, smp_to_std),
+  features_extracted <- select(-c(samps_found, stans_found, smp_to_blk, smp_to_std,
+                                  pooled_cv, pooled_cv_rob),
                                .data = features_extracted)
 }
 write.csv(features_extracted, paste0(output_folder, "features_extracted.csv"), 

@@ -19,6 +19,14 @@ library(tidyverse)
 library(RaMS)
 ```
 
+```{r run analysis, eval=FALSE}
+for(dataset_version in c("FT2040", "MS3000", "CultureData", "Pttime")){
+  source("peakpicking_and_prep.R")
+  source("feature_extraction.R")
+}
+```
+
+
 ```{r load data}
 file_data <- read_csv("made_data_MS3000/file_data.csv") %>%
   mutate(depth=factor(depth, levels=c("15m", "DCM", "175m"))) %>%

@@ -17,7 +17,7 @@ options(pillar.sigfig=7)
 # dataset_version <- "FT2040"
 # dataset_version <- "MS3000"
 # dataset_version <- "CultureData"
-dataset_version <- "Pttime"
+# dataset_version <- "Pttime"
 
 output_folder <- paste0("made_data_", dataset_version, "/")
 mzML_files <- list.files(paste0(output_folder, "mzMLs/"), full.names=TRUE)
