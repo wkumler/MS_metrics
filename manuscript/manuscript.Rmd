@@ -11,7 +11,7 @@ bibliography: refs.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
@@ -805,13 +805,15 @@ One of the major ways in which this manuscript differs from prior work is its fo
 
 These two measures of success were then used to explore different types of classification models for separating good molecular features (MFs) from bad, with a particular focus on quantifying the likelihood of each class rather than just returning the label. We found that a simple two-parameter logistic regression model trained on two novel metrics of peak quality had reasonably good performance on the training set and was highly robust when applied to novel datasets. The logistic regression in particular was favored over the random forest and regularized regression we tried due to their similar performance and increased interpretability (Supp. figure XX).
 
+#### Performance relative to other peak picking models
+
 ```{r, eval=FALSE}
 FT2040_features %>%
   mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
   mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
-  # with(table(feat_class, pred_class))
-  with(caret::confusionMatrix(as.factor(pred_class), as.factor(feat_class)))
+  with(table(feat_class, pred_class)) %>%
+  caret::confusionMatrix(positive="Good", mode="everything")
 # Falkor if everything was just classified as "Bad"
 (980+56)/(980+56+45+196) # 0.824
 
@@ -819,25 +821,64 @@ MS3000_features %>%
   mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
   mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
-  # with(table(feat_class, pred_class))
-  with(caret::confusionMatrix(as.factor(pred_class), as.factor(feat_class)))
+  with(table(feat_class, pred_class)) %>%
+  caret::confusionMatrix(positive="Good", mode="everything")
 # MESOSCOPE if everything was just classified as "Bad"
 (1547+36)/(1547+36+67+182) # 0.864
+
+bind_rows(MS3000_features, FT2040_features) %>%
+  mutate(pred_prob=predict(object=both_min_model,newdata = ., type = "response")) %>%
+  mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  with(table(feat_class, pred_class)) %>%
+  caret::confusionMatrix(positive="Good", mode="everything")
 ```
 
-The model's performance is similar to the highly complex convolutional neural networks currently implemented in the literature. @Guo2021 presented EVA and reported an accuracy of 90-95%, a range inclusive of our accuracy on both the Falkor (92.1%) and MESOSCOPE (94.4%) when using the two-parameter model with a likelihood threshold of 0.5. However, we note that accuracy alone can be a highly misleading statistic to report when working with datasets as unbalanced as these because very high accuracy can be obtained by simply classifying everything as bad, with a strong incentive to actually *increase* the number of bad peaks detected while doing so. This strategy, when applied to our data, returned accuracies in the 80-90% range despite being a useless classifier for downstream analysis. This is perhaps a slightly facetious argument, but many of the single-parameter logistic models we tested never exceeded a 50% likelihood and essentially functioned as this type of classifier (Supp figure XX).
+This model performs less well than previous reports in the literature, but is highly simplified. @Guo2021 presented EVA and reported an accuracy of 90-95%, a range inclusive of our accuracy on both the Falkor (92.1%) and MESOSCOPE (94.4%) datasets when using a likelihood threshold of 0.5. However, we note that accuracy alone can be a highly misleading statistic to report when working with datasets as unbalanced as these because very high accuracy can be obtained by simply classifying everything as bad, with a strong incentive to actually *increase* the number of bad peaks detected while doing so. This strategy, when applied to our data, returned accuracies in the 80-90% range despite being a useless classifier for downstream analysis. This is perhaps a slightly facetious argument, but many of the single-parameter logistic models we tested never exceeded a 50% likelihood and essentially functioned as this type of classifier (Supp figure XX). 
 
-The class imbalance is partially why we chose to measure GPF and FDR instead of total accuracy. When reported, our model performs similarly on both metrics, albeit with a more limited application to HILIC-Orbitrap data. Compared to the peakonly algorithm of @Melnikov2020, we obtained higher accuracy scores (they report an accuracy of 89%) and higher recall (peakonly's recall was also 89%, while recall (%GPF) on our data was 94.6% and 97.7% for the Falkor and MESOSCOPE datasets, respectively). However, peakonly outperforms our model in precision with an FDR of 3% while our final FDR was 4.4% for the Falkor dataset and 4.1% for MESOSCOPE.
+The class imbalance is partially why we chose to measure GPF and FDR instead of total accuracy. @Melnikov2020 reported these values as well in their presentation of peakonly, relative to which we obtained higher accuracy (they report 89% accuracy) but worse GPF and FDR than their model (89% and 3%, respectively, relative to our 80% GPF and 23% FDR overall). 
 
-@Gloaguen2022 later introduced NeatMS, another CNN, and compared it directly to peakonly to claim equivalent or superior performance across a range of dilution factors. However, they do not report total precision or recall metrics in a comprehensive untargeted way but instead focus only on assessing the model's performance on known chemical standards. Additionally, they report a percentage of standards found for the peakonly model applied to their data and find that its performance is significantly lower (79.4%) than the recall reported in @Melnikov2020, perhaps indicating that the peakonly model is still overfit.
+@Gloaguen2022 later introduced NeatMS, another CNN, and compared it directly to peakonly to claim equivalent or superior performance across a range of dilution factors. However, they do not report total precision or recall metrics in a comprehensive untargeted way but instead focus only on assessing the model's performance on known chemical standards. Additionally, they report a percentage of standards found for the peakonly model applied to their data and find that its performance is significantly lower (79.4%) than the recall reported in @Melnikov2020, perhaps indicating that the peakonly model is still overfit. 
 
-We would argue that the deep learning models, while promising, do not currently show significant enough improvement over a simple logistic model to justify their black-box nature. In particular, they provide no way to control the tradeoff between false positives and false negatives and no relative ranking of individual MF quality beyond the broad bins into which they are placed. [This is spicy, might be better to soften it a bit?]
+While the model we present here has reduced performance relative to the CNNs, we would argue that its utility is not in maximizing performance but instead in maximizing interpretability. In particular, the CNNs provide no way to control the tradeoff between false positives and false negatives and no relative ranking of individual MF quality beyond the broad bins into which they are placed or explanation of relative metrics strengths for later analyses.
+
+#### Assessing the relative power of individual metrics
 
 The two metrics in the final model were derived from the raw EIC data rather than any summary statistic calculated by XCMS automatically and were implemented because they matched our intuition about what makes an MF look good to an MS expert. It is worth noting that these are very simple metrics and therefore fast to calculate, but we expect that more complicated metrics could perform even better. For example, the method of using the data within the peak boundaries for SNR calculation rather than data outside of them is not known to the authors to be implemented elsewhere but could be further improved by more advanced smoothing methods rather than using the residuals directly. Additionally, the calculation of peak shape using a Pearson's correlation to an idealized curve was not expected to be especially powerful given prior research (e.g. @Ipsen2010) and that the centWave algorithm essentially uses this information already during the wavelet fitting, but still proved to be a highly effective parameter. This metric could be improved with more careful summary statistics that account for the differences between samples. Currently, the use of the overall median value does a reasonable job at identifying MFs that appear in many samples but performs poorly when detecting MFs that appear in only a few. Also worth noting is that the calculation of any new metrics such as these that rely on access to the raw data require exact specification of the maximum and minimum *m/z* and retention time for a peak, values that are not always returned by peakpicking algorithms.
 
-We were surprised at the poor performance of several other metrics. The isotope information in particular was expected to be a very strong predictor of peak quality given previous work that uses this metric extensively.[@Libiseller2015; @Treutler2016; @ElAbiead2021] We learned that many noise peaks still have reliable isotopes (perhaps unsurprising, given that the noise is in fact often caused by solvents or contaminants that are still chemical in nature) and that many real peaks are simply too low-intensity to have them in this kind of dilute environmental sample. We also showed that the automatically calculated SNR parameter from XCMS is not especially useful in distinguishing signal from noise. After inspecting a selection of peaks that had anomalous values for this metric, we are inclined to agree with @Myers2017a and conclude that this is often due to insufficient data outside of the peak for a robust calculation of noise level. Finally, we were surprised to find essentially no predictive power offered by peak area or intensity, with good peaks distributed almost identically to the bad peaks in this space. This cautions strongly against an arbitrarily-decided intensity threshold for winnowing down the number of MFs, in agreement with previous work.[@Houriet2022; @Barupal2021]
+```{r}
+bind_rows(MS3000_features, FT2040_features) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=feat_class=="Good") %>%
+  select(feat_class, all_of(all_params)) %>%
+  glm(formula=feat_class~., family = binomial) %>%
+  broom::tidy() %>%
+  arrange(p.value) %>%
+  print(n=Inf)
 
-RSD/CV problems also noted by @Gloaguen2022!
+bind_rows(MS3000_features, FT2040_features) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  ggplot() +
+  geom_histogram(aes(x=mean_mz, fill=feat_class)) +
+  facet_wrap(~feat_class, ncol = 1, scales = "free_y")
+bind_rows(MS3000_features, FT2040_features) %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_class=ifelse(feat_class=="Good", 1, 0)) %>%
+  ggplot(aes(x=mean_mz, y=feat_class)) +
+  geom_jitter(height=0.1, alpha=0.2) +
+  geom_smooth(method="glm", method.args=list(family=binomial), formula = "y~x")
+```
+
+
+We were surprised at the poor performance of several other metrics. The isotope information in particular was expected to be a very strong predictor of peak quality given previous work that uses this metric extensively.[@Libiseller2015; @Treutler2016; @ElAbiead2021] We learned that many noise peaks still have reliable isotopes (perhaps unsurprising, given that the noise is in fact often caused by solvents or contaminants that are still chemical in nature) and that many real peaks are simply too low-intensity to have them in this kind of dilute environmental sample. 
+
+The relative standard deviation (RSD), also called the coefficient of variance, among pooled samples is another parameter that performed poorly given its general acceptance as a quality scoring metric. In the full model, neither the traditional calculation of RSD (standard deviation divided by the mean) nor the robust implementation (median absolute deviation divided by the median) were significant parameters. This result was also reported by @Gloaguen2022 who noted that while the RSD was typically lower for high-quality features there were many noise peaks with low RSDs as well. We also note that though they do not report the statistical significance of the RSD shift across feature quality, it doesn't appear to be hugely significant without a very large sample size.
+
+We also showed that the automatically calculated SNR parameter from XCMS is not especially useful in distinguishing signal from noise. After inspecting a selection of peaks that had anomalous values for this metric, we are inclined to agree with @Myers2017a and conclude that this is often due to insufficient data outside of the peak for a robust calculation of noise level. 
+
+Finally, we were surprised to find essentially no predictive power offered by peak area or intensity, with good peaks distributed almost identically to the bad peaks in this space. This cautions strongly against an arbitrarily-decided intensity threshold for winnowing down the number of MFs, in agreement with previous work.[@Houriet2022; @Barupal2021]
+
+#### Model selection and simplification
 
 We settled on the highly reduced model of just two parameters because we found that additional parameters often improved performance on the training set but did not do so significantly for the novel datasets where the application of such a model is actually useful (Figure XX). One important caveat to note is that for the partially-labelled CultureData and Pttime datasets, there exists an uncontrolled degree of experimenter bias because the MS expert responsible for labeling did know that these peaks were all expected to be good. However, given that we do still see poor-quality peaks in this set indicates that this was not an overwhelming bias. The drastic drop in performance on out-of-sample data was particularly concerning because it creates overconfidence in the true level of noise actually ending up in the final dataset.
 
