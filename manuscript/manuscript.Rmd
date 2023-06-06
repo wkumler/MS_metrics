@@ -1087,8 +1087,8 @@ residuals_gp <- perf_peak_data %>%
   geom_hline(yintercept = 0, lwd=1) +
   geom_line(aes(x=rt, y=new_val, color=name), lwd=1) +
   geom_text(aes(x=x_coord, y=Inf, label=single_sd, color=name),
-             data = summary_stats, vjust=3) +
-  annotate("text", x=0.5, y=Inf, vjust=1.5, label="Residual SD:") +
+             data = summary_stats, vjust=2.7) +
+  annotate("text", x=0.5, y=Inf, vjust=1.35, label="Residual SD:") +
   facet_grid(~feature) +
   scale_color_manual(breaks = c("Raw data", skew_names),
                      values = c("black", viridisLite::plasma(6)[2:5])) +
