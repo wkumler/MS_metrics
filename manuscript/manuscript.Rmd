@@ -398,12 +398,12 @@ error_type_all_datasets <- pred_probs_all %>%
   pivot_wider(names_from=error_type, values_from = n) %>%
   mutate(`FDR`=`%FP`/(`%FP`+`%TP`)) %>%
   mutate(`GPF`=`%TP`/(`%FN`+`%TP`)) %>%
-  mutate(`GPF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `GPF`)) %>%
-  pivot_longer(c(`FDR`, `GPF`)) %>%
-  drop_na()
+  mutate(`GPF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `GPF`))
 
 fdr_gpf_all_datasets_gp <- error_type_all_datasets %>%
-    mutate(desc=case_when(
+  pivot_longer(c(`FDR`, `GPF`)) %>%
+  drop_na() %>%
+  mutate(desc=case_when(
     is.na(value) ~ NA,
     name=="FDR"~ paste0("frac(",`%FP`,",",`%FP`+`%TP`,")"),
     name=="GPF"~ paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")
@@ -1218,7 +1218,7 @@ ggsave(plot = suppfig_model_param_estimates_gp,
 
 ![Supplemental figure 1: Model parameter estimates for each of the metrics in the full model, additionally broken down by their inclusion in the two-parameter (raw_data) and XCMS-exclusively models. Colors correspond to the dataset used to train the logistic regression model, with "both" indicating a combined model using all manually-labeled features across both datasets. <Explanations of the actual facet names forthcoming.>](supplement/suppfig_model_param_estimates.png){width=90%}
 
-```{r subsampling model stability supp figure}
+```{r subsampling model stability supp figure, warning=FALSE}
 set.seed(123)
 both_data <- rbind(MS3000_features, FT2040_features) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
@@ -1422,7 +1422,41 @@ fdr_gpf_full_model <- bind_rows(lst(FT2040_features, MS3000_features), .id = "da
   )) %>%
   select(model_type, train, test, TP, TN, FP, FN, FDR, GPF)
 
-bind_rows(fdr_gpf_individual, fdr_gpf_full_model) %>%
+fdr_gpf_strict_all <- bind_rows(lst(FT2040_features, MS3000_features), .id = "dataset") %>%
+  mutate(pred_prob=predict(object=both_min_model, newdata = ., type = "response")) %>%
+  mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+  mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  drop_na() %>%
+  bind_rows(combined=., each=., .id = "calc_type") %>% 
+  mutate(calc_type=ifelse(calc_type=="each", dataset, calc_type)) %>%
+  select(-dataset) %>%
+  group_by(calc_type) %>%
+  count(error_type) %>%
+  ungroup() %>%
+  pivot_wider(names_from=error_type, values_from = n, values_fill = 0) %>%
+  mutate(FDR=FP/(FP+TP)) %>%
+  mutate(GPF=TP/(FN+TP)) %>%
+  mutate(model_type="Two-parameter model") %>%
+  mutate(train="Both") %>%
+  mutate(test=case_when(
+    calc_type=="FT2040_features"~"FT2040",
+    calc_type=="MS3000_features"~"MS3000",
+    calc_type=="combined"~"Both"
+  )) %>%
+  select(model_type, train, test, TP, TN, FP, FN, FDR, GPF)
+
+fdr_gpf_stricter_thresh <- error_type_all_datasets %>%
+  set_names(c("test", "FN", "FP", "TN", "TP", "FDR", "GPF")) %>%
+  mutate(model_type="Both (threshold 0.9)") %>%
+  mutate(train="Both") %>%
+  select(model_type, train, test, TP, TN, FP, FN, FDR, GPF)
+
+bind_rows(fdr_gpf_individual, fdr_gpf_full_model, fdr_gpf_stricter_thresh) %>%
   write_csv("manuscript/supplement/model_confusion_matrices.csv")
 ```
 

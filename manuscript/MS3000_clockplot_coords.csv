@@ -1,4 +1,4 @@
-feature,feat_class,pred_class,x,y,cor_pval_byclass,resp_class,error_type
+feature,feat_class,pred_class,x,y,fdr_pval_byclass,resp_class,error_type
 FT0004,Bad,Good,0.17515151515151506,0.014242424242424168,0.12399378840511452,All equal,Bad peak included
 FT0005,Bad,Good,0.041212121212121255,0.042424242424242475,0.790261753376259,All equal,Bad peak included
 FT0006,Bad,Good,0.005454545454545379,-0.0033333333333334103,0.9966630639182616,All equal,Bad peak included
