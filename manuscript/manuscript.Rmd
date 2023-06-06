@@ -192,10 +192,10 @@ ggsave(plot = egg_complete,
 
 ![Figure 1: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good molecular feature that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=90%}
 
-The full model performed very well when tested internally on the same dataset both during 80/20 cross validation and when using the full dataset, with FDR values in the 5-10% range and 80-90% GPF values implying that a large majority of the good MFs passed the threshold with very little noise included. The XCMS metrics performed slightly worse, with FDR values in the 10-15% range and GPF values closer to 75%. The two-parameter model performed worst when tested internally, with an FDR of about 20% and %GPF also around 75% (Figure 2). However, when the models were trained on a different dataset than the one they were used to predict classifications for, all models had similar performance with %FDR around 10-25 and %GPF around 60-80. The model trained on MESOSCOPE and tested on Falkor had consistently higher values, indicating that it was favoring more MFs recovered at the cost of a higher FDR, while the reverse was true for the model trained on Falkor and tested on MESOSCOPE (Figure 2). 
+The full model performed very well when tested internally on the same dataset both during 80/20 cross validation and when using the full dataset, with FDR values in the 5-10% range and 80-90% GFF values implying that a large majority of the good MFs passed the threshold with very little noise included. The XCMS metrics performed slightly worse, with FDR values in the 10-15% range and GFF values closer to 75%. The two-parameter model performed worst when tested internally, with an FDR of about 20% and GFF also around 75% (Figure 2). However, when the models were trained on a different dataset than the one they were used to predict classifications for, all models had similar performance with %FDR around 10-25 and GFF around 60-80. The model trained on MESOSCOPE and tested on Falkor had consistently higher values, indicating that it was favoring more MFs recovered at the cost of a higher FDR, while the reverse was true for the model trained on Falkor and tested on MESOSCOPE (Figure 2). 
 
-```{r Fig2 FDR vs GPF cross-train triangle figure feature selection}
-fdr_gpf_cross_train_df <- lst(all_params, raw_data_params, xcms_params) %>%
+```{r Fig2 FDR vs GFF cross-train triangle figure feature selection}
+fdr_gff_cross_train_df <- lst(all_params, raw_data_params, xcms_params) %>%
   imap(function(param_selection, param_name){
     lapply(dataset_versions, function(train_set){
       full_model <- get(train_set) %>% 
@@ -226,19 +226,19 @@ fdr_gpf_cross_train_df <- lst(all_params, raw_data_params, xcms_params) %>%
   mutate(cross_type=factor(cross_type, levels=c("Same", "Different"))) %>%
   pivot_wider(names_from=error_type, values_from = n) %>%
   mutate(FDR=FP/(FP+TP)) %>%
-  mutate(GPF=TP/(FN+TP))
+  mutate(GFF=TP/(FN+TP))
 
 train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
 train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
-fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
-  pivot_longer(c(FDR, GPF)) %>%
+fdr_gff_cross_train_gp <- fdr_gff_cross_train_df %>%
+  pivot_longer(c(FDR, GFF)) %>%
   mutate(name=paste0("%", name)) %>%
   mutate(which_params=factor(which_params, 
                              labels=c("All metrics", "XCMS metrics", "Raw data metrics"),
                              levels=c("all_params", "xcms_params", "raw_data_params"))) %>%
   mutate(cross_type_num=as.numeric(cross_type)) %>%
   mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
-  mutate(name=factor(name, levels=c("%GPF", "%FDR"), labels=c("GPF", "FDR"))) %>%
+  mutate(name=factor(name, levels=c("%GFF", "%FDR"), labels=c("GFF", "FDR"))) %>%
   ggplot() +
   geom_point(aes(x=cross_type, y=value, color=train_test, 
                  fill=train_test, shape=name), size=5) +
@@ -250,7 +250,7 @@ fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
   scale_color_manual(values = c("#0b505c", "#184d1f", "#0d8299", "#028e34"), 
                      breaks = train_test_labels,
                      aesthetics = c("color", "fill")) +
-  scale_shape_manual(breaks = c("GPF", "FDR"), values = c("\u25B2", "\u25BC")) +
+  scale_shape_manual(breaks = c("GFF", "FDR"), values = c("\u25B2", "\u25BC")) +
   coord_cartesian(ylim = c(0, 1)) +
   scale_y_continuous(labels = scales::label_percent()) +
   theme_bw() +
@@ -258,13 +258,13 @@ fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
   labs(x=NULL, y=NULL, color="Train-test", fill="Train-test", shape="Error type") +
   guides(shape=guide_legend(order=1))
 
-ggsave(plot = fdr_gpf_cross_train_gp, 
-       filename = "fdr_gpf_cross_train.png", 
+ggsave(plot = fdr_gff_cross_train_gp, 
+       filename = "fdr_gff_cross_train.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-![Figure 2: False discovery rate (%FDR) and fraction of good peaks found (GPF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those molecular features the model categorized as "Good" using a threshold of 0.5, and higher %GPF indicates a larger fraction of the total good features were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gpf_cross_train.png){width=90%}
+![Figure 2: False discovery rate (%FDR) and fraction of good features found (%GFF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those molecular features the model categorized as "Good" using a threshold of 0.5, and higher %GFF indicates a larger fraction of the total good features were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gff_cross_train.png){width=90%}
 
 ### Model stability under different training sets
 
@@ -359,15 +359,15 @@ When testing model stability under a smaller sample size, we found reasonably go
 
 ### Regularized regression and random forests perform about the same
 
-None of the penalized regression models significantly improved cross-validated performance between the MESOSCOPE and Falkor datasets when measured by both initial performance and the performance drop when applied across datasets. All three regularized regression models had similar behavior, with ridge regression (α = 0) had the lowest rates for both GPF and FDR, with lasso (α = 1) obtaining higher ones and representing a less-stringent false negative acceptance while, as expected, the elastic net (α = 0.5) fell in between the two (Supp. figure 3). The random forest model, interestingly, had perfect predictive capacity when tested internally on the training data (FDR=0%, GPF=100%, for both MESOSCOPE and Falkor) but showed a significant drop in improvement when applied across datasets (Supp. figure 3). In each case, the performance drop when applied to a novel dataset was more extreme than the simple two-parameter model described above.
+None of the penalized regression models significantly improved cross-validated performance between the MESOSCOPE and Falkor datasets when measured by both initial performance and the performance drop when applied across datasets. All three regularized regression models had similar behavior, with ridge regression (α = 0) had the lowest rates for both GFF and FDR, with lasso (α = 1) obtaining higher ones and representing a less-stringent false negative acceptance while, as expected, the elastic net (α = 0.5) fell in between the two (Supp. figure 3). The random forest model, interestingly, had perfect predictive capacity when tested internally on the training data (FDR=0%, GFF=100%, for both MESOSCOPE and Falkor) but showed a significant drop in improvement when applied across datasets (Supp. figure 3). In each case, the performance drop when applied to a novel dataset was more extreme than the simple two-parameter model described above.
 
 ### Performance of a stricter threshold on novel datasets
 
 We settled on a 90% likelihood threshold for application to novel datasets because it struck a balance between the number of MFs we estimated to be necessary for robust testing while still remaining reasonable to manually label. For the CultureData dataset, we obtained 1,790 total mass features, 192 of which had predicted likelihoods above 0.9. Of these, 151 were identified manually as "Good", 21 were given "Ambiguous" designations, and only 3 were flagged as "Bad", with the remaining 17 appearing only in the standards. For the Pttime dataset, 7,781 were obtained with 400 flagged by the model as "Good". 348 were truly good MFs, 35 were ambiguous, and 17 were "Bad". No standards were run during this analysis, so there were no features in that category.
 
-With the stricter threshold, we obtained FDR values consistently below 5% even on the novel datasets, with values of 1.0%, 0.0% (truly zero false positives), 2.0%, and 4.6% for Falkor, MESOSCOPE, CultureData, and Pttime respectively (Figure 4). Of course, this low error rate required that we miss out on additional potentially valuable features, with only a fraction of the total good MFs making it past this threshold. In both the Falkor and MESOSCOPE datasets, less than half of the good MFs were labeled as such, with actual values of 39.4% and 26.5%, respectively. Since we did not label the complete dataset for CultureData and Pttime, we cannot accurately calculate the %GPF but expect it to be in a similar range (Figure 4).
+With the stricter threshold, we obtained FDR values consistently below 5% even on the novel datasets, with values of 1.0%, 0.0% (truly zero false positives), 2.0%, and 4.6% for Falkor, MESOSCOPE, CultureData, and Pttime respectively (Figure 4). Of course, this low error rate required that we miss out on additional potentially valuable features, with only a fraction of the total good MFs making it past this threshold. In both the Falkor and MESOSCOPE datasets, less than half of the good MFs were labeled as such, with actual values of 39.4% and 26.5%, respectively. Since we did not label the complete dataset for CultureData and Pttime, we cannot accurately calculate the %GFF but expect it to be in a similar range (Figure 4).
 
-```{r FDR vs GPF with additional datasets}
+```{r FDR vs GFF with additional datasets}
 # Currently a fairly simple figure, may need additional data?
 both_min_model <- rbind(FT2040_features, MS3000_features) %>%
   select(feat_class, med_cor, med_SNR) %>%
@@ -397,25 +397,25 @@ pred_probs_all <- bind_rows(lst(
 error_type_all_datasets <- pred_probs_all %>%
   pivot_wider(names_from=error_type, values_from = n) %>%
   mutate(`FDR`=`%FP`/(`%FP`+`%TP`)) %>%
-  mutate(`GPF`=`%TP`/(`%FN`+`%TP`)) %>%
-  mutate(`GPF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `GPF`))
+  mutate(`GFF`=`%TP`/(`%FN`+`%TP`)) %>%
+  mutate(`GFF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `GFF`))
 
-fdr_gpf_all_datasets_gp <- error_type_all_datasets %>%
-  pivot_longer(c(`FDR`, `GPF`)) %>%
+fdr_gff_all_datasets_gp <- error_type_all_datasets %>%
+  pivot_longer(c(`FDR`, `GFF`)) %>%
   drop_na() %>%
   mutate(desc=case_when(
     is.na(value) ~ NA,
     name=="FDR"~ paste0("frac(",`%FP`,",",`%FP`+`%TP`,")"),
-    name=="GPF"~ paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")
+    name=="GFF"~ paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")
   )) %>%
   mutate(vjust_custom=case_when(
     is.na(value) ~ NA,
     name=="FDR" & dataset=="Pttime" ~ 1.3,
     name=="FDR" ~ -0.3,
-    name=="GPF" ~ 1.3,
+    name=="GFF" ~ 1.3,
   )) %>%
-  mutate(name=factor(name, levels=c("GPF", "FDR"),
-                     labels=c("Fraction of good peaks found (GPF)", 
+  mutate(name=factor(name, levels=c("GFF", "FDR"),
+                     labels=c("Fraction of good features found (GFF)", 
                               "False discovery rate (FDR)"))) %>%
   mutate(dataset=factor(dataset, 
                         levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"),
@@ -429,8 +429,8 @@ fdr_gpf_all_datasets_gp <- error_type_all_datasets %>%
   theme(axis.title = element_blank(),
         strip.background = element_rect(fill="white"))
 
-ggsave(plot = fdr_gpf_all_datasets_gp, 
-       filename = "fdr_gpf_all_datasets.png", 
+ggsave(plot = fdr_gff_all_datasets_gp, 
+       filename = "fdr_gff_all_datasets.png", 
        device = "png", path = "manuscript/figures",
        width = 3, height = 4, units = "in", dpi = 300)
 
@@ -445,7 +445,7 @@ ggsave(plot = fdr_gpf_all_datasets_gp,
 #   theme(axis.title = element_blank())
 ```
 
-![Figure 4: False discovery rate and proportion of total good features identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GPF is calculated by dividing the number of true positives by the total number of good features as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gpf_all_datasets.png){width=30%}
+![Figure 4: False discovery rate and proportion of total good features identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GFF is calculated by dividing the number of true positives by the total number of good features as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gff_all_datasets.png){width=30%}
 
 ### Implications for biological conclusions
 
@@ -478,7 +478,7 @@ peak_data <- msnexp_filled %>%
 source("manuscript/IS_integrations/is_combine.R")
 IS_areas <- read_csv("manuscript/IS_integrations/all_IS.csv") %>%
   mutate(filename=paste0(filename, ".mzML")) %>%
-  dplyr::rename(area="IS_area") %>%
+  dplyr::rename(IS_area="area") %>%
   filter(!str_detect(filename, "QC")) %>%
   pivot_wider(names_from=IS_name, values_from = "IS_area") %>%
   mutate("Inj_vol"=ifelse(str_detect(filename, "Poo.*Half"), 0.5, 1)) %>%
@@ -603,8 +603,8 @@ clockplot_complete_df <- clockplot_data %>%
     pred_class=="Bad" & feat_class=="Bad" ~ "TN"
   )) %>%
   mutate(error_type=factor(error_type, levels=c("TP", "FP", "FN", "TN"),
-                           labels=c("Good peak found", "Bad peak included",
-                                    "Good peak missed", "Bad peak avoided")))
+                           labels=c("Good MF found", "Bad MF included",
+                                    "Good MF missed", "Bad MF avoided")))
 
 write_csv(clockplot_complete_df, file = "manuscript/MS3000_clockplot_coords.csv")
 ```
@@ -666,8 +666,8 @@ clockplot_base_gp <- ggplot() +
 clockplot_complete_gp <- clockplot_base_gp +
   geom_point(aes(shape=error_type), alpha=0.5, size=2,
              data = clockplot_complete_df) +
-  scale_shape_manual(breaks = c("Good peak found", "Bad peak included",
-                                "Good peak missed", "Bad peak avoided"), 
+  scale_shape_manual(breaks = c("Good MF found", "Bad MF included",
+                                "Good MF missed", "Bad MF avoided"), 
                      values = c(19, 3, 4, 1))
 
 ggsave(plot = clockplot_complete_gp, 
@@ -798,7 +798,7 @@ ggsave(plot = thresh_NMDS_gp, filename = "thresh_NMDS_plots.png",
 
 ## Discussion
 
-We used two fully-labeled and two partially-labeled HILIC LC-MS datasets to assess the performance of the XCMS algorithm and construct a robust model of peak quality. To measure performance, we used two measurements of success closely tied to intuitive questions about a dataset: the percentage of total good peaks found (GPF, also known as recall or sensitivity) and the percentage of bad molecular features (MFs) included, also known as the false discovery rate (FDR). We decided against using the F$_1$ score as an overall summary statistic because false negatives and false positives have very different implications in this context and should be treated separately.
+We used two fully-labeled and two partially-labeled HILIC LC-MS datasets to assess the performance of the XCMS algorithm and construct a robust model of peak quality. To measure performance, we used two measurements of success closely tied to intuitive questions about a dataset: the percentage of total good features found (GFF, also known as recall or sensitivity) and the percentage of bad molecular features (MFs) included, also known as the false discovery rate (FDR). We decided against using the F$_1$ score as an overall summary statistic because false negatives and false positives have very different implications in this context and should be treated separately.
 
 One of the major ways in which this manuscript differs from prior work is its focus on summary statistics calculated across multiple files. Most existing peakpicking literature uses the single-file EIC peak as the core bit of training data, but that approach ignores critical information obtained elsewhere in the MS run that can change the judgement made on a single chromatogram.[@Pirttila2022; @Guo2021; @Muller2020] Features that are high quality are typically represented in multiple files, especially in quality control pooled samples, and a feature that only has a peak in a single file is typically regarded as highly suspect, if not removed entirely. Classifying an entire feature at once not only has the advantage of reducing the amount of manual labor by a factor equal to the number of files in the run (typically 10s-100s smaller) but is also a better representation of the judgement made by an MS expert. An exemplary implementation of this multi-file approach in prior work is reported in @Kantz2019, who compared the multi-file summary statistic model to a deep neural network and came to many similar conclusions.
 
@@ -839,13 +839,13 @@ bind_rows(MS3000_features, FT2040_features) %>%
 
 We explored several different types of classification models for separating good molecular features (MFs) from bad, with a particular focus on quantifying the likelihood of each class rather than just returning the label. We found that a simple two-parameter logistic regression model trained on two novel metrics of peak quality had reasonably good performance on the training set and was highly robust when applied to novel datasets. The logistic regression in particular was favored over the random forest and regularized regression we tried due to their similar performance and increased interpretability (Supp. figure XX).
 
-This model outperforms the previously reported logistic regression model in @Kantz2019 and is highly simplified. There, they used a nineteen-parameter multiple logistic regression model and found a maximum performance of 80% GPF and an FDR of 34% on a cross-validated second cohort, similar to our cross-dataset testing. Our final two-parameter model also had an 80% GPF at a 0.5 likelihood threshold, but a significantly lower FDR of ~22.9%. This increased performance is likely due to our use of the metrics recalculated from the raw data, as their metrics were only calculated from the default MzMine2 peak parameters reported: similar to our XCMS-only model.
+This model outperforms the previously reported logistic regression model in @Kantz2019 and is highly simplified. There, they used a nineteen-parameter multiple logistic regression model and found a maximum performance of 80% GFF and an FDR of 34% on a cross-validated second cohort, similar to our cross-dataset testing. Our final two-parameter model also had an 80% GFF at a 0.5 likelihood threshold, but a significantly lower FDR of ~22.9%. This increased performance is likely due to our use of the metrics recalculated from the raw data, as their metrics were only calculated from the default MzMine2 peak parameters reported: similar to our XCMS-only model.
 
 #### Performance relative to recent deep learning methods
 
 @Guo2021 presented EVA and reported an accuracy of 90-95%, a range inclusive of our accuracy on both the Falkor (92.1%) and MESOSCOPE (94.4%) datasets when using a likelihood threshold of 0.5. However, we note that accuracy alone can be a highly misleading statistic to report when working with unbalanced datasets because very high accuracy can be obtained by simply classifying everything as bad, with a strong incentive to actually *increase* the number of bad MFs detected while doing so. This strategy, when applied to our data, returned accuracies in the 80-90% range despite being a useless classifier for downstream analysis. This is perhaps a facetious argument, but many of the single-parameter logistic models we tested never exceeded a 50% likelihood and essentially functioned as this type of classifier.
 
-The class imbalance, with mostly poor quality MFs, is partially why we chose to measure precision and recall instead of total accuracy. However, precision and recall can also be ambiguous when the positive class is not specified and the raw confusion matrices are unavailable, thus our very precise use of the FDR and GPF metrics as well as providing the raw confusion matrices in Supplemental Table XX. @Melnikov2020 reported precision and recall in their presentation of `peakonly`, relative to which we obtained higher accuracy (they report 89% accuracy) but worse GPF and FDR (89% and 3%, respectively, relative to our 77.1% GPF and 19.6% FDR overall). However, if we report precision and recall with the positive class set to "Bad", essentially trying to predict poor-quality MFs instead of good ones, our precision becomes 96.5% and our recall 95.7% due to the strong prior information about most MFs being bad.
+The class imbalance, with mostly poor quality MFs, is partially why we chose to measure precision and recall instead of total accuracy. However, precision and recall can also be ambiguous when the positive class is not specified and the raw confusion matrices are unavailable, thus our very precise use of the FDR and GFF metrics as well as providing the raw confusion matrices in Supplemental Table XX. @Melnikov2020 reported precision and recall in their presentation of `peakonly`, relative to which we obtained higher accuracy (they report 89% accuracy) but worse GFF and FDR (89% and 3%, respectively, relative to our 77.1% GFF and 19.6% FDR overall). However, if we report precision and recall with the positive class set to "Bad", essentially trying to predict poor-quality MFs instead of good ones, our precision becomes 96.5% and our recall 95.7% due to the strong prior information about most MFs being bad.
 
 @Gloaguen2022 later introduced NeatMS, another CNN, and compared it directly to `peakonly` to claim equivalent or superior performance across a range of dilution factors. However, they do not report total precision or recall metrics in a comprehensive untargeted way but instead focus only on assessing the model's performance on known chemical standards. They report a percentage of standards found for the `peakonly` model applied to their data and find that its performance is significantly lower (79.4%) than the recall reported in @Melnikov2020, perhaps indicating that the `peakonly` model is still overfit.
 
@@ -1036,7 +1036,7 @@ perf_peak_data <- single_EIC %>%
   })) %>%
   dplyr::rename(`Raw data`="int") %>%
   mutate(feature=factor(feature, levels=c("FT0588", "FT0280"), 
-                        labels=c("Good peak", "Bad peak")))
+                        labels=c("Good MF", "Bad MF")))
 summary_stats <- perf_peak_data %>%
   pivot_longer(-c(feature, rt, `Raw data`)) %>%
   mutate(new_val=value-`Raw data`) %>%
@@ -1113,7 +1113,7 @@ Finally, we calculated several metrics using a design-of-experiments (DoE) appro
 
 We used three different multiple logistic regression models to predict the likelihood of each MF being categorized as "Good". The first model included all metrics calculated as described above in Methods, the second contained only those parameters immediately available from the XCMS output without revisiting the raw data (the four core peak metrics *m/z*, RT, peak width, area and their standard deviations plus the mysterious lmin, f, and scale values as well as the fraction of peaks, samples, and standards found), and the final model was a simple two-parameter model using only the peak shape and novel SNR metrics. 
 
-In each case, we categorized each molecular feature as a true positive (TP) if it was predicted to be Good and was manually classified as Good, a true negative if both predicted and classifed as Bad, a false positive if predicted to be Good but manually classified as Bad, and a false negative if predicted to be Bad but was in fact manually classified as Good. This allowed us to additionally define two useful measures of success, the traditionally-defined false discovery rate (FDR, defined as 1-precision or the number of false positives divided by the total number of predicted positives) and the percentage of good peaks found (GPF, also known as the recall or sensitivity and defined as the number of true positives divided by the total number of actual positives).
+In each case, we categorized each molecular feature as a true positive (TP) if it was predicted to be Good and was manually classified as Good, a true negative if both predicted and classifed as Bad, a false positive if predicted to be Good but manually classified as Bad, and a false negative if predicted to be Bad but was in fact manually classified as Good. This allowed us to additionally define two useful measures of success, the traditionally-defined false discovery rate (FDR, defined as 1-precision or the number of false positives divided by the total number of predicted positives) and the percentage of good features found (GFF, also known as the recall or sensitivity and defined as the number of true positives divided by the total number of actual positives).
 
 To further explore questions of model stability and the potential for overfitting, we compared the predictions from a Falkor-trained model to a MESOSCOPE-trained model. This comparison was done in both the raw probability space as well as a rank-ordered space to test whether the most extreme likelihood (i.e. very best and very worst) MFs were consistently found to be most extreme independently of the actual likelihood predicted. For the raw probability space we compared the predictions using Pearson's correlation coefficient, while Spearman's rank-ordered coefficient was used for the ranked space. We also looked at the estimates produced by these two models and compared them with the combined model trained on both datasets combined to assess the model stability directly.
 
@@ -1143,7 +1143,7 @@ SNR: Signal to Noise Ratio
 
 MF: Molecular Feature
 
-GPF: Good Peaks Found
+GFF: Good Feature Found
 
 FDR: False Discovery Rate
 
@@ -1330,7 +1330,7 @@ rf_cross_train_df <- lapply(dataset_versions, function(train_set){
     }) %>% bind_rows() %>%
   mutate(which_alpha="rf")
 
-fdr_gpf_cross_train_df_fancy <- net_cross_train_df %>%
+fdr_gff_cross_train_df_fancy <- net_cross_train_df %>%
   rbind(rf_cross_train_df) %>%
   mutate(error_type=case_when(
     feat_class=="Bad" & pred_class=="Bad" ~ "TN",
@@ -1345,15 +1345,15 @@ fdr_gpf_cross_train_df_fancy <- net_cross_train_df %>%
   mutate(cross_type=factor(cross_type, levels=c("Same", "Different"))) %>%
   pivot_wider(names_from=error_type, values_from = n, values_fill = 0) %>%
   mutate(FDR=FP/(FP+TP)) %>%
-  mutate(GPF=TP/(FN+TP)) %>%
+  mutate(GFF=TP/(FN+TP)) %>%
   mutate(cross_type_num=as.numeric(cross_type))
 train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
 train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
-fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df_fancy %>%
+fdr_gff_cross_train_gp <- fdr_gff_cross_train_df_fancy %>%
   mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
   mutate(which_alpha=factor(which_alpha, levels=c("ridge", "elastic", "lasso", "rf"),
                             labels=c("Ridge: α=0", "Elastic: α=0.5", "Lasso: α=1", "Random forest"))) %>%
-  pivot_longer(c(FDR, GPF)) %>%
+  pivot_longer(c(FDR, GFF)) %>%
   ggplot() +
   geom_smooth(aes(x=cross_type_num, y=value, group=name), 
               method = "lm", formula="y~x", color="black", se=FALSE) +
@@ -1365,7 +1365,7 @@ fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df_fancy %>%
   scale_color_manual(values = c("#0b505c", "#184d1f", "#0d8299", "#028e34"), 
                      breaks = train_test_labels,
                      aesthetics = c("color", "fill")) +
-  scale_shape_manual(breaks = c("GPF", "FDR"), values = c("\u25B2", "\u25BC")) +
+  scale_shape_manual(breaks = c("GFF", "FDR"), values = c("\u25B2", "\u25BC")) +
   coord_cartesian(ylim = c(0, 1)) +
   scale_y_continuous(labels = scales::label_percent()) +
   theme_bw() +
@@ -1373,13 +1373,13 @@ fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df_fancy %>%
   labs(x=NULL, y=NULL, color="Train-test", fill="Train-test", shape="Error type") +
   guides(shape=guide_legend(order=1))
 
-ggsave(plot = fdr_gpf_cross_train_gp, 
-       filename = "regregrf_fdrgpf_cross_train.png", 
+ggsave(plot = fdr_gff_cross_train_gp, 
+       filename = "regregrf_fdrgff_cross_train.png", 
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-![Supplemental figure 3: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets.](supplement/regregrf_fdrgpf_cross_train.png){width=90%}
+![Supplemental figure 3: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets.](supplement/regregrf_fdrgff_cross_train.png){width=90%}
 
 ```{r confusion matrices for all the models for supplement}
 model_levels <- c("all_params", "xcms_params", "raw_data_params", 
@@ -1387,14 +1387,14 @@ model_levels <- c("all_params", "xcms_params", "raw_data_params",
 model_labels <- c("Full model", "XCMS model", "Two-parameter model",
                   "Ridge regression", "Elastic net", "Lasso regression", 
                   "Random forest")
-fdr_gpf_individual <- fdr_gpf_cross_train_df %>%
-  bind_rows(fdr_gpf_cross_train_df_fancy %>% dplyr::rename(which_params=which_alpha)) %>%
+fdr_gff_individual <- fdr_gff_cross_train_df %>%
+  bind_rows(fdr_gff_cross_train_df_fancy %>% dplyr::rename(which_params=which_alpha)) %>%
   separate("train_test", into = c("train", "test"), sep = "-") %>%
   select(-`NA`) %>%
-  select(model_type=which_params, train, test, TP, TN, FP, FN, FDR, GPF) %>%
+  select(model_type=which_params, train, test, TP, TN, FP, FN, FDR, GFF) %>%
   mutate(model_type=factor(model_type, levels=model_levels, labels=model_labels)) %>%
   arrange(model_type)
-fdr_gpf_full_model <- bind_rows(lst(FT2040_features, MS3000_features), .id = "dataset") %>%
+fdr_gff_full_model <- bind_rows(lst(FT2040_features, MS3000_features), .id = "dataset") %>%
   mutate(pred_prob=predict(object=both_min_model, newdata = ., type = "response")) %>%
   mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
   mutate(error_type=case_when(
@@ -1412,7 +1412,7 @@ fdr_gpf_full_model <- bind_rows(lst(FT2040_features, MS3000_features), .id = "da
   ungroup() %>%
   pivot_wider(names_from=error_type, values_from = n, values_fill = 0) %>%
   mutate(FDR=FP/(FP+TP)) %>%
-  mutate(GPF=TP/(FN+TP)) %>%
+  mutate(GFF=TP/(FN+TP)) %>%
   mutate(model_type="Two-parameter model") %>%
   mutate(train="Both") %>%
   mutate(test=case_when(
@@ -1420,9 +1420,9 @@ fdr_gpf_full_model <- bind_rows(lst(FT2040_features, MS3000_features), .id = "da
     calc_type=="MS3000_features"~"MS3000",
     calc_type=="combined"~"Both"
   )) %>%
-  select(model_type, train, test, TP, TN, FP, FN, FDR, GPF)
+  select(model_type, train, test, TP, TN, FP, FN, FDR, GFF)
 
-fdr_gpf_strict_all <- bind_rows(lst(FT2040_features, MS3000_features), .id = "dataset") %>%
+fdr_gff_strict_all <- bind_rows(lst(FT2040_features, MS3000_features), .id = "dataset") %>%
   mutate(pred_prob=predict(object=both_min_model, newdata = ., type = "response")) %>%
   mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
   mutate(error_type=case_when(
@@ -1440,7 +1440,7 @@ fdr_gpf_strict_all <- bind_rows(lst(FT2040_features, MS3000_features), .id = "da
   ungroup() %>%
   pivot_wider(names_from=error_type, values_from = n, values_fill = 0) %>%
   mutate(FDR=FP/(FP+TP)) %>%
-  mutate(GPF=TP/(FN+TP)) %>%
+  mutate(GFF=TP/(FN+TP)) %>%
   mutate(model_type="Two-parameter model") %>%
   mutate(train="Both") %>%
   mutate(test=case_when(
@@ -1448,15 +1448,15 @@ fdr_gpf_strict_all <- bind_rows(lst(FT2040_features, MS3000_features), .id = "da
     calc_type=="MS3000_features"~"MS3000",
     calc_type=="combined"~"Both"
   )) %>%
-  select(model_type, train, test, TP, TN, FP, FN, FDR, GPF)
+  select(model_type, train, test, TP, TN, FP, FN, FDR, GFF)
 
-fdr_gpf_stricter_thresh <- error_type_all_datasets %>%
-  set_names(c("test", "FN", "FP", "TN", "TP", "FDR", "GPF")) %>%
+fdr_gff_stricter_thresh <- error_type_all_datasets %>%
+  set_names(c("test", "FN", "FP", "TN", "TP", "FDR", "GFF")) %>%
   mutate(model_type="Both (threshold 0.9)") %>%
   mutate(train="Both") %>%
-  select(model_type, train, test, TP, TN, FP, FN, FDR, GPF)
+  select(model_type, train, test, TP, TN, FP, FN, FDR, GFF)
 
-bind_rows(fdr_gpf_individual, fdr_gpf_full_model, fdr_gpf_stricter_thresh) %>%
+bind_rows(fdr_gff_individual, fdr_gff_full_model, fdr_gff_stricter_thresh) %>%
   write_csv("manuscript/supplement/model_confusion_matrices.csv")
 ```
 
