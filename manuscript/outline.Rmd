@@ -180,20 +180,6 @@ ggsave(plot = comb_cowplot,
 
 ![Figure 1: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
 
-Include the descriptor for what "FTXXXX" means. 
-
-Include the molecular mass in the feature label? If known, include name?
-
-Put the actual good/bad label in the figure somewhere
-
-What's the importance of the different colors?
-
-Note that these were taken from the MESOSCOPE dataset.
-
-Explain the chromatograms (RT/int/ what "goodness" requires?) explain x/y axis in figure legend, maybe do in bulk across all at once?
-
-Explain that we grabbed the center of the peak +/- 1 (2?) minutes
-
 ### Feature extraction
 Feature extraction - many possible metrics, calculated across features
 

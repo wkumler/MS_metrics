@@ -972,29 +972,40 @@ minEIC_df <- read_csv("manuscript/minEIC_df.csv")
 
 good_chroms_gp <- minEIC_df %>%
   filter(feat_class=="Good") %>%
+  arrange(feature) %>%
+  mutate(feature=case_when(
+    feature=="FT0588"~"DMS-Ac 13C",
+    feature=="FT0677"~"Taurine",
+    TRUE~feature
+  )) %>%
+  mutate(feature=factor(feature, levels=unique(feature))) %>%
   ggplot() +
   geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
-  facet_wrap(~feature, nrow = 1, scales = "free") +
+  ggh4x::facet_grid2(feat_class~feature, scales = "free", 
+                     independent = "y", switch = "y") +
   scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
   theme_bw() +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank(),
         axis.title = element_blank(),
         legend.position = "none", 
-        panel.grid = element_blank()) +
+        panel.grid = element_blank(),
+        panel.spacing.x = unit(0, "lines")) +
   guides(color=guide_legend(override.aes = list(linewidth=2), title = "Sample depth:  "))
 bad_chroms_gp <- minEIC_df %>%
   filter(feat_class=="Bad") %>%
   ggplot() +
   geom_line(aes(x=rt, y=int, group=filename, color=depth)) +
-  facet_wrap(~feature, nrow = 1, scales = "free") +
+  ggh4x::facet_grid2(feat_class~feature, scales = "free", 
+                     independent = "y", switch = "y") +
   scale_color_manual(breaks = c("15m", "DCM", "175m"), values = c("#f4bb23", "#028e34", "#0b505c")) +
   theme_bw() +
   theme(axis.text = element_blank(),
         axis.ticks = element_blank(),
         axis.title = element_blank(),
         legend.position = "none",
-        panel.grid = element_blank())
+        panel.grid = element_blank(),
+        panel.spacing.x = unit(0, "lines"))
 chroms_legend <- cowplot::get_legend(good_chroms_gp + theme(legend.position = "bottom"))
 
 comb_cowplot <- cowplot::plot_grid(good_chroms_gp, bad_chroms_gp, chroms_legend, 
@@ -1005,7 +1016,7 @@ ggsave(plot = comb_cowplot,
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-![Figure 7: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications, colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
+![Figure 7: Randomly selected ion chromatograms from both "Good" (top row) and "Bad" (bottom row) manual classifications. Plots show retention time along the x-axis in a 1 minute window around the center of the feature and show measured intensity on the y. Features are from the MESOSCOPE dataset and colored by the depth from which the biological sample was taken. DCM = deep chlorophyll maximum, approximately 110 meters. Molecular feature ids are provided as the title of each panel, starting with "FT" and followed by 4 digits. Two features were annotated using authentic standards run alongside: the 13C isotope of dimethylsulfonioacetate (DMS-Ac) and taurine.](figures/somegood_somebad_depthcolor_chroms.png){width=70%}
 
 ### Peak feature extraction and metric calculation
 
