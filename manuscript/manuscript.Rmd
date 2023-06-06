@@ -532,12 +532,13 @@ best_feats <- MS3000_features %>%
   select(feature, feat_class, pred_class)
 clockplot_data <- norm_area_data %>%
   right_join(best_feats, by = join_by(feature)) %>%
-  left_join(file_data %>% select(filename, depth), by = join_by(filename))
+  left_join(file_data %>% select(filename, depth), by = join_by(filename)) %>%
+  mutate(depth=factor(depth, levels=c("15m", "DCM", "175m")))
 
 kw_pvals_all <- clockplot_data %>%
   nest(data=-c(feature, pred_class)) %>%
   mutate(tidyaov=map(
-    data, ~ broom::tidy(kruskal.test(.x$norm_area~.x$depth))), 
+    data, ~ broom::tidy(kruskal.test(.x$norm_area~.x$depth))),
   ) %>%
   unnest(tidyaov) %>%
   select(-parameter, -method) %>%
