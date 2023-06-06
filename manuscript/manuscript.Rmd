@@ -11,7 +11,7 @@ bibliography: refs.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
+knitr::opts_chunk$set(echo = FALSE, eval=TRUE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
@@ -23,7 +23,7 @@ library(RaMS)
 for(dataset_version in c("FT2040", "MS3000", "CultureData", "Pttime")){
   print(paste("Processing", dataset_version))
   # source("peakpicking_and_prep.R")
-  source("feature_extraction.R")
+  # source("feature_extraction.R")
 }
 ```
 
@@ -226,17 +226,17 @@ fdr_gpf_cross_train_df <- lst(all_params, raw_data_params, xcms_params) %>%
   mutate(cross_type=factor(cross_type, levels=c("Same", "Different"))) %>%
   pivot_wider(names_from=error_type, values_from = n) %>%
   mutate(FDR=FP/(FP+TP)) %>%
-  mutate(GPF=TP/(FN+TP)) %>%
+  mutate(GPF=TP/(FN+TP))
+
+train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
+train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
+fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
   pivot_longer(c(FDR, GPF)) %>%
   mutate(name=paste0("%", name)) %>%
   mutate(which_params=factor(which_params, 
                              labels=c("All metrics", "XCMS metrics", "Raw data metrics"),
                              levels=c("all_params", "xcms_params", "raw_data_params"))) %>%
-  mutate(cross_type_num=as.numeric(cross_type))
-
-train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
-train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
-fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
+  mutate(cross_type_num=as.numeric(cross_type)) %>%
   mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
   mutate(name=factor(name, levels=c("%GPF", "%FDR"), labels=c("GPF", "FDR"))) %>%
   ggplot() +
@@ -478,7 +478,7 @@ peak_data <- msnexp_filled %>%
 source("manuscript/IS_integrations/is_combine.R")
 IS_areas <- read_csv("manuscript/IS_integrations/all_IS.csv") %>%
   mutate(filename=paste0(filename, ".mzML")) %>%
-  rename(area="IS_area") %>%
+  dplyr::rename(area="IS_area") %>%
   filter(!str_detect(filename, "QC")) %>%
   pivot_wider(names_from=IS_name, values_from = "IS_area") %>%
   mutate("Inj_vol"=ifelse(str_detect(filename, "Poo.*Half"), 0.5, 1)) %>%
@@ -853,7 +853,9 @@ While the model we present here likely has reduced performance relative to the C
 
 #### Assessing the relative power of individual metrics
 
-The two metrics in the final model were derived from the raw EIC data rather than any summary statistic calculated by XCMS automatically and were implemented because they matched our intuition about what makes an MF look good to an MS expert. It is worth noting that these are very simple metrics and therefore fast to calculate, but we expect that more complicated metrics could perform even better. For example, the method of using the data within the peak boundaries for SNR calculation rather than data outside of them is not known to the authors to be implemented elsewhere but could be further improved by more advanced smoothing methods rather than using the residuals directly. Additionally, the calculation of peak shape using a Pearson's correlation to an idealized curve was not expected to be especially powerful given prior research (e.g. @Ipsen2010) and that the centWave algorithm essentially uses this information already during the wavelet fitting, but still proved to be a highly effective parameter. This metric could be improved with more careful summary statistics that account for the differences between samples. Currently, the use of the overall median value does a reasonable job at identifying MFs that appear in many samples but performs poorly when detecting MFs that appear in only a few. Also worth noting is that the calculation of any new metrics such as these that rely on access to the raw data require exact specification of the maximum and minimum *m/z* and retention time for a peak, values that are not always returned by peakpicking algorithms and must be recalculated, as in @Kantz2019.
+Although the deep learning models show promise for peak quality recalibration, many mass-spectrometrists are reluctant to jump fully to their black-box nature. For this reason, we also reported here the relative power of individual parameters in our full model and use the results to dispel several myths about which parameters are useful in distinguishing signal from noise.
+
+The two metrics in the final model were rederived from the raw EIC data because they matched our intuition about what makes an MF look good to an MS expert. It is worth noting that these are very simple metrics and therefore fast to calculate, but we expect that more complicated metrics could perform even better. For example, the method of using the data within the peak boundaries for SNR calculation rather than data outside of them is not known to the authors to be implemented elsewhere but could be further improved by more advanced smoothing methods rather than using the residuals directly. Additionally, the calculation of peak shape using a Pearson's correlation to an idealized curve was not expected to be especially powerful given prior research (e.g. @Ipsen2010) and that the centWave algorithm essentially uses this information already during the wavelet fitting, but still proved to be a highly effective parameter. This metric could be improved with more careful summary statistics that account for the differences between samples. Currently, the use of the overall median value does a reasonable job at identifying MFs that appear in many samples but performs poorly when detecting MFs that appear in only a few. Also worth noting is that the calculation of any new metrics such as these that rely on access to the raw data require exact specification of the maximum and minimum *m/z* and retention time for a peak, values that are not always returned by peakpicking algorithms and must be recalculated, as in @Kantz2019.
 
 ```{r, eval=FALSE}
 bind_rows(MS3000_features, FT2040_features)
@@ -882,7 +884,7 @@ MS3000_features %>%
 
 We were surprised at the poor performance of several other metrics. The isotope information in particular was expected to be a very strong predictor of peak quality given previous work that uses this metric extensively.[@Libiseller2015; @Treutler2016; @ElAbiead2021] We learned that many noise peaks still have reliable isotopes (perhaps unsurprising, given that the noise is in fact often caused by solvents or contaminants that are still chemical in nature) and that many real peaks are simply too low-intensity to have them in this kind of dilute environmental sample. 
 
-The relative standard deviation (RSD), also called the coefficient of variance, among pooled samples is another parameter that performed poorly given its general acceptance as a quality scoring metric. In the full model, neither the traditional calculation of RSD (standard deviation divided by the mean) nor the robust implementation (median absolute deviation divided by the median) were significant parameters. This result was also reported by @Gloaguen2022 who noted that while the RSD was typically lower for high-quality features there were many noise peaks with low RSDs as well. We also note that though they do not report the statistical significance of the RSD shift across feature quality, it doesn't appear to be hugely significant without a very large sample size.
+The relative standard deviation (RSD), also called the coefficient of variance, among pooled samples is another parameter that performed surprisingly poorly given its general acceptance as a quality scoring metric. In the full model, neither the traditional calculation of RSD (standard deviation divided by the mean) nor the robust implementation (median absolute deviation divided by the median) were significant parameters. This result was also reported by @Gloaguen2022 who noted that while the RSD was typically lower for high-quality features there were many noise peaks with low RSDs as well. We also note that though they do not report the statistical significance of the RSD shift across feature quality, it doesn't appear to be hugely significant without a very large sample size.
 
 We also showed that the automatically calculated SNR parameter from XCMS is not especially useful in distinguishing signal from noise. After inspecting a selection of peaks that had anomalous values for this metric, we are inclined to agree with @Myers2017a and conclude that this is often due to insufficient data outside of the peak for a robust calculation of noise level. 
 
@@ -890,9 +892,9 @@ Finally, we were surprised to find essentially no predictive power offered by pe
 
 #### Model selection and simplification
 
-We settled on the highly reduced model of just two parameters because we found that additional parameters often improved performance on the training set but did not do so significantly for the novel datasets where the application of such a model is actually useful (Figure XX). One important caveat to note is that for the partially-labelled CultureData and Pttime datasets, there exists an uncontrolled degree of experimenter bias because the MS expert responsible for labeling did know that these peaks were all expected to be good. However, given that we do still see poor-quality peaks in this set indicates that this was not an overwhelming bias. The drastic drop in performance on out-of-sample data was particularly concerning because it creates overconfidence in the true level of noise actually ending up in the final dataset.
+We settled on the highly reduced model of just two parameters because we found that additional parameters often improved performance on the training set but did not do so significantly for the novel datasets where the application of such a model is actually useful (Figure 2). One important caveat to note is that for the partially-labelled CultureData and Pttime datasets, there exists an uncontrolled degree of experimenter bias because the MS expert responsible for labeling did know that these peaks were all expected to be good. However, given that we do still see poor-quality peaks in this set indicates that this was not an overwhelming bias. The drastic drop in performance on out-of-sample data was particularly concerning because it creates overconfidence in the true level of noise actually ending up in the final dataset.
 
-We also found that this reduced two-parameter model was largely independent of the particular training set used, unlike in the more complex models (Figure XX). This was true in both absolute likelihood as well as rank-ordered space, a particularly important distinction when one imagines manually labeling "down" the dataset where the researcher desires to start viewing the chromatograms associated with the very best features and eventually reaching a point where enough MFs have been reviewed or bad MFs are consistent enough that they decide to forgo additional labeling.
+We also found that this reduced two-parameter model was largely independent of the particular training set used, unlike in the more complex models (Figure 3). This was true in both absolute likelihood as well as rank-ordered space, a particularly important distinction when one imagines manually labeling "down" the dataset where the researcher desires to start viewing the chromatograms associated with the very best features and eventually reaching a point where enough MFs have been reviewed or bad MFs are consistent enough that they decide to forgo additional labeling.
 
 A final benefit to the reduced model is the smaller training set required to reach stability (Supp figure XX). This reduced size means that a useful model could be trained using only a fraction of the MFs identified in a sample set and then used to predict the quality for the remainder of the features. This reduction in training set size was not as significant as we expected, however, with several hundred features requiring manual labeling before even the two most stable parameters reached a consensus.
 
@@ -1032,7 +1034,7 @@ perf_peak_data <- single_EIC %>%
     perf_peak <- dbeta(.$rt, shape1=x, shape2=5)
     perf_peak/max(perf_peak)
   })) %>%
-  rename(`Raw data`="int") %>%
+  dplyr::rename(`Raw data`="int") %>%
   mutate(feature=factor(feature, levels=c("FT0588", "FT0280"), 
                         labels=c("Good peak", "Bad peak")))
 summary_stats <- perf_peak_data %>%
@@ -1328,9 +1330,9 @@ rf_cross_train_df <- lapply(dataset_versions, function(train_set){
     }) %>% bind_rows() %>%
   mutate(which_alpha="rf")
 
-fdr_gpf_cross_train_df <- net_cross_train_df %>%
+fdr_gpf_cross_train_df_fancy <- net_cross_train_df %>%
   rbind(rf_cross_train_df) %>%
-    mutate(error_type=case_when(
+  mutate(error_type=case_when(
     feat_class=="Bad" & pred_class=="Bad" ~ "TN",
     feat_class=="Bad" & pred_class=="Good" ~ "FP",
     feat_class=="Good" & pred_class=="Bad" ~ "FN",
@@ -1347,7 +1349,7 @@ fdr_gpf_cross_train_df <- net_cross_train_df %>%
   mutate(cross_type_num=as.numeric(cross_type))
 train_test_levels <- c("MS3000-MS3000", "FT2040-FT2040", "MS3000-FT2040", "FT2040-MS3000")
 train_test_labels <- c("MESO-MESO", "Falkor-Falkor", "MESO-Falkor", "Falkor-MESO")
-fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df %>%
+fdr_gpf_cross_train_gp <- fdr_gpf_cross_train_df_fancy %>%
   mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
   mutate(which_alpha=factor(which_alpha, levels=c("ridge", "elastic", "lasso", "rf"),
                             labels=c("Ridge: α=0", "Elastic: α=0.5", "Lasso: α=1", "Random forest"))) %>%
@@ -1378,3 +1380,49 @@ ggsave(plot = fdr_gpf_cross_train_gp,
 ```
 
 ![Supplemental figure 3: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets.](supplement/regregrf_fdrgpf_cross_train.png){width=90%}
+
+```{r confusion matrices for all the models for supplement}
+model_levels <- c("all_params", "xcms_params", "raw_data_params", 
+                  "ridge", "elastic", "lasso", "rf")
+model_labels <- c("Full model", "XCMS model", "Two-parameter model",
+                  "Ridge regression", "Elastic net", "Lasso regression", 
+                  "Random forest")
+fdr_gpf_individual <- fdr_gpf_cross_train_df %>%
+  bind_rows(fdr_gpf_cross_train_df_fancy %>% dplyr::rename(which_params=which_alpha)) %>%
+  separate("train_test", into = c("train", "test"), sep = "-") %>%
+  select(-`NA`) %>%
+  select(model_type=which_params, train, test, TP, TN, FP, FN, FDR, GPF) %>%
+  mutate(model_type=factor(model_type, levels=model_levels, labels=model_labels)) %>%
+  arrange(model_type)
+fdr_gpf_full_model <- bind_rows(lst(FT2040_features, MS3000_features), .id = "dataset") %>%
+  mutate(pred_prob=predict(object=both_min_model, newdata = ., type = "response")) %>%
+  mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
+  mutate(error_type=case_when(
+    feat_class=="Bad" & pred_class=="Bad" ~ "TN",
+    feat_class=="Bad" & pred_class=="Good" ~ "FP",
+    feat_class=="Good" & pred_class=="Bad" ~ "FN",
+    feat_class=="Good" & pred_class=="Good" ~ "TP"
+  )) %>%
+  drop_na() %>%
+  bind_rows(combined=., each=., .id = "calc_type") %>% 
+  mutate(calc_type=ifelse(calc_type=="each", dataset, calc_type)) %>%
+  select(-dataset) %>%
+  group_by(calc_type) %>%
+  count(error_type) %>%
+  ungroup() %>%
+  pivot_wider(names_from=error_type, values_from = n, values_fill = 0) %>%
+  mutate(FDR=FP/(FP+TP)) %>%
+  mutate(GPF=TP/(FN+TP)) %>%
+  mutate(model_type="Two-parameter model") %>%
+  mutate(train="Both") %>%
+  mutate(test=case_when(
+    calc_type=="FT2040_features"~"FT2040",
+    calc_type=="MS3000_features"~"MS3000",
+    calc_type=="combined"~"Both"
+  )) %>%
+  select(model_type, train, test, TP, TN, FP, FN, FDR, GPF)
+
+bind_rows(fdr_gpf_individual, fdr_gpf_full_model) %>%
+  write_csv("manuscript/supplement/model_confusion_matrices.csv")
+```
+
