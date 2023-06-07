@@ -624,12 +624,6 @@ ggsave(plot = comb_prob_space_gp,
 
 ![Figure 5: Predicted likelihood of a feature being "Good" according to a model trained on the MESOSCOPE dataset vs a model trained on the Falkor dataset. The top row of plots show the exact likelihood predicted by the logistic model across three different subsets of parameters, while the bottom row shows the estimates ranked from least likely to most likely. Points are colored by their manually-assigned quality according to an expert.](figures/comb_prob_space.png){width=70%}
 
-Make sure labels are the same as above - probably stick with XCMS for specificity. (Could just go in tables?)
-
-Remember to add Pearson and Spearman correlation coefficients in the corners!
-
-Maybe avoid "rank" phrasing? Instead of best/worst?
-
 ### Error rates on novel data with stricter likelihood threshold
 
 ```{r FDR vs GPF with additional datasets}

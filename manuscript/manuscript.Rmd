@@ -267,7 +267,7 @@ ggsave(plot = fdr_gff_cross_train_gp,
 
 ### Model stability under different training sets
 
-We found that the predictions made from a Falkor-trained dataset consistently differed from a MESOSCOPE-trained dataset for the full and XCMS-only models. In the raw probability space, the two-parameter models had the highest $r$ value of 0.996, while the full models and the XCMS-trained models had $r$ values of 0.856 and 0.896, respectively. When compared in ranked space, we found an intensification of the effect described previously, with an even higher $r$ for the two-parameter model of 0.998 but lower $r$ values for the full and XCMS-trained model of 0.818 and 0.849, respectively (Figure 3).
+We found that the predictions made from a Falkor-trained dataset consistently differed from a MESOSCOPE-trained dataset for the full and XCMS-only models. In the raw probability space, the two-parameter models had the highest $r$ value of 0.996, while the full models and the XCMS-trained models had $r$ values of 0.799 and 0.863, respectively. When compared in ranked space, we found an intensification of the effect described previously, with a higher $ρ$ for the two-parameter model of 0.998 but lower $ρ$ values for the full and XCMS-trained model of 0.725 and 0.804, respectively (Figure 3).
 
 ```{r Fig3 red/gold rank dotplot step-down method}
 dotplot_stepdown_data <- lst(all_params, xcms_params, raw_data_params) %>%
@@ -290,17 +290,23 @@ stepdown_cors <- dotplot_stepdown_data %>%
   group_by(training_set, which_params) %>%
   pivot_wider(names_from = training_set, values_from = c(pred_prob)) %>%
   summarize(pcor=cor(FT2040_features, MS3000_features, method = "pearson"),
-            scor=cor(FT2040_features, MS3000_features, method = "spearman"))
+            scor=cor(FT2040_features, MS3000_features, method = "spearman")) %>% 
+  mutate(pcor=paste0("r=", signif(pcor, digits = 3))) %>%
+  mutate(scor=paste0("ρ=", signif(scor, digits = 3))) %>%
+  mutate(which_params=factor(
+    which_params, levels=c("all_params", "xcms_params", "raw_data_params"),
+    labels=c("All metrics", "XCMS-only metrics", "Raw data metrics")))
 
 raw_prob_space_gp <- dotplot_stepdown_data %>%
   pivot_wider(names_from = training_set, values_from = pred_prob) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(which_params=factor(
     which_params, levels=c("all_params", "xcms_params", "raw_data_params"),
-    labels=c("All metrics", "XCMS metrics", "Raw data metrics"))) %>%
+    labels=c("All metrics", "XCMS-only metrics", "Raw data metrics"))) %>%
   ggplot() +
   geom_abline(slope = 1, intercept = 0, color="black", lwd=1) +
   geom_point(aes(x=FT2040_features, y=MS3000_features, color=feat_class), alpha=0.2) +
+  geom_text(aes(label=pcor), x=-Inf, y=Inf, hjust=-0.1, vjust=1.5, data=stepdown_cors) +
   facet_wrap(~which_params, nrow = 1) +
   scale_fill_manual(values = c("#a41118", "#f4bb23"), breaks = c("Bad", "Good"), 
                     aesthetics = c("color", "fill")) +
@@ -319,11 +325,12 @@ rank_prob_space_gp <- dotplot_stepdown_data %>%
   mutate(which_params=factor(
     which_params, 
     levels=c("all_params", "xcms_params", "raw_data_params"),
-    labels=c("All metrics", "XCMS metrics", "Raw data metrics"))) %>%
+    labels=c("All metrics", "XCMS-only metrics", "Raw data metrics"))) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   ggplot() +
   geom_abline(slope = 1, intercept = 0, color="black", lwd=1) +
   geom_point(aes(x=FT2040_features, y=MS3000_features, color=feat_class), alpha=0.2) +
+  geom_text(aes(label=scor), x=-Inf, y=Inf, hjust=-0.1, vjust=1.5, data=stepdown_cors) +
   facet_wrap(~which_params, nrow = 1) +
   scale_fill_manual(values = c("#a41118", "#f4bb23"), breaks = c("Bad", "Good"), 
                     aesthetics = c("color", "fill")) +
@@ -340,7 +347,7 @@ rank_prob_space_gp <- dotplot_stepdown_data %>%
   theme(axis.text.x = ggtext::element_markdown(hjust=c(0, 1)),
         # strip.text = element_blank(),
         strip.background = element_rect(fill="white"),
-        legend.position=c(0.875, 0.25),
+        legend.position=c(0.925, 0.25),
         legend.background = element_blank(),
         legend.spacing.x = unit(0.003, units = "npc"))
 comb_prob_space_gp <- egg::ggarrange(raw_prob_space_gp, rank_prob_space_gp, draw = FALSE)
