@@ -256,29 +256,29 @@ write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = F
 
 # Calculate DOE metrics ----
 # library(lmPerm)
-depth_diffs <- peak_data %>%
-  select(feature, filename, into) %>%
-  left_join(file_data) %>%
-  filter(samp_type=="Smp") %>%
-  nest(data=-feature) %>%
-  mutate(t_pval=map_dbl(data, function(x){
-    depthtab <- table(x$depth)
-    if(any(depthtab<2))return(99)
-    if(length(depthtab)<2)return(999)
-    broom::tidy(aov(x$into~x$depth))$p.value[1]
-    # broom::tidy(aovp(x$into~x$depth, settings=FALSE, perm = "Prob",
-    #                  maxIter=1000))$`Pr(Prob)`[1]
-  })) %>%
-  mutate(t_pval=ifelse(t_pval==99, (max(t_pval[t_pval<1])+9)/10, t_pval)) %>%
-  mutate(t_pval=ifelse(t_pval==999, min(t_pval[t_pval<1])/10, t_pval)) %>%
-  mutate(t_pval=log10(t_pval)) %>%
-  mutate(t_pval=log10(t_pval*-1)*-1) %>%
-  select(feature, t_pval) %>%
-  # Cover cases where there's zero data in samples OR blank
-  # 0.9 p-value is high enough to be ignored but not 1 to cause problems
-  right_join(distinct(peak_data, feature)) %>%
-  mutate(smp_to_blk=ifelse(is.na(t_pval), 0.9, t_pval))
-write.csv(depth_diffs, paste0(output_folder, "depth_diffs.csv"), row.names = FALSE)
+# depth_diffs <- peak_data %>%
+#   select(feature, filename, into) %>%
+#   left_join(file_data) %>%
+#   filter(samp_type=="Smp") %>%
+#   nest(data=-feature) %>%
+#   mutate(t_pval=map_dbl(data, function(x){
+#     depthtab <- table(x$depth)
+#     if(any(depthtab<2))return(99)
+#     if(length(depthtab)<2)return(999)
+#     broom::tidy(aov(x$into~x$depth))$p.value[1]
+#     # broom::tidy(aovp(x$into~x$depth, settings=FALSE, perm = "Prob",
+#     #                  maxIter=1000))$`Pr(Prob)`[1]
+#   })) %>%
+#   mutate(t_pval=ifelse(t_pval==99, (max(t_pval[t_pval<1])+9)/10, t_pval)) %>%
+#   mutate(t_pval=ifelse(t_pval==999, min(t_pval[t_pval<1])/10, t_pval)) %>%
+#   mutate(t_pval=log10(t_pval)) %>%
+#   mutate(t_pval=log10(t_pval*-1)*-1) %>%
+#   select(feature, t_pval) %>%
+#   # Cover cases where there's zero data in samples OR blank
+#   # 0.9 p-value is high enough to be ignored but not 1 to cause problems
+#   right_join(distinct(peak_data, feature)) %>%
+#   mutate(smp_to_blk=ifelse(is.na(t_pval), 0.9, t_pval))
+# write.csv(depth_diffs, paste0(output_folder, "depth_diffs.csv"), row.names = FALSE)
 
 if(dataset_version%in%c("FT2040", "MS3000", "CultureData")){
   blank_diffs <- peak_data %>%
@@ -347,7 +347,7 @@ write.csv(stan_diffs, paste0(output_folder, "stan_diffs.csv"), row.names = FALSE
 simple_feats <- read_csv(paste0(output_folder, "simple_feats.csv"))
 peakshape_mets <- read_csv(paste0(output_folder, "peakshape_mets.csv"))
 med_missed_scans <- read_csv(paste0(output_folder, "med_missed_scans.csv"))
-depth_diffs <- read_csv(paste0(output_folder, "depth_diffs.csv"))
+# depth_diffs <- read_csv(paste0(output_folder, "depth_diffs.csv"))
 blank_diffs <- read_csv(paste0(output_folder, "blank_diffs.csv"))
 stan_diffs <- read_csv(paste0(output_folder, "stan_diffs.csv"))
 feat_isodata <- read_csv(paste0(output_folder, "feat_isodata.csv"))
@@ -400,7 +400,7 @@ library(plotly)
 plot_ly(features_extracted, x=~mean_pw, y=~log10(sn), z=~n_found, color=~feat_class,
         type = "scatter3d", mode="markers")
 features_extracted %>%
-  plot_ly(x=~med_SNR, y=~med_cor, z=~log_mean_height, 
+  plot_ly(x=~med_SNR, y=~med_cor, z=~log_mean_area, 
           color=~feat_class, text=~feature,
           type = "scatter3d", mode="markers")
 features_extracted %>%
@@ -408,10 +408,10 @@ features_extracted %>%
           type = "scatter3d", mode="markers")
 
 
-library(GGally)
-gp <- features_extracted %>%
-  select(-feature) %>%
-  ggpairs(aes(color=feat_class), lower=list(
-    combo=wrap("facethist",  bins=30))
-    )
+# library(GGally)
+# gp <- features_extracted %>%
+#   select(-feature) %>%
+#   ggpairs(aes(color=feat_class), lower=list(
+#     combo=wrap("facethist",  bins=30))
+#     )
 
