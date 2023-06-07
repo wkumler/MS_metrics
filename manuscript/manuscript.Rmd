@@ -11,7 +11,7 @@ bibliography: refs.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
+knitr::opts_chunk$set(echo = FALSE, eval=TRUE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
@@ -23,7 +23,7 @@ library(RaMS)
 for(dataset_version in c("FT2040", "MS3000", "CultureData", "Pttime")){
   print(paste("Processing", dataset_version))
   # source("peakpicking_and_prep.R")
-  # source("feature_extraction.R")
+  source("feature_extraction.R")
 }
 ```
 
