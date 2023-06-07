@@ -11,7 +11,7 @@ bibliography: refs.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=TRUE)
+knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
@@ -232,16 +232,17 @@ fdr_gff_cross_train_gp <- fdr_gff_cross_train_df %>%
   pivot_longer(c(FDR, GFF)) %>%
   mutate(name=paste0("%", name)) %>%
   mutate(which_params=factor(which_params, 
-                             labels=c("All metrics", "XCMS metrics", "Raw data metrics"),
+                             labels=c("All metrics", "XCMS-only metrics", "Raw data metrics"),
                              levels=c("all_params", "xcms_params", "raw_data_params"))) %>%
   mutate(cross_type_num=as.numeric(cross_type)) %>%
   mutate(train_test=factor(train_test, levels=train_test_levels, labels=train_test_labels)) %>%
   mutate(name=factor(name, levels=c("%GFF", "%FDR"), labels=c("GFF", "FDR"))) %>%
   ggplot() +
+  geom_smooth(aes(x=cross_type_num, y=value, group=name), 
+              method = "lm", formula="y~x", color="black", 
+              linewidth=0.5, se=FALSE) +
   geom_point(aes(x=cross_type, y=value, color=train_test, 
                  fill=train_test, shape=name), size=5) +
-  geom_smooth(aes(x=cross_type_num, y=value, group=name), 
-              method = "lm", formula="y~x", color="black", se=FALSE) +
   facet_grid(~which_params) +
   scale_x_discrete(labels = c("Same\ndataset\n", "Different\ndataset\n"),
                    breaks = c("Same", "Different")) +
@@ -262,7 +263,7 @@ ggsave(plot = fdr_gff_cross_train_gp,
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-![Figure 2: False discovery rate (%FDR) and fraction of good features found (%GFF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those molecular features the model categorized as "Good" using a threshold of 0.5, and higher %GFF indicates a larger fraction of the total good features were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gff_cross_train.png){width=90%}
+![Figure 2: False discovery rate (%FDR) and fraction of good features found (%GFF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those molecular features the model categorized as "Good" using a threshold of 0.5, and higher %GFF indicates a larger fraction of the total good features were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black behind the data points, with the steepest slopes found in the full and XCMS-only models indicating excessive overfitting on the training data.](figures/fdr_gff_cross_train.png){width=90%}
 
 ### Model stability under different training sets
 
@@ -1365,7 +1366,8 @@ fdr_gff_cross_train_gp <- fdr_gff_cross_train_df_fancy %>%
   pivot_longer(c(FDR, GFF)) %>%
   ggplot() +
   geom_smooth(aes(x=cross_type_num, y=value, group=name), 
-              method = "lm", formula="y~x", color="black", se=FALSE) +
+              method = "lm", formula="y~x", color="black", 
+              linewidth=0.5, se=FALSE) +
   geom_point(aes(x=cross_type, y=value, color=train_test, 
                  fill=train_test, shape=name), size=5, alpha=0.8) +
   facet_grid(~which_alpha) +

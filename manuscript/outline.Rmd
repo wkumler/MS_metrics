@@ -535,18 +535,6 @@ ggsave(plot = fdr_gpf_cross_train_gp,
 
 ![Figure 4: False discovery rate (%FDR) and fraction of good peaks found (GPF) plotted across different subsets of model parameters. Lower %FDR indicates a smaller fraction of false positives among those peaks the model categorized as "Good" using a threshold of 0.5, and higher %GPF indicates a larger fraction of the total good peaks were found using the same threshold. Points are colored by the model used for training and testing, with internal validation (using the same dataset for training as prediction) in the darker colors on the left and external validation (using a different dataset for training than prediction) in the lighter colors on the right of each panel. Lines of best fit have been estimated and plotted in black on top of the data points.](figures/fdr_gpf_cross_train.png){width=70%}
 
-Dark blue and dark green are too similar, need to separate these better somehow. 
-
-Include conclusions in figure legend? Something like "slope of the line is much greater in All metrics and XCMS metrics, indicating overfitting"?
-
-Is averaging the two points for the best fit line best? Lines sometimes have different slopes
-
-Is GPF worth using instead of more common jargon like 1-precision
-
-Maybe simpler metric
-
-Line feels a little heavy and too dark, put behind data, maybe make line grey instead of dark black
-
 ### Full model probability depends strongly on training data, two-parameter model does not
 
 ```{r red/gold rank dotplot step-down method}
