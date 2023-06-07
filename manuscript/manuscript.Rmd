@@ -406,52 +406,44 @@ error_type_all_datasets <- pred_probs_all %>%
   mutate(`GFF`=`%TP`/(`%FN`+`%TP`)) %>%
   mutate(`GFF`=ifelse(dataset%in%c("CultureData", "Pttime"), NA, `GFF`))
 
-fdr_gff_all_datasets_gp <- error_type_all_datasets %>%
-  pivot_longer(c(`FDR`, `GFF`)) %>%
-  drop_na() %>%
-  mutate(desc=case_when(
-    is.na(value) ~ NA,
-    name=="FDR"~ paste0("frac(",`%FP`,",",`%FP`+`%TP`,")"),
-    name=="GFF"~ paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")
-  )) %>%
-  mutate(vjust_custom=case_when(
-    is.na(value) ~ NA,
-    name=="FDR" & dataset=="Pttime" ~ 1.3,
-    name=="FDR" ~ -0.3,
-    name=="GFF" ~ 1.3,
-  )) %>%
-  mutate(name=factor(name, levels=c("GFF", "FDR"),
-                     labels=c("Fraction of good features found (GFF)", 
-                              "False discovery rate (FDR)"))) %>%
+fdr_alldatasets_gp <- error_type_all_datasets %>%
+  mutate(FDR_label=paste0("frac(",`%FP`,",",`%FP`+`%TP`,")")) %>%
+  mutate(vjust_custom=ifelse(dataset=="Pttime", 1.3, -0.3)) %>%
   mutate(dataset=factor(dataset, 
                         levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"),
                         labels= c("Falkor", "MESO-\nSCOPE", "Culture\nData", "Pttime"))) %>%
-  ggplot(aes(x=dataset, y=value)) +
+  ggplot(aes(x=dataset, y=FDR)) +
   geom_point(size=3) +
-  geom_text(aes(label=desc, vjust=vjust_custom), parse=TRUE) +
-  facet_wrap(~name, scales = "free_y", ncol = 1) +
-  scale_y_continuous(limits = c(0, NA), labels = scales::label_percent()) +
+  geom_text(aes(label=FDR_label, vjust=vjust_custom), parse=TRUE) +
+  scale_y_continuous(limits = c(0, NA), labels = scales::label_percent(),
+                     name = "False discovery rate (FDR)\n") +
   theme_bw() +
-  theme(axis.title = element_blank(),
+  theme(axis.title.x = element_blank(),
         strip.background = element_rect(fill="white"))
+gff_alldatasets_gp <- error_type_all_datasets %>%
+  mutate(GFF_label=paste0("frac(",`%TP`,",",`%FN`+`%TP`,")")) %>%
+  mutate(vjust_custom=1.3) %>%
+  mutate(dataset=factor(dataset, 
+                        levels = c("Falkor", "MESOSCOPE", "CultureData", "Pttime"),
+                        labels= c("Falkor", "MESO-\nSCOPE", "Culture\nData", "Pttime"))) %>%
+  ggplot(aes(x=dataset, y=GFF)) +
+  geom_point(size=3) +
+  geom_text(aes(label=GFF_label, vjust=vjust_custom), parse=TRUE) +
+  scale_y_continuous(limits = c(0, NA), labels = scales::label_percent(),
+                     name = "Fraction of good\nfeatures found (GFF)") +
+  theme_bw() +
+  theme(axis.title.x = element_blank(),
+        strip.background = element_rect(fill="white"),
+        axis.text.x = element_blank())
+fdr_gff_all_datasets_gp <- egg::ggarrange(gff_alldatasets_gp, fdr_alldatasets_gp, ncol = 1)
 
 ggsave(plot = fdr_gff_all_datasets_gp, 
        filename = "fdr_gff_all_datasets.png", 
        device = "png", path = "manuscript/figures",
        width = 3, height = 4, units = "in", dpi = 300)
-
-# Confusion matrices for confirmation
-# pred_probs_all
-# pred_probs_all %>%
-#   ggplot(aes(x=error_type, y=n)) +
-#   geom_col(color="#0b505c", fill="#0b505c") +
-#   geom_text(aes(label=n), vjust=-0.2, color="#0b505c") +
-#   facet_wrap(~dataset, nrow=1) +
-#   theme_bw() +
-#   theme(axis.title = element_blank())
 ```
 
-![Figure 4: False discovery rate and proportion of total good features identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GFF is calculated by dividing the number of true positives by the total number of good features as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gff_all_datasets.png){width=30%}
+![Figure 4: False discovery rate and proportion of total good features identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset. A stricter likelihood threshold is used here (0.9) than in Figure 2. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GFF is calculated by dividing the number of true positives by the total number of good features as identified manually (only possible for fully-labeled datasets). Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gff_all_datasets.png){width=30%}
 
 ### Implications for biological conclusions
 

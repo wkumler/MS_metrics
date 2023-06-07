@@ -704,17 +704,6 @@ ggsave(plot = fdr_gpf_all_datasets_gp,
 
 ![Figure 6: False discovery rate and proportion of total good peaks identified as good by the two-parameter model trained on the combined MESOSCOPE/Falkor dataset and applied to each dataset individually with a threshold of 0.9. FDR is calculated by dividing the number of false positives by the total positives produced by the model and GPF is calculated by dividing the number of true positives by the total number of good peaks as identified manually. Points correspond to the calculated percentage and absolute numbers are provided above/below the point.](figures/fdr_gpf_all_datasets.png){width=30%}
 
-Emphasize the use of a different threshold here!
-
-Explain why there are no values for GPF in Pttime/CultureData?
-
-Render as a table and see how that looks instead?
-
-Include Pttime definition in the figure caption?
-
-Maybe include the facet captions as the y-axis label instead? Anitra doesn't love how it looks as-is
-
-
 
 ### Implications for biological conclusions
 
