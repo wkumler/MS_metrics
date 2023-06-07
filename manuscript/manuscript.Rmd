@@ -245,7 +245,7 @@ fdr_gff_cross_train_gp <- fdr_gff_cross_train_df %>%
   facet_grid(~which_params) +
   scale_x_discrete(labels = c("Same\ndataset\n", "Different\ndataset\n"),
                    breaks = c("Same", "Different")) +
-  scale_color_manual(values = c("#0b505c", "#184d1f", "#0d8299", "#028e34"), 
+  scale_color_manual(values = c("#0b505c", "#3A601E", "#0d8299", "#028e34"), 
                      breaks = train_test_labels,
                      aesthetics = c("color", "fill")) +
   scale_shape_manual(breaks = c("GFF", "FDR"), values = c("\u25B2", "\u25BC")) +
@@ -1371,7 +1371,7 @@ fdr_gff_cross_train_gp <- fdr_gff_cross_train_df_fancy %>%
   facet_grid(~which_alpha) +
   scale_x_discrete(labels = c("Same\ndataset\n", "Different\ndataset\n"),
                    breaks = c("Same", "Different")) +
-  scale_color_manual(values = c("#0b505c", "#184d1f", "#0d8299", "#028e34"), 
+  scale_color_manual(values = c("#0b505c", "#3A601E", "#0d8299", "#028e34"), 
                      breaks = train_test_labels,
                      aesthetics = c("color", "fill")) +
   scale_shape_manual(breaks = c("GFF", "FDR"), values = c("\u25B2", "\u25BC")) +
