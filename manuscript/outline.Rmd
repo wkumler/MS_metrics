@@ -445,16 +445,6 @@ ggsave(plot = egg_complete,
 
 ![Figure 3: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good peak that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=70%}
 
-Explain what the different datasets are?
-
-Make sure the break gap is consistent
-
-Maybe turn into two rows, one zoomed and one unzoomed?
-
-Differentiate the 0.9 line from the axis break line - don't like the vertical black line, looks like data
-
-Convert "meh" to "ambiguous"
-
 ### Model cross-validation with novel datasets
 
 ```{r FDR vs GPF cross-train triangle figure feature selection}

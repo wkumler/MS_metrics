@@ -128,7 +128,7 @@ According to all three logistic regression models (see Methods), the majority of
 base_gp <- ggplot() +
   aes(x=pred_prob_min, fill=feat_class) +
   facet_wrap(~dataset, scales="free_y") +
-  scale_fill_manual(breaks = c("Good", "Bad", "Meh", "Stans only", "Unclassified"),
+  scale_fill_manual(breaks = c("Good", "Bad", "Ambiguous", "Stans only", "Unclassified"),
                     values = c("#f4bb23", "#a41118", "#0b505c", "#028e34", "grey50")) +
   labs(x="Predicted probability", y="# of mass features", fill="Manual\nclassification") +
   theme_bw() +
@@ -146,7 +146,6 @@ falk_hist_gp <- base_gp +
                    filter(dataset=="Falkor")) +
   scale_y_continuous(breaks = c(0, 50, 100, 150, 195),
                      labels = c(0, 50, 100, 150, axis_breaks["Falkor"])) +
-  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
   annotate("rect", xmin=0, xmax=1, ymin=180, ymax=185, fill="white", color="black") +
   annotate("rect", xmin=0, xmax=0.125, ymin=195, ymax=Inf, fill="white", color="grey90") +
   coord_cartesian(ylim = c(0, 200), expand = FALSE) +
@@ -156,8 +155,7 @@ meso_hist_gp <- base_gp +
                    filter(dataset=="MESOSCOPE")) +
   scale_y_continuous(breaks = c(0, 50, 100, 150, 200, 240),
                      labels = c(0, 50, 100, 150, 200, axis_breaks["MESOSCOPE"])) +
-  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
-  annotate("rect", xmin=0, xmax=1, ymin=220, ymax=230, fill="white", color="black") +
+  annotate("rect", xmin=0, xmax=1, ymin=226, ymax=232, fill="white", color="black") +
   annotate("rect", xmin=0, xmax=0.125, ymin=240, ymax=Inf, fill="white", color="grey90") +
   coord_cartesian(ylim = c(0, 250), expand = FALSE) +
   theme(axis.title = element_blank(), axis.text.x = element_blank())
@@ -166,7 +164,7 @@ culture_hist_gp <- base_gp +
                    filter(dataset=="CultureData")) +
   scale_y_continuous(breaks = c(0, 50, 100, 116),
                      labels = c(0, 50, 100, axis_breaks["CultureData"])) +
-  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
+  geom_vline(xintercept = 0.9, color="black", linewidth=0.5, lty=2) +
   annotate("rect", xmin=0, xmax=1, ymin=110, ymax=113, fill="white", color="black") +
   annotate("rect", xmin=0, xmax=0.125, ymin=116, ymax=Inf, fill="white", color="grey90") +
   coord_cartesian(ylim = c(0, 120), expand = FALSE)
@@ -175,8 +173,8 @@ pttime_hist_gp <- base_gp +
                    filter(dataset=="Pttime")) +
   scale_y_continuous(breaks = c(0,100,200,300,400,510),
                      labels = c(0,100,200,300,400,axis_breaks["Pttime"])) +
-  geom_vline(xintercept = 0.9, color="black", linewidth=1) +
-  annotate("rect", xmin=0, xmax=1, ymin=470, ymax=485, fill="white", color="black") +
+  geom_vline(xintercept = 0.9, color="black", linewidth=0.5, lty=2) +
+  annotate("rect", xmin=0, xmax=1, ymin=479, ymax=492, fill="white", color="black") +
   annotate("rect", xmin=0, xmax=0.125, ymin=510, ymax=Inf, fill="white", color="grey90") +
   coord_cartesian(ylim = c(0, 520), expand = FALSE) +
   theme(axis.title.y = element_blank())
@@ -190,7 +188,7 @@ ggsave(plot = egg_complete,
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
 
-![Figure 1: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good molecular feature that was only visible in the standards run alongside the samples. Datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=90%}
+![Figure 1: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE environmental datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good molecular feature that was only visible in the standards run alongside the samples. Culture datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=90%}
 
 The full model performed very well when tested internally on the same dataset both during 80/20 cross validation and when using the full dataset, with FDR values in the 5-10% range and 80-90% GFF values implying that a large majority of the good MFs passed the threshold with very little noise included. The XCMS metrics performed slightly worse, with FDR values in the 10-15% range and GFF values closer to 75%. The two-parameter model performed worst when tested internally, with an FDR of about 20% and GFF also around 75% (Figure 2). However, when the models were trained on a different dataset than the one they were used to predict classifications for, all models had similar performance with %FDR around 10-25 and GFF around 60-80. The model trained on MESOSCOPE and tested on Falkor had consistently higher values, indicating that it was favoring more MFs recovered at the cost of a higher FDR, while the reverse was true for the model trained on Falkor and tested on MESOSCOPE (Figure 2). 
 
