@@ -865,7 +865,7 @@ Make sure I include the threshold used for the above plot (in the legend?)
 
 Make sure I explain the statistical significance and the "Hard to tell" category
 
-See aobut including ONLY the good peaks in a separate plot (inset figure?)
+See about including ONLY the good peaks in a separate plot (inset figure?)
 
 Switch the shapes to make empty circles "good peaks missed"
 
