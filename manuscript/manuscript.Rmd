@@ -615,8 +615,6 @@ Additionally, a large number of features manually identified as bad nonetheless 
 
 The model did fail to recover some interesting biological variation, however. Two features of particular interest were those good MFs with a DCM minimum (DCM < 15m = 175m), both of which were missed by the two-parameter model. These features possess an unexpected biological signal that does not track with depth or other common oceanographic parameters, thereby potentially representing an interesting biomarker or pathway that's downregulated in excess of the biomass effect. [Maybe better for discussion?]
 
-[MAA paragraph?] Several mass features that were found dominantly at the surface were putatively identified as mycosporine-like amino acids (MAAs), which have been shown to have UV photoprotective properties.[@ref] Although we were unable to calculate their exact concentrations due to a lack of authentic standards, peak areas were approximately 100 to 1000 times higher in the 15 meter samples than the values averaged between the DCM and 175 meter samples. The abundance of MAAs in this particular category indicates that there may be other MAA molecules with this depth pattern that have not yet been characterized also among these unknowns.
-
 ```{r Fig5 clockplot}
 resp_class_levels <- c("All equal", 
     "15m > DCM = 175m", "15m > DCM > 175m", "15m = DCM > 175m",
@@ -758,7 +756,6 @@ ggsave(plot = clockplot_complete_gp,
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 7, units = "in", dpi = 300)
 ```
-
 
 ![Figure 5: Plot of metabolite response to depth shown across three axes using the rank-normalized median value at each depth as the coordinate for that axis. Each molecular feature corresponds to a point in the plot, and their position on the plot describes the shape of their depth profile. Compounds aligning with the 15m axis correspond to compounds with most of their abundance found in the surface ocean; points far to the right side correspond to compounds that are found only at the deep chlorophyll maximum; points found at the bottom of the plot are those compounds that increased more or less linearly with depth.](figures/clockplot_complete.png){width=90%}
 
