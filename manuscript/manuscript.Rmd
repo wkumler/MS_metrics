@@ -800,6 +800,8 @@ mat_list <- lst(mat_good, mat_90, mat_50, mat_10, mat_01, mat_all)
 ```
 
 ```{r PERMANOVA results}
+subset_levels <- c("mat_good", "mat_90", "mat_50", "mat_10", "mat_01", "mat_all")
+subset_labels <- c("Only good MFs", paste("Threshold", c(0.9, 0.5, 0.1, 0.01)), "All MFs")
 thresh_tests <- imap(mat_list, function(mat_given, mat_name){
   mat_data <- mat_given %>%
     select(-feat_class, -pred_prob) %>%
@@ -814,28 +816,7 @@ thresh_tests <- imap(mat_list, function(mat_given, mat_name){
   bind_rows() %>%
   select(thresh_name, n, R2, `F`, `Pr(>F)`) %>%
   `rownames<-`(NULL) %>%
-  column_to_rownames("thresh_name") %>%
-  knitr::kable()
-```
-
-In each test, the permutational p-value obtained was less than 0.001, indicating that the differences between samples due to depth were never likely to be due entirely to chance. However, the pseudo-F was much larger with higher thresholds, scaling from around 8.5 when thresholding at a 1% likelihood to 42 when thresholded at a 90% likelihood. 
-
-|         |    n|   R2|    F| Pr(>F)|
-|:--------|----:|----:|----:|------:|
-|mat_good |  249| 0.44| 38.0|  0.001|
-|mat_90   |   75| 0.46| 42.0|  0.001|
-|mat_50   |  287| 0.34| 25.3|  0.001|
-|mat_10   |  516| 0.25| 16.0|  0.001|
-|mat_01   | 1129| 0.15|  8.5|  0.001|
-|mat_all  | 2086| 0.10|  5.5|  0.001|
-
-*Table 1: Number of mass features (n), variance explained (R2), pseudo-F statistic (F), and permutational p-value (Pr(>F)) estimates obtained from performing a permutational MANOVA on subsets of the full mass feature selection according to variable likelihood thresholds. [Needs cleaning, will fix]*
-
-We also tested the inclusion of all the features identified with XCMS (corresponding to a 0% threshold) and the results when only the manually-identified "Good" features were included. The default XCMS output continued the trend observed above, as expected, with the least variance explained and the lowest R$^2$ value. Subsetting for the "Good" MFs only, however, did not actually return the highest F-ratio or R$^2$, instead falling between the 50% and 90% thresholds for these two metrics. In large part this is due to the much smaller number of features: 249 features were manually labeled as Good, while only 75 exceeded the 90% likelihood threshold.
-
-The relative power of identifying only the very best MFs was also illustrated visually with non-metric multidimensional scaling (NMDS) plots (Figure XX). In these common exploratory plots, the MFs with likelihoods above 50% strongly separated by depth while lower thresholds disguised the true signal and had higher stress values. Performing an NMDS on the manually-identified Good MFs resulted in output nearly indistinguishable from those of the 90% and 50% thresholds, while the 0.1 and 0.01 thresholds looked almost identical to the same analysis performed on all the XCMS features.
-
-```{r Fig6 NMDS results}
+  mutate(mat_name=factor(thresh_name, levels=subset_levels, labels=subset_labels))
 thresh_NMDS_df <- imap(mat_list, function(mat_given, mat_name){
   mat_data <- mat_given %>%
     select(-feat_class, -pred_prob) %>%
@@ -853,31 +834,61 @@ thresh_NMDS_df <- imap(mat_list, function(mat_given, mat_name){
   bind_rows() %>%
   select(mat_name, filename, starts_with("MDS"), depth, stress) %>%
   mutate(basename=str_extract(filename, "MS\\d+C\\d+.*(?=_[A-C])")) %>%
-  mutate(mat_name=factor(
-    mat_name, levels=c("mat_good", "mat_90", "mat_50", "mat_10", "mat_01", "mat_all"),
-    labels=c("Only good", paste("Threshold", c(0.9, 0.5, 0.1, 0.01)), "All features")
-  )) %>%
-  mutate(stress=format(stress, digits=2))
+  mutate(mat_name=factor(mat_name, levels=subset_levels, labels=subset_labels)) %>%
+  mutate(stress=format(stress, digits=3))
+
+
+thresh_statistic_df <- thresh_NMDS_df %>%
+  distinct(mat_name, stress) %>%
+  left_join(thresh_tests, by="mat_name") %>%
+  mutate(R2=round(R2*100, digits = 1)) %>%
+  mutate(`F`=round(`F`, digits = 1)) %>%
+  mutate(stress=as.numeric(stress)) %>%
+  select(`Data subset`=mat_name, `# of MFs`=n, `% Var\ Expl.`=R2, `Pseudo-F`=`F`,
+         `2D NMDS\ stress`=stress) %>%
+  arrange(desc(row_number()))
+
+knitr::kable(thresh_statistic_df)
+```
+
+In each test, the permutational p-value obtained was less than 0.001, indicating that the differences between samples due to depth were never likely to be due entirely to chance. However, the pseudo-F and was much larger with higher thresholds, scaling from around 8.5 when thresholding at a 1% likelihood to 42 when thresholded at a 90% likelihood (Table 1). 
+
+|Data subset    | # of MFs| % Var Expl.| Pseudo-F| 2D NMDS stress|
+|:--------------|--------:|-----------:|--------:|--------------:|
+|All MFs        |     2086|        10.4|      5.5|          0.169|
+|Threshold 0.01 |     1129|        15.2|      8.6|          0.191|
+|Threshold 0.1  |      516|        25.0|     16.0|          0.200|
+|Threshold 0.5  |      287|        34.6|     25.3|          0.180|
+|Threshold 0.9  |       75|        46.7|     42.0|          0.097|
+|Only good MFs  |      249|        44.2|     38.1|          0.142|
+
+*Table 1: Number of mass features, percent variance explained, pseudo-F statistic, and stress values from performing a permutational MANOVA and 2D non-metric multidimensional scaling (NMDS) on subsets of the full mass feature selection according to variable likelihood thresholds.*
+
+We also tested the inclusion of all the features identified with XCMS (corresponding to a 0% threshold) and the results when only the manually-identified "Good" features were included. The default XCMS output continued the trend observed above, as expected, with the least variance explained and the lowest R$^2$ value. Subsetting for the "Good" MFs only, however, did not actually return the highest F-ratio or R$^2$, instead falling between the 50% and 90% thresholds for these two metrics. In large part this is due to the much smaller number of features: 249 features were manually labeled as Good, while only 75 exceeded the 90% likelihood threshold (Table 1).
+
+The relative power of identifying only the very best MFs was also illustrated visually with non-metric multidimensional scaling (NMDS) plots (Figure 6). In these common exploratory plots, the MFs with likelihoods above 50% strongly separated by depth while lower thresholds disguised the true signal and had higher stress values. Performing an NMDS on the manually-identified Good MFs resulted in output nearly indistinguishable from those of the 90% and 50% thresholds, while the 0.1 and 0.01 thresholds looked almost identical to the same analysis performed on all the XCMS features.
+
+```{r Fig6 NMDS results}
 thresh_NMDS_gp <- thresh_NMDS_df %>%
   ggplot() +
   geom_vline(xintercept = 0) +
   geom_hline(yintercept = 0) +
   geom_polygon(aes(x=MDS1, y=MDS2, fill=depth, color=depth, group=basename), alpha=0.5) +
-  geom_label(aes(label=stress), x=Inf, y=Inf, 
-             label.r = unit(0, "in"), hjust=1, vjust=1,
-             data=thresh_NMDS_df %>% distinct(mat_name, stress)) +
+  geom_label(aes(label=stress), x=Inf, y=Inf,  label.r = unit(0, "in"), 
+             hjust=1, vjust=1, data=distinct(thresh_NMDS_df, mat_name, stress)) +
   facet_wrap(~mat_name, scales = "free", ncol=3) +
   scale_color_manual(values=viridis::viridis(9, direction = -1)[c(2,5,8)], 
                      breaks = c("15m", "DCM", "175m"),
-                     aesthetics = c("color", "fill")) +
+                     aesthetics = c("color", "fill"),
+                     name="Sample\ndepth") +
   theme_bw() +
   theme(aspect.ratio = 1)
 ggsave(plot = thresh_NMDS_gp, filename = "thresh_NMDS_plots.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
-
-![Figure 6: NMDS plots of metabolite similarity according to sample depth across multiple likelihood thresholds. Triplicate samples are represented by the vertices of the triangles and colored by the depth from which they were sampled (DCM = deep chlorophyll maximum, ~110m). "Only good" refers to those features manually labeled as "Good". NMDS stress values are reported to 3 significant figures in the upper right of the plot.](figures/thresh_NMDS_plots.png){width=90%}
+ 
+![Figure 6: 2D non-metric multidimensional scaling (NMDS) plots of metabolite similarity according to sample depth across multiple likelihood thresholds. Triplicate samples are represented by the vertices of the triangles and colored by the depth from which they were sampled (DCM = deep chlorophyll maximum, ~110m). "Only good MFs" refers to those features manually labeled as "Good". NMDS stress values are reported in the upper right corner of each plot.](figures/thresh_NMDS_plots.png){width=90%}
 
 ## Discussion
 
