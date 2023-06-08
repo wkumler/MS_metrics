@@ -861,15 +861,7 @@ ggsave(plot = clockplot_complete_gp,
 
 ![Figure 7: Plot of metabolite response to depth shown across three axes using the rank-normalized median value at each depth as the coordinate for that axis. Each molecular feature corresponds to a point in the plot, and their position on the plot describes the shape of their depth profile. Compounds aligning with the 15m axis correspond to compounds with most of their abundance found in the surface ocean; points far to the right side correspond to compounds that are found only at the deep chlorophyll maximum; points found at the bottom of the plot are those compounds that increased more or less linearly with depth.](figures/clockplot_complete.png){width=90%}
 
-Make sure I include the threshold used for the above plot (in the legend?)
 
-Make sure I explain the statistical significance and the "Hard to tell" category
-
-See about including ONLY the good peaks in a separate plot (inset figure?)
-
-Switch the shapes to make empty circles "good peaks missed"
-
-Add some internal circle to help render information about the overplotting in the center? Give a bar graph breakdown for the  things within the circle?
 
 ```{r manual check on clockplot, eval=FALSE}
 # msdata <- readRDS("made_data_MS3000/msdata.rds")
