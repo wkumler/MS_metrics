@@ -22,7 +22,7 @@ library(RaMS)
 ```{r run analysis, eval=FALSE}
 for(dataset_version in c("FT2040", "MS3000", "CultureData", "Pttime")){
   print(paste("Processing", dataset_version))
-  # source("peakpicking_and_prep.R")
+  source("peakpicking_and_prep.R")
   source("feature_extraction.R")
 }
 ```
@@ -47,8 +47,8 @@ all_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", "sd_pw",
                 "log_mean_area", "log_sd_area", "sn", "f", "scale", 
                 "lmin", "feat_npeaks", "n_found", "samps_found", "stans_found", 
                 "med_cor", "med_SNR", "med_missed_scans", "smp_to_blk", 
-                "smp_to_std", "pooled_cv", "pooled_cv_rob", "shape_cor", 
-                "area_cor")
+                "smp_to_std", "pooled_cv", "pooled_cv_rob", "iso_shape_cor", 
+                "iso_area_cor")
 ```
 
 ## Abstract
@@ -120,6 +120,8 @@ pred_probs %>%
 
 An average of 3,300 molecular features (MFs) were reported by XCMS across the 4 datasets, with the fewest (1,495) in the Falkor data and the most in the Pttime samples (7,781). In the Falkor and MESOSCOPE datasets that were fully labeled by an MS expert, approximately 70% (69% and 73%, respectively) of the features were given a "Bad" designation, corresponding to noise MFs that the expert would not have included in a downstream analysis. In both, 5% of the MFs were unable to be assigned confidently to either "Good" or "Bad" classes and 10% were identified as appearing only in the standards, leaving only ~15% of the features classified as "Good" (16% and 12%, respectively). 
 
+Most metrics had reasonably normal distributions after the scaling and normalization described in Methods. Visually, the most compelling separations between good and bad MFs were observed in the novel peak shape and SNR metrics, with higher peak shape correlations and larger SNR values corresponding to good MFs and almost complete separation for the peak shape (`med_cor`) metric. Peak width and its standard deviation also showed reasonable separation between good and bad MFs (good MFs tended to have low SDs and larger peak widths). The isotope shape and area correlations also showed good separation (Supp. figure XX).
+
 ### Logistic regression performance
 
 According to all three logistic regression models (see Methods), the majority of MFs were estimated to have a less than 1% chance of being good. The full model (containing all possible peak metrics) and the XCMS model (built on only those metrics calculated from the XCMS output) both displayed a strongly bimodal distribution, with a large number of MFs also exceeding a 99% chance of being good, while the two-parameter model (consisting of the novel SNR metric and the peak shape correlation metric) had a flatter distribution with fewer high-confidence MF assignments and more intermediate values (Figure 1).
@@ -189,6 +191,43 @@ ggsave(plot = egg_complete,
 ```
 
 ![Figure 1: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE environmental datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good molecular feature that was only visible in the standards run alongside the samples. Culture datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (black vertical line) and were otherwise unclassified.](figures/pred_prob_class_color_hists.png){width=90%}
+
+```{r full model estimate csv write}
+set.seed(123)
+
+glm_estimates <- both_datasets %>%
+  select(feat_bin, all_of(all_params)) %>%
+  # mutate(across(-feat_bin, \(x)scale(x)[,1])) %>%
+  glm(formula = feat_bin~., family=binomial) %>%
+  broom::tidy() %>%
+  rename_with(~paste0("GLM.", .x), -term)
+
+glmnet_estimates <- both_datasets %>% 
+  select(all_of(all_params)) %>% 
+  data.matrix() %>%
+  glmnet::cv.glmnet(y=both_datasets$feat_bin, family="binomial", alpha=0.5) %>%
+  coef() %>%
+  as.matrix() %>%
+  as.data.frame() %>%
+  rownames_to_column("term") %>%
+  dplyr::rename(`Elastic.net.estimate`=s1)
+
+rf_estimates <- both_datasets %>% 
+  select(all_of(all_params)) %>%
+  randomForest::randomForest(factor(both_datasets$feat_bin), importance=TRUE) %>%
+  pluck("importance") %>%
+  as.data.frame() %>%
+  rownames_to_column("term") %>%
+  select(term, RF.accuracy.decrease=MeanDecreaseAccuracy,
+         RF.Gini.Decrease=MeanDecreaseGini)
+
+glm_estimates %>%
+  left_join(glmnet_estimates, by="term") %>%
+  left_join(rf_estimates, by="term") %>%
+  write_csv("manuscript/supplement/full_model_estimates.csv")
+```
+
+We explored the relative predictive power of the individual parameters using the full model and found that the predictors least likely to be different from zero due to chance were the mean *m/z* ratio, the novel peak shape correlation metric `med_cor`, and the novel SNR estimate `med_SNR`, all with reported p-values < 10$^{-10}$. The novel parameters were then validated using a random forest model that also found them to have the highest importance (Supp table XX).
 
 The full model performed very well when tested internally on the same dataset both during 80/20 cross validation and when using the full dataset, with FDR values in the 5-10% range and 80-90% GFF values implying that a large majority of the good MFs passed the threshold with very little noise included. The XCMS metrics performed slightly worse, with FDR values in the 10-15% range and GFF values closer to 75%. The two-parameter model performed worst when tested internally, with an FDR of about 20% and GFF also around 75% (Figure 2). However, when the models were trained on a different dataset than the one they were used to predict classifications for, all models had similar performance with %FDR around 10-25 and GFF around 60-80. The model trained on MESOSCOPE and tested on Falkor had consistently higher values, indicating that it was favoring more MFs recovered at the cost of a higher FDR, while the reverse was true for the model trained on Falkor and tested on MESOSCOPE (Figure 2). 
 
@@ -359,13 +398,13 @@ ggsave(plot = comb_prob_space_gp,
 
 ![Figure 3: Predicted likelihood of a feature being "Good" according to a model trained on the MESOSCOPE dataset vs a model trained on the Falkor dataset. The top row of plots show the exact likelihood predicted by the logistic model across three different subsets of parameters, while the bottom row shows the estimates ranked from least likely to most likely. Points are colored by their manually-assigned quality according to an expert.](figures/comb_prob_space.png){width=90%}
 
-A majority of the time, the estimates from the two models disagreed by more than 2x the standard error of the estimate. Some parameters disagreed not only in magnitude but also in sign, with the Falkor-trained full model increasing MF goodness likelihood with larger ppm variation and a wider peak width, while the MESOSCOPE-trained full model had negative estimates for each of these parameters. Notably, the peak shape and novel SNR parameters used in the two-parameter model were among the most robust to training model variation, potentially explaining the consistency described above (Supp. figure 1).
+A majority of the time, the estimates from the two models disagreed by more than 2x the standard error of the estimate. Some parameters disagreed not only in magnitude but also in sign, with the Falkor-trained full model increasing MF goodness likelihood with larger PPM variation and a wider peak width, while the MESOSCOPE-trained full model had negative estimates for each of these parameters. Notably, the peak shape and novel SNR parameters used in the two-parameter model were among the most robust to training model variation, potentially explaining the consistency described above (Supp. figure XX).
 
-When testing model stability under a smaller sample size, we found reasonably good convergence in a dataset containing half the mass features with most values falling within two standard errors of the estimate for the XCMS and two-parameter model, while the full model required closer to 80% of the mass features to produce estimates consistent with the original model (Supp. figure 2).
+When testing model stability under a smaller sample size, we found reasonably good convergence in a dataset containing half the mass features with most values falling within two standard errors of the estimate for the XCMS and two-parameter model, while the full model required closer to 80% of the mass features to produce estimates consistent with the original model (Supp. figure XX).
 
 ### Regularized regression and random forests perform about the same
 
-None of the penalized regression models significantly improved cross-validated performance between the MESOSCOPE and Falkor datasets when measured by both initial performance and the performance drop when applied across datasets. All three regularized regression models had similar behavior, with ridge regression (α = 0) had the lowest rates for both GFF and FDR, with lasso (α = 1) obtaining higher ones and representing a less-stringent false negative acceptance while, as expected, the elastic net (α = 0.5) fell in between the two (Supp. figure 3). The random forest model, interestingly, had perfect predictive capacity when tested internally on the training data (FDR=0%, GFF=100%, for both MESOSCOPE and Falkor) but showed a significant drop in improvement when applied across datasets (Supp. figure 3). In each case, the performance drop when applied to a novel dataset was more extreme than the simple two-parameter model described above.
+None of the penalized regression models significantly improved cross-validated performance between the MESOSCOPE and Falkor datasets when measured by both initial performance and the performance drop when applied across datasets. All three regularized regression models had similar behavior, with ridge regression (α = 0) had the lowest rates for both GFF and FDR, with lasso (α = 1) obtaining higher ones and representing a less-stringent false negative acceptance while, as expected, the elastic net (α = 0.5) fell in between the two (Supp. figure 3). The random forest model, interestingly, had perfect predictive capacity when tested internally on the training data (FDR=0%, GFF=100%, for both MESOSCOPE and Falkor) but showed a significant drop in improvement when applied across datasets (Supp. figure XX). In each case, the performance drop when applied to a novel dataset was more extreme than the simple two-parameter model described above.
 
 ### Performance of a stricter threshold on novel datasets
 
@@ -939,7 +978,7 @@ This model outperforms the previously reported logistic regression model in @Kan
 
 @Guo2021 presented EVA and reported an accuracy of 90-95%, a range inclusive of our accuracy on both the Falkor (92.1%) and MESOSCOPE (94.4%) datasets when using a likelihood threshold of 0.5. However, we note that accuracy alone can be a highly misleading statistic to report when working with unbalanced datasets because very high accuracy can be obtained by simply classifying everything as bad, with a strong incentive to actually *increase* the number of bad MFs detected while doing so. This strategy, when applied to our data, returned accuracies in the 80-90% range despite being a useless classifier for downstream analysis. This is perhaps a facetious argument, but many of the single-parameter logistic models we tested never exceeded a 50% likelihood and essentially functioned as this type of classifier.
 
-The class imbalance, with mostly poor quality MFs, is partially why we chose to measure precision and recall instead of total accuracy. However, precision and recall can also be ambiguous when the positive class is not specified and the raw confusion matrices are unavailable, thus our very precise use of the FDR and GFF metrics as well as providing the raw confusion matrices in Supplemental Table XX. @Melnikov2020 reported precision and recall in their presentation of `peakonly`, relative to which we obtained higher accuracy (they report 89% accuracy) but worse GFF and FDR (89% and 3%, respectively, relative to our 77.1% GFF and 19.6% FDR overall). However, if we report precision and recall with the positive class set to "Bad", essentially trying to predict poor-quality MFs instead of good ones, our precision becomes 96.5% and our recall 95.7% due to the strong prior information about most MFs being bad.
+The class imbalance, with mostly poor quality MFs, is partially why we chose to measure precision and recall instead of total accuracy. However, precision and recall can also be ambiguous when the positive class is not specified and the raw confusion matrices are unavailable, thus our very precise use of the FDR and GFF metrics as well as providing the confusion matrices in Supplemental Table XX. @Melnikov2020 reported precision and recall in their presentation of `peakonly`, relative to which we obtained higher accuracy (they report 89% accuracy) but worse GFF and FDR (89% and 3%, respectively, relative to our 77.1% GFF and 19.6% FDR overall). However, if we report precision and recall with the positive class set to "Bad", essentially trying to predict poor-quality MFs instead of good ones, our precision becomes 96.5% and our recall 95.7% due to the strong prior information about most MFs being bad.
 
 @Gloaguen2022 later introduced NeatMS, another CNN, and compared it directly to `peakonly` to claim equivalent or superior performance across a range of dilution factors. However, they do not report total precision or recall metrics in a comprehensive untargeted way but instead focus only on assessing the model's performance on known chemical standards. They report a percentage of standards found for the `peakonly` model applied to their data and find that its performance is significantly lower (79.4%) than the recall reported in @Melnikov2020, perhaps indicating that the `peakonly` model is still overfit.
 
@@ -1114,11 +1153,11 @@ ggsave(plot = comb_cowplot,
 
 ### Peak feature extraction and metric calculation
 
-Our process of feature engineering was divided into three categories of features: those that could be calculated using a single peak trace, those that required access to the entire file, and those that could only be calculated across multiple files. [Rewrite without the "three categories" business ugh] For metrics belonging to the first two categories, summary statistics were used (mean/median, standard deviation) to create a single consensus value for the mass feature as a whole. Missing values were ignored during these summary statistic calculations by setting na.rm=TRUE. Distributions were visually inspected and highly abnormal metrics were transformed using log-scaling if necessary. Using a pairs plot, highly correlated (above a Pearson's r ~ 0.9) had one of the correlated metrics removed.
+Our process of feature engineering involved querying several MS experts in our lab about their intuition for what they thought best distinguished poor-quality MFs and noise from good ones.
 
-The first category consisted largely of information produced directly by XCMS: the very typical *m/z* ratios, retention times, peak widths, and integrated areas as well as the less common and poorly-documented sn, f, scale, and lmin parameters. Although we requested additional parameters from XCMS with the verboseColumns = TRUE argument, all of the values returned were NAs and could not be used in the model building so were dropped. The total number of peaks found for a given feature was calculated as the number of peaks divided by the total number of files, and the total number of files in which a peak was initially detected was calculated by subtracting the number of NAs in the peak baseline estimate (which is NA if the peak was filled in) from the total number of files and then dividing by the number of files to normalize across datasets. This calculation were performed for the Falkor, MESOSCOPE, and CultureData datasets to estimate the proportion of sample and standard files in which a given molecular feature (MF) was found, but could not be calculated for the Pttime dataset because no standard files were available. The sn metric contained a large number of zero values to begin with that then became negative infinities when log-scaled, so we replaced those values with zeroes and functionally equated an sn of 0 with an sn of 1.
+The simplest metrics to calculate were summary statistics of those parameters reported directly by XCMS. These features consisted of the mean retention time (RT) of each MF and the standard deviation (SD) within the feature and the mean peak width (calculated by subtracting the max RT from the minimum) and its SD. We also calculated the mean *m/z* ratio and the SD in parts-per-million (PPM) by dividing each peak's reported *m/z* ratio by the *m/z* ratio of the feature as a whole, then multiplying by one million. Mean peak area was calculated by taking the log$_{10}$ of the individual areas then taking the mean, and the same process (log$_{10}$ then mean) was repeated for the SD of the peak areas. XCMS's default signal-to-noise parameter, `sn`, was also summarized in this way, but we only used `sn` values that were greater than or equal to zero and replaced any zeros with ones to avoid negative infinities after taking the log$_{10}$. We also used the mean of other parameters reported by XCMS (f, scale, and lmin) as features. We additionally calculated several design-of-experiments metrics, using the number of peaks in each feature divided by the total number of files as well as the fraction of files in which a peak initially found by the peakpicker. This last metric was further subset into the fraction of samples in which a peak was initially found and the fraction of standards in which a peak was found (for those datasets in which standards were run). Finally, the coefficient of variance was estimated for the pooled sample peak areas by dividing the SD of the pooled sample peak areas by the mean of the same and additionally done in a robust way by using the median absolute deviation and median, respectively. For all of the above features, missing values were dropped silently from the summary calculations. We were unable to use any of the columns produced by enabling the `verboseColumns = TRUE` option in `findChromPeaks` because all of the values returned were NAs. 
 
-We also calculated several metrics from the raw mz/rt/int values. Using the R package RaMS we extracted the data points falling within each individual peak's mz and retention time bounding box (values between the XCMS-reported min and max) separately for each file. The data points were then linearly scaled to fall within the 0-1 range by subtracting the minimum RT and dividing by the maximum RT, then each scaled RT was fit to a beta distribution with α values of 2.5, 3, 4, and 5, and a fixed β value of 5. This approach allowed us to approximate a bell curve with increasing degrees of right-skewness and the beta distribution was chosen because it is constrained between 0 and 1 and simple and speedy to generate in R. For each α value, Pearson's correlation coefficient was calculated between the beta distribution and the raw data, with the highest value returned as a metric for how peak-shaped the data were (Figure 8). The beta distribution with the highest *r* was also then used to estimate the noise level within the peak by also scaling both the beta distribution densities and the raw data intensity values as described above, then subtracting the scaled beta distribution from the scaled intensity values, producing the residuals of the fit (Figure 8). The signal-to-noise ratio (SNR) was calculated by dividing the maximum original peak height by the standard deviation of the residuals multiplied by the maximum height of the original peak. This method of SNR calculation allowed us to rapidly estimate the noise within the peak itself rather than relying on background estimation using data points outside the peak, which may not exist or may be influenced by additional molecular signals.[@Myers2017b] If there were fewer than 5 data points, a missing value was returned and dropped in subsequent summary calculations. Accessing the raw data values also allowed us to calculate the proportion of "missed" scans in a peak for which a retention time exists at other masses in the same sample but for which no data was produced at the selected *m/z* ratio.
+We also calculated several novel metrics from the raw *m/z*/RT/intensity values. Using the R package RaMS we extracted the data points falling within each individual peak's *m/z* and RT bounding box (values between the XCMS-reported min and max) separately for each file. The data points were then linearly scaled to fall within the 0-1 range by subtracting the minimum RT and dividing by the maximum RT, then each scaled RT was fit to a beta distribution with α values of 2.5, 3, 4, and 5, and a fixed β value of 5. This approach allowed us to approximate a bell curve with increasing degrees of right-skewness and the beta distribution was chosen because it is constrained between 0 and 1 and simple and speedy to generate in R. For each α value, Pearson's correlation coefficient (*r*) was calculated between the beta distribution and the raw data, with the highest value returned as a metric for how peak-shaped the data were (Figure 8). The beta distribution with the highest *r* was also then used to estimate the noise level within the peak by scaling both the beta distribution probability densities and the raw data intensity values as described above, then subtracting the scaled beta distribution from the scaled intensity values, producing the residuals of the fit (Figure 8). The signal-to-noise ratio (SNR) was calculated by dividing the maximum original peak height by the standard deviation of the residuals multiplied by the maximum height of the original peak. This method of SNR calculation allowed us to rapidly estimate the noise within the peak itself rather than relying on background estimation using data points outside the peak, which may not exist or may be influenced by additional molecular signals.[@Myers2017b] If there were fewer than 5 data points, a missing value was returned and dropped in subsequent summary calculations. Accessing the raw data values also allowed us to calculate the proportion of "missed" scans in a peak for which an RT exists at other masses in the same sample but for which no data was produced at the selected *m/z* ratio, divided by the total number of scans between the min and max RTs.
 
 ```{r Fig8 how are raw peak shape metrics calculated}
 minEIC_df <- read_csv("manuscript/minEIC_df.csv")
@@ -1208,11 +1247,11 @@ ggsave(plot = comb_peakmetrics_gp,
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
 
-![Figure 8: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=70%}
+![Figure 8: Method used to calculate the metrics for the two-parameter model from the raw data via comparison to an idealized pseudo-Gaussian peak for both manually identified "Good" and "Bad" peaks. Normalization was performed by linearly scaling the raw values into the 0-1 range by subtracting the minimum value and dividing by the maximum. Peak shape similarity was measured with Pearson's correlation coefficient and the noise level is estimated as the standard deviation of the residuals after the raw data is subtracted from the idealized peak.](figures/peakmetrics_singlechrom.png){width=90%}
 
-We additionally estimated the existence of a $^{13}$C isotope using a similar method to extract the raw mz/rt/int values within the peak bounding box, then searched the same RT values at an *m/z* delta of +1.003355. In places where more than 5 data points existed at both the original mass and the $^{13}$C mass, we again used Pearson's correlation coefficient to estimate the similarity between the two mass traces and used a trapezoidal Riemann sum to estimate the area of the original and isotope peaks. The overall feature isotope shape similarity was calculated by taking the median of the correlation coefficients. We also calculated the correlation coefficient of the ratio of the $\frac{^{13}C}{^{12}C}$ across multiple files, expecting that a true isotope would have a fixed $\frac{^{13}C}{^{12}C}$ ratio. Both the isotope shape similarity and the isotope area correlation were used as metrics in the downstream analysis. Peaks for which no isotope signal was detected or had too few scans to calculate the above metrics were imputed with NA values that were again dropped in the calculation of summary statistics for the molecular feature as a whole.
+We additionally estimated the presence or absence of a $^{13}$C isotope using a similar method to extract the raw *m/z*/RT/intensity values within the peak bounding box, then searched the same RT values at an *m/z* delta of +1.003355 ± 4 PPM. In places where more than 5 data points existed at both the original mass and the $^{13}$C mass, we again used Pearson's correlation coefficient to estimate the similarity between the two mass traces and used a trapezoidal Riemann sum to estimate the area of the original and isotope peaks. The overall feature isotope shape similarity was calculated by taking the median of the correlation coefficients. We also calculated the correlation coefficient of the ratio of the $\frac{^{13}C}{^{12}C}$ peak areas across multiple files, expecting that a true isotope would have a fixed $\frac{^{13}C}{^{12}C}$ ratio. Both the isotope shape similarity and the isotope area correlation were used as metrics in the downstream analysis. Peaks for which no isotope signal was detected or had too few scans to calculate the above metrics were imputed with NA values that were again dropped in the calculation of summary statistics for the molecular feature as a whole. Because these isotope metrics typically had highly skewed distributions with most values very close to one, we normalized them by taking the log$_{10}$ of one minus the value.
 
-Finally, we calculated several metrics using a design-of-experiments (DoE) approach for the Falkor and MESOSCOPE datasets which were expected to have a large difference in metabolite composition between those samples collected at the surface (15-25 meters) and those collected deeper in the water column. We used ANOVAs to compare the integrated peak area with depth and extracted the p-values of each test, which became an additional potential peak quality metric. We also calculated the difference between the mean sample area and the mean blank area and the difference between the mean sample area and the mean area of the standards which also became metrics. When there were too many missing values to perform the ANOVA or sample averages, we replaced the calculated statistic with a value a single order of magnitude outside the most extreme value.
+Distributions were visually inspected using a pairs plot and highly correlated (above a Pearson's r ~ 0.9) had one of the correlated metrics removed.
 
 ### Regressions and model development
 
@@ -1244,21 +1283,25 @@ All analyses were run in R, version 4.2.2, and code is available on the Github a
 
 DCM: Deep Chlorophyll Maximum
 
-SNR: Signal to Noise Ratio
-
-MF: Molecular Feature
-
-GFF: Good Feature Found
+EIC: Extracted Ion Chromatogram
 
 FDR: False Discovery Rate
 
-HILIC: Hydrophilic Interaction Liquid Chromatography
+GFF: Good Feature Found
 
-EIC: Extracted Ion Chromatogram
+HILIC: Hydrophilic Interaction Liquid Chromatography
 
 LC: Liquid Chromatography
 
+MF: Molecular Feature
+
 MS: Mass Spectrometry
+
+PPM: parts-per-million
+
+RT: Retention time
+
+SNR: Signal to Noise Ratio
 
 ## Declarations
 ### Ethics approval and consent to participate
@@ -1290,6 +1333,44 @@ The authors declare that they have no competing interests
 
 ## Supplement
 
+```{r Supp figure param distributions, warning=FALSE}
+both_datasets <- list(MESOSCOPE=MS3000_features, Falkor=FT2040_features) %>%
+  bind_rows(.id = "dataset") %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_bin=ifelse(feat_class=="Good", 1, 0))
+pdf(file = "manuscript/supplement/metric_distributions.pdf", width = 6.5, height = 4)
+both_datasets %>%
+  select(mean_mz:area_cor) %>%
+  colnames() %>%
+  walk(function(chosen_param){
+    hist_gp <- both_datasets %>%
+      ggplot() +
+      geom_hline(yintercept = 0) +
+      geom_histogram(aes(x=get(chosen_param), fill=feat_class), bins=40) +
+      scale_fill_manual(breaks = c("Bad", "Good"), values = c("#a41118", "#f4bb23")) +
+      labs(y="# of mass features", x=chosen_param) +
+      theme_bw() +
+      theme(legend.direction = "horizontal", legend.position = "none") +
+      facet_wrap(~dataset, ncol=1, scales = "free_y")
+    log_gp <- both_datasets %>%
+      ggplot(aes(x=get(chosen_param), y=feat_bin)) +
+      geom_jitter(aes(color=feat_class), alpha=0.2, height = 0.1, width=0) +
+      geom_smooth(method = "glm", method.args=list(family=binomial), formula="y~x", color="black") +
+      scale_color_manual(breaks = c("Bad", "Good"), values = c("#a41118", "#f4bb23")) +
+      scale_y_continuous(breaks = c(0, 1), labels = c("Bad", "Good"), name=NULL) +
+      labs(x=chosen_param) +
+      theme_bw() +
+      theme(legend.position = "none", 
+            axis.text.y = ggtext::element_markdown(
+              color = c("#a41118", "#f4bb23"), face = "bold")) +
+      facet_wrap(~dataset, ncol=1, scales = "free_y")
+    egg::ggarrange(hist_gp, log_gp, nrow=1)
+  }, .progress = TRUE)
+graphics.off()
+```
+
+*Supplemental figure XX: Distribution and single-parameter logistic curves for each metric extracted for model training, shown separately for the MESOSCOPE and Falkor datasets. Histograms show the distribution of good and bad mass features by color across the span of the data on the x-axis with the number of MFs in each bin shown on the y-axis. Scatterplots show the same x-axis but show the results of a logistic regression on the single parameter, with the line of best fit in black and a ±1 standard error ribbon around it in grey. Vertical jittering has been applied when plotting to reduce the number of overlapping points.*
+
 ```{r model stability dotplot errorbars supp figure}
 both_features <- rbind(FT2040_features, MS3000_features)
 dataset_versions_both <- c(dataset_versions, "both_features")
@@ -1307,21 +1388,28 @@ model_param_estimates <- lst(all_params, xcms_params, raw_data_params) %>%
   }) %>% bind_rows()
 suppfig_model_param_estimates_gp <- model_param_estimates %>%
   mutate(param_name=str_remove(param_name, "_params")) %>%
+  mutate(param_name=factor(param_name, levels=c("all", "xcms", "raw_data"), 
+                           labels=paste(c("Full", "XCMS-only", "Two-parameter"), 
+                                        "model"))) %>%
+  mutate(train_set=factor(train_set, levels=c("MS3000_features", "FT2040_features", "both_features"),
+                          labels=c("MESOSCOPE", "Falkor", "Combined"))) %>%
   ggplot(aes(x=param_name, color=train_set)) +
   geom_hline(yintercept = 0) +
   geom_point(aes(y=estimate), position = position_dodge(width=0.2)) +
   geom_errorbar(aes(ymin=estimate-2*std.error, ymax=estimate+2*std.error),
                 position = position_dodge(width=0.2), width=0.3) +
   facet_wrap(~term, scales="free_y", ncol = 4) +
+  labs(x="Model type", y="Logistic regression estimate", color="Training set") +
   theme_bw() +
-  theme(legend.position = "top", axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
+  theme(legend.position = "top", 
+        axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 ggsave(plot = suppfig_model_param_estimates_gp, 
        filename = "suppfig_model_param_estimates.png", 
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 9, units = "in", dpi = 300)
 ```
 
-![Supplemental figure 1: Model parameter estimates for each of the metrics in the full model, additionally broken down by their inclusion in the two-parameter (raw_data) and XCMS-exclusively models. Colors correspond to the dataset used to train the logistic regression model, with "both" indicating a combined model using all manually-labeled features across both datasets. <Explanations of the actual facet names forthcoming.>](supplement/suppfig_model_param_estimates.png){width=90%}
+![Supplemental figure XX: Model parameter estimates for each of the metrics in the full model, additionally broken down by their inclusion in the two-parameter (raw_data) and XCMS-exclusively models. Colors correspond to the dataset used to train the logistic regression model, with "both" indicating a combined model using all manually-labeled features across both datasets. <Explanations of the actual facet names forthcoming.>](supplement/suppfig_model_param_estimates.png){width=90%}
 
 ```{r subsampling model stability supp figure, warning=FALSE}
 set.seed(123)
@@ -1379,7 +1467,7 @@ ggsave(plot = sampled_model_est_gp,
        width = 6.5, height = 5, units = "in", dpi = 300)
 ```
 
-![Supplemental figure 2: Robustness of the two most significant metrics across the full (all_params), XCMS-only (xcms_params), and two-parameter (raw_data_params) models. The x-axis corresponds to the fraction of the data used to train the model and the y-coordinate shows the estimated value for the specified term in the subset across 10-fold replicated subsampling. The grey bar in the background corresponds to the estimate of the full model +/- 1SE (thinner dark grey bar) and 2SE (thicker light grey bar).](supplement/sampled_model_est.png){width=90%}
+![Supplemental figure XX: Robustness of the two most significant metrics across the full (all_params), XCMS-only (xcms_params), and two-parameter (raw_data_params) models. The x-axis corresponds to the fraction of the data used to train the model and the y-coordinate shows the estimated value for the specified term in the subset across 10-fold replicated subsampling. The grey bar in the background corresponds to the estimate of the full model +/- 1SE (thinner dark grey bar) and 2SE (thicker light grey bar).](supplement/sampled_model_est.png){width=90%}
 
 ```{r elastic net and random forest}
 set.seed(123)
@@ -1485,7 +1573,7 @@ ggsave(plot = fdr_gff_cross_train_gp,
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-![Supplemental figure 3: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets.](supplement/regregrf_fdrgff_cross_train.png){width=90%}
+![Supplemental figure XX: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets.](supplement/regregrf_fdrgff_cross_train.png){width=90%}
 
 ```{r confusion matrices for all the models for supplement}
 model_levels <- c("all_params", "xcms_params", "raw_data_params", 

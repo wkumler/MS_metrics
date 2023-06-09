@@ -246,12 +246,12 @@ write.csv(peak_isodata, file = paste0(output_folder, "peak_isodata.csv"), row.na
 peak_isodata <- read_csv(paste0(output_folder, "peak_isodata.csv"))
 feat_isodata <- peak_isodata %>%
   group_by(feature) %>%
-  summarise(shape_cor=log10(1-median(iso_cor, na.rm=TRUE)), 
-            area_cor=log10(1-cor(init_area, iso_area, use="pairwise"))) %>%
-  mutate(shape_cor=ifelse(is.na(shape_cor), 1, shape_cor)) %>%
-  mutate(area_cor=ifelse(is.na(area_cor), 1, area_cor)) %>%
-  mutate(shape_cor=ifelse(is.infinite(shape_cor), 1, shape_cor)) %>%
-  mutate(area_cor=ifelse(is.infinite(area_cor), 1, area_cor))
+  summarise(iso_shape_cor=log10(1-median(iso_cor, na.rm=TRUE)), 
+            iso_area_cor=log10(1-cor(init_area, iso_area, use="pairwise"))) %>%
+  mutate(iso_shape_cor=ifelse(is.na(iso_shape_cor), 1, iso_shape_cor)) %>%
+  mutate(iso_area_cor=ifelse(is.na(iso_area_cor), 1, iso_area_cor)) %>%
+  mutate(iso_shape_cor=ifelse(is.infinite(iso_shape_cor), 1, iso_shape_cor)) %>%
+  mutate(iso_area_cor=ifelse(is.infinite(iso_area_cor), 1, iso_area_cor))
 write.csv(feat_isodata, paste0(output_folder, "feat_isodata.csv"), row.names = FALSE)
 
 # Calculate DOE metrics ----
@@ -404,7 +404,7 @@ features_extracted %>%
           color=~feat_class, text=~feature,
           type = "scatter3d", mode="markers")
 features_extracted %>%
-  plot_ly(x=~log10(1-shape_cor), y=~med_SNR, z=~log10(1-med_cor), color=~feat_class,
+  plot_ly(x=~log10(1-iso_shape_cor), y=~med_SNR, z=~log10(1-med_cor), color=~feat_class,
           type = "scatter3d", mode="markers")
 
 
