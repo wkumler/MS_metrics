@@ -11,7 +11,7 @@ bibliography: refs.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
+knitr::opts_chunk$set(echo = FALSE, eval=TRUE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
@@ -194,6 +194,10 @@ ggsave(plot = egg_complete,
 
 ```{r full model estimate csv write}
 set.seed(123)
+both_datasets <- list(MESOSCOPE=MS3000_features, Falkor=FT2040_features) %>%
+  bind_rows(.id = "dataset") %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_bin=ifelse(feat_class=="Good", 1, 0))
 
 glm_estimates <- both_datasets %>%
   select(feat_bin, all_of(all_params)) %>%
@@ -1340,7 +1344,7 @@ both_datasets <- list(MESOSCOPE=MS3000_features, Falkor=FT2040_features) %>%
   mutate(feat_bin=ifelse(feat_class=="Good", 1, 0))
 pdf(file = "manuscript/supplement/metric_distributions.pdf", width = 6.5, height = 4)
 both_datasets %>%
-  select(mean_mz:area_cor) %>%
+  select(mean_mz:iso_area_cor) %>%
   colnames() %>%
   walk(function(chosen_param){
     hist_gp <- both_datasets %>%
