@@ -401,7 +401,7 @@ rank_prob_space_gp <- dotplot_stepdown_data %>%
   mutate(which_params=factor(
     which_params, 
     levels=c("all_params", "xcms_params", "raw_data_params"),
-    labels=c("All metrics", "XCMS-only metrics", "Raw data metrics"))) %>%
+    labels=c("Full model", "XCMS-only model", "Two-parameter model"))) %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   ggplot() +
   geom_abline(slope = 1, intercept = 0, color="black", lwd=1) +
