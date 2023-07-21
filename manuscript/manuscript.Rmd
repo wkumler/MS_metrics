@@ -50,6 +50,37 @@ all_params <- c("mean_mz", "sd_ppm", "mean_rt", "sd_rt", "mean_pw", "sd_pw",
                 "med_cor", "med_SNR", "med_missed_scans", "smp_to_blk", 
                 "smp_to_std", "pooled_cv", "pooled_cv_rob", "iso_shape_cor", 
                 "iso_area_cor")
+param_longnames <- c(
+  mean_mz = "Mean feature m/z ratio",
+  sd_ppm = "SD of feature m/z ratios in ppm",
+  mean_rt = "Mean feature retention time",
+  sd_rt = "SD of feature retention time",
+  mean_pw = "Mean peak width, in seconds",
+  sd_pw = "SD of peak widths, in seconds",
+  log_mean_area = "Log-10 scaled mean feature area",
+  log_sd_area = "Log-10 scaled SD of feature areas",
+  sn = "XCMS 'sn' metric",
+  f = "XCMS 'f' metric",
+  scale = "XCMS 'scale' metric",
+  lmin = "XCMS 'lmin' metric",
+  feat_npeaks = "Average number of peaks detected per file",
+  n_found = "Proportion of total files in which a peak was found",
+  samps_found = "Proportion of total samples in which a peak was found",
+  stans_found = "Proportion of total standards in which a peak was found",
+  pooled_cv = "Coefficient of variance among pooled sample replicate peak areas",
+  pooled_cv_rob = "Robust CV among pooled sample peak areas\n(median absolute deviation divided by median)",
+  med_SNR = "Median novel SNR metric across a feature",
+  med_cor = "Median peak shape metric across a feature",
+  max_SNR = "Maximum novel SNR metric",
+  max_cor = "Maximum peak shape metric",
+  medtop3_cor = "Median of 3 highest peak shape values",
+  log_med_cor = "Median log-10 scaled (1-peak shape)",
+  med_missed_scans = "Median number of scans with no data",
+  smp_to_blk = "Ratio of average sample peak area to peak area in blank",
+  smp_to_std = "Ratio of average sample peak area to peak area in standards",
+  iso_shape_cor = "Median log-10 scaled 1-correlation of 13C isotope EIC trace to monoisotopic EIC trace",
+  iso_area_cor = "Correlation between 13C isotope area and monoisotopic peak area"
+)
 ```
 
 ## Abstract
@@ -206,7 +237,7 @@ glm_estimates <- both_datasets %>%
   rename_with(~paste0("GLM.", .x), -term)
 
 glmnet_estimates <- both_datasets %>% 
-  select(all_of(all_params)) %>% 
+  select(all_of(all_params), c("max_SNR", "max_cor", "medtop3_cor", "log_med_cor")) %>% 
   data.matrix() %>%
   glmnet::cv.glmnet(y=both_datasets$feat_bin, family="binomial", alpha=0.5) %>%
   coef() %>%
@@ -216,7 +247,7 @@ glmnet_estimates <- both_datasets %>%
   dplyr::rename(`Elastic.net.estimate`=s1)
 
 rf_estimates <- both_datasets %>% 
-  select(all_of(all_params)) %>%
+  select(all_of(all_params), c("max_SNR", "max_cor", "medtop3_cor", "log_med_cor")) %>% 
   randomForest::randomForest(factor(both_datasets$feat_bin), importance=TRUE) %>%
   pluck("importance") %>%
   as.data.frame() %>%
@@ -224,13 +255,17 @@ rf_estimates <- both_datasets %>%
   select(term, RF.accuracy.decrease=MeanDecreaseAccuracy,
          RF.Gini.Decrease=MeanDecreaseGini)
 
-glm_estimates %>%
+param_longnames %>%
+  as.data.frame() %>%
+  set_names("long_name") %>%
+  rownames_to_column("term") %>%
+  left_join(glm_estimates, by="term") %>%
   left_join(glmnet_estimates, by="term") %>%
   left_join(rf_estimates, by="term") %>%
   write_csv("manuscript/supplement/supp_table_1_full_model_estimates.csv")
 ```
 
-We explored the relative predictive power of the individual parameters using the full model and found that the predictors least likely to be different from zero due to chance were the mean *m/z* ratio, the novel peak shape correlation metric `med_cor`, and the novel SNR estimate `med_SNR`, all with reported p-values < 10$^{-10}$. The novel parameters were then validated using a random forest model that also found them to have the highest importance (Supp. table 1).
+We explored the relative predictive power of the individual parameters using the full model and found that the predictors least likely to be different from zero due to chance were the mean *m/z* ratio, our novel peak shape correlation metric, and our novel SNR estimate, all with reported p-values < 10$^{-10}$. The novel parameters were then validated using a random forest model that also found them to have the highest importance (Supp. table 1).
 
 The full model performed very well when tested internally on the same dataset both during 80/20 cross validation and when using the full dataset, with FDR values in the 5-10% range and 80-90% GFF values implying that a large majority of the good MFs passed the threshold with very little noise included. The XCMS metrics performed slightly worse, with FDR values in the 10-15% range and GFF values closer to 75%. The two-parameter model performed worst when tested internally, with an FDR of about 20% and GFF also around 75% (Figure 2). However, when the models were trained on a different dataset than the one they were used to predict classifications for, they all had similar performance with FDRs around 10-25 and GFF around 60-80. The model trained on MESOSCOPE and tested on Falkor had consistently higher values, indicating that it was favoring more MFs recovered at the cost of a higher FDR, while the reverse was true for the model trained on Falkor and tested on MESOSCOPE (Figure 2). 
 
@@ -1347,7 +1382,8 @@ both_datasets <- list(MESOSCOPE=MS3000_features, Falkor=FT2040_features) %>%
   bind_rows(.id = "dataset") %>%
   filter(feat_class%in%c("Good", "Bad")) %>%
   mutate(feat_bin=ifelse(feat_class=="Good", 1, 0))
-pdf(file = "manuscript/supplement/metric_distributions.pdf", width = 6.5, height = 4)
+
+pdf(file = "manuscript/supplement/supp_fig_1_metric_distributions.pdf", width = 6.5, height = 4)
 both_datasets %>%
   select(mean_mz:iso_area_cor) %>%
   colnames() %>%
@@ -1357,17 +1393,19 @@ both_datasets %>%
       geom_hline(yintercept = 0) +
       geom_histogram(aes(x=get(chosen_param), fill=feat_class), bins=40) +
       scale_fill_manual(breaks = c("Bad", "Good"), values = c("#a41118", "#f4bb23")) +
-      labs(y="# of mass features", x=chosen_param) +
+      labs(y="# of mass features", x=param_longnames[chosen_param]) +
       theme_bw() +
-      theme(legend.direction = "horizontal", legend.position = "none") +
-      facet_wrap(~dataset, ncol=1, scales = "free_y")
+      theme(legend.direction = "horizontal", legend.position = "none",
+            axis.title.x = element_text(hjust=0)) +
+      facet_wrap(~dataset, ncol=1, scales = "free_y") +
+      coord_cartesian(clip = "off")
     log_gp <- both_datasets %>%
       ggplot(aes(x=get(chosen_param), y=feat_bin)) +
       geom_jitter(aes(color=feat_class), alpha=0.2, height = 0.1, width=0) +
       geom_smooth(method = "glm", method.args=list(family=binomial), formula="y~x", color="black") +
       scale_color_manual(breaks = c("Bad", "Good"), values = c("#a41118", "#f4bb23")) +
       scale_y_continuous(breaks = c(0, 1), labels = c("Bad", "Good"), name=NULL) +
-      labs(x=chosen_param) +
+      labs(x=NULL) +
       theme_bw() +
       theme(legend.position = "none", 
             axis.text.y = ggtext::element_markdown(
@@ -1413,7 +1451,7 @@ suppfig_model_param_estimates_gp <- model_param_estimates %>%
   theme(legend.position = "top", 
         axis.text.x=element_text(angle=90, hjust=1, vjust=0.5))
 ggsave(plot = suppfig_model_param_estimates_gp, 
-       filename = "suppfig_model_param_estimates.png", 
+       filename = "supp_fig_2_model_param_estimates.png", 
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 9, units = "in", dpi = 300)
 ```
@@ -1471,7 +1509,7 @@ gplist <- c("all_params", "xcms_params", "raw_data_params") %>%
   })
 sampled_model_est_gp <- do.call(what = egg::ggarrange, c(gplist, ncol=1, draw=FALSE))
 ggsave(plot = sampled_model_est_gp, 
-       filename = "sampled_model_est.png", 
+       filename = "supp_fig_3_sampled_model_est.png", 
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 5, units = "in", dpi = 300)
 ```
@@ -1577,7 +1615,7 @@ fdr_gff_cross_train_gp <- fdr_gff_cross_train_df_fancy %>%
   guides(shape=guide_legend(order=1))
 
 ggsave(plot = fdr_gff_cross_train_gp, 
-       filename = "regregrf_fdrgff_cross_train.png", 
+       filename = "supp_fig_4_regregrf_fdrgff_cross_train.png", 
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
