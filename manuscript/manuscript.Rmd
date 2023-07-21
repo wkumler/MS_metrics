@@ -215,7 +215,7 @@ egg_legend <- cowplot::get_legend(culture_hist_gp + theme(legend.position = "rig
 egg_complete <- cowplot::plot_grid(egg_grob, egg_legend, rel_widths = c(1, 0.25)) +
   theme(plot.background = element_rect(fill = "white", color=NA))
 ggsave(plot = egg_complete, 
-       filename = "manuscript/figures/pred_prob_class_color_hists.png", 
+       filename = "manuscript/figures/fig_1_pred_prob_class_color_hists.png", 
        device = "png",
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
@@ -335,7 +335,7 @@ fdr_gff_cross_train_gp <- fdr_gff_cross_train_df %>%
   guides(shape=guide_legend(order=1))
 
 ggsave(plot = fdr_gff_cross_train_gp, 
-       filename = "fdr_gff_cross_train.png", 
+       filename = "fig_2_fdr_gff_cross_train.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
@@ -427,7 +427,7 @@ rank_prob_space_gp <- dotplot_stepdown_data %>%
         legend.spacing.x = unit(0.003, units = "npc"))
 comb_prob_space_gp <- egg::ggarrange(raw_prob_space_gp, rank_prob_space_gp, draw = FALSE)
 ggsave(plot = comb_prob_space_gp, 
-       filename = "comb_prob_space.png", 
+       filename = "fig_3_comb_prob_space.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 5, units = "in", dpi = 300)
 ```
@@ -515,7 +515,7 @@ gff_alldatasets_gp <- error_type_all_datasets %>%
 fdr_gff_all_datasets_gp <- egg::ggarrange(gff_alldatasets_gp, fdr_alldatasets_gp, ncol = 1, draw = FALSE)
 
 ggsave(plot = fdr_gff_all_datasets_gp, 
-       filename = "fdr_gff_all_datasets.png", 
+       filename = "fig_4_fdr_gff_all_datasets.png", 
        device = "png", path = "manuscript/figures",
        width = 3, height = 4, units = "in", dpi = 300)
 ```
@@ -829,7 +829,7 @@ clockplot_complete_gp <- gridExtra::arrangeGrob(
   layout_matrix = matrix(c(1,2,2), ncol=1)
 )
 ggsave(plot = clockplot_complete_gp, 
-       filename = "clockplot_complete.png", 
+       filename = "fig_5_clockplot_complete.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 7, units = "in", dpi = 300)
 ```
@@ -958,7 +958,7 @@ thresh_NMDS_gp <- thresh_NMDS_df %>%
                      name="Sample\ndepth") +
   theme_bw() +
   theme(aspect.ratio = 1)
-ggsave(plot = thresh_NMDS_gp, filename = "thresh_NMDS_plots.png", 
+ggsave(plot = thresh_NMDS_gp, filename = "fig_6_thresh_NMDS_plots.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
@@ -1180,7 +1180,7 @@ chroms_legend <- cowplot::get_legend(good_chroms_gp + theme(legend.position = "b
 comb_cowplot <- cowplot::plot_grid(good_chroms_gp, bad_chroms_gp, chroms_legend, 
                                    ncol = 1, rel_heights = c(1, 1, 0.15))
 ggsave(plot = comb_cowplot, 
-       filename = "somegood_somebad_depthcolor_chroms.png", 
+       filename = "fig_7_somegood_somebad_depthcolor_chroms.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
@@ -1278,7 +1278,7 @@ comb_peakmetrics_gp <- cowplot::plot_grid(
 ) + theme(plot.background = element_rect(fill = "white", color=NA))
 
 ggsave(plot = comb_peakmetrics_gp, 
-       filename = "peakmetrics_singlechrom.png", 
+       filename = "fig_8_peakmetrics_singlechrom.png", 
        device = "png", path = "manuscript/figures",
        width = 6.5, height = 4, units = "in", dpi = 300)
 ```
