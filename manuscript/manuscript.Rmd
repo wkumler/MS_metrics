@@ -2,12 +2,9 @@
 title: 'Picky with peakpicking: assessing chromatographic peak quality with simple
   metrics in metabolomics'
 author: "William Kumler, Bryna Hazelton, and Anitra Ingalls"
-date: "`r Sys.Date()`"
 output:
   word_document:
     reference_docx: template.docx
-  pdf_document:
-    latex_engine: xelatex
 bibliography: refs.bib
 ---
 
