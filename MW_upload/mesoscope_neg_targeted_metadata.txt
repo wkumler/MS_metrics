@@ -1,0 +1,9 @@
+compound_name	formula	stan_mz	stan_rt_expected	which_standard_mix	concentration_added	kegg_id
+(2R)-3-sulfopropanediol	C3H8O5S	155.001422	10.67	Mix2	4	cpd:C19675
+Pyroglutamic acid	C5H7NO3	128.034768	7.97	Mix1	4	cpd:C01879
+AMP	C10H14N5O7P	346.055262	11.585	Mix2	4	cpd:C00020
+2-Hydroxyethanesulfonate	C2H6O4S	124.990857	7.2	Mix2	4	cpd:C05123
+Malic acid	C4H6O5	133.0137	11.97	Mix1	4	cpd:C00149
+Sucrose	C12H22O11	341.10839	11.93	Mix1	5	cpd:C00089
+Taurine	C2H7NO3S	124.006841	11.13	Mix2	4	cpd:C00245
+Trehalose	C12H22O11	341.10839	13	Mix2	4	cpd:C01083
