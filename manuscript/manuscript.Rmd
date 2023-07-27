@@ -1,7 +1,7 @@
 ---
 title: 'Picky with peakpicking: assessing chromatographic peak quality with simple
   metrics in metabolomics'
-author: "William Kumler, Bryna Hazelton, and Anitra Ingalls"
+author: "William Kumler, Bryna Hazelton, and Anitra E. Ingalls"
 output:
   word_document:
     reference_docx: template.docx
@@ -1355,15 +1355,15 @@ The authors declare that they have no competing interests
 
 ### Funding
 
-This work was supported by grants from the Simons Foundation (SCOPE Award ID 329108 to AI, SF Award ID 385428 to AI).
+This work was supported by grants from the Simons Foundation (SCOPE Award ID 329108 to AEI, SF Award ID 385428 to AEI).
 
 ### Authors' contributions
 
-WK extracted the Falkor samples, processed the data, performed the analyses, and wrote the manuscript. BH helped design the metrics and implement the regressions as well as providing support and context for the analysis. AI provided funding and data and helped to interpret the conclusions and edit the manuscript.
+WK extracted the Falkor samples, processed the data, performed the analyses, and wrote the manuscript. BH helped design the metrics and implement the regressions as well as providing support and context for the analysis. AEI provided funding and data and helped to interpret the conclusions and edit the manuscript.
 
 ### Acknowledgements
 
-This work was supported by the University of Washington eScience Institute through their Data Science Incubator program. The authors would also like to acknowledge Laura Carlson for her expertise in obtaining the CultureData, MESOSCOPE, and Falkor datasets; Katherine Heal and Bryn Durham for their assistance with culturing and collecting the cultured samples; the captain and crew of the R/Vs *Kilo Moana* and *Falkor*, Wei Qin, Rachel Lundeen, and the SCOPE ops team for collecting and processing the environmental samples; Joshua Sacks, Dave Beck, and the entire eScience incubator team for their feedback on the project development and scope; and Brisson Vanessa and LLNL for making their Pttime dataset available for reuse on Metabolomics Workbench. Additionally, the R packages plotly, dbscan, ClusterR, RaMS, and the entire tidyverse were crucial for preliminary data exploration.
+This work was supported by the University of Washington eScience Institute through their Data Science Incubator program. The authors would also like to acknowledge Laura Carlson for her expertise in obtaining the CultureData, MESOSCOPE, and Falkor datasets; Katherine Heal, Angie Boysen, and Bryn Durham for their assistance with culturing and collecting the cultured samples; the captain and crew of the R/Vs *Kilo Moana* and *Falkor*, Wei Qin, Rachel Lundeen, and the SCOPE ops team for collecting and processing the environmental samples; Joshua Sacks, Dave Beck, and the entire eScience incubator team for their feedback on the project development and scope; and Brisson Vanessa and LLNL for making their Pttime dataset available for reuse on Metabolomics Workbench. Additionally, the R packages plotly, dbscan, ClusterR, RaMS, and the entire tidyverse were crucial for preliminary data exploration.
 
 ## References
 
