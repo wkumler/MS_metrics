@@ -1370,7 +1370,20 @@ This work was supported by the University of Washington eScience Institute throu
 
 <div id="refs"></div>
 
-## Supplement
+
+```{r supp figure text}
+supp_fig_1_text <- "Supplemental figure 1: Distribution and single-parameter logistic curves for each metric extracted for model training, shown separately for the MESOSCOPE and Falkor datasets. Histograms show the distribution of good and bad mass features by color across the span of the data on the x-axis with the number of MFs in each bin shown on the y-axis. Scatterplots show the same x-axis but show the results of a logistic regression on the single parameter, with the line of best fit in black and a ±1 standard error ribbon around it in grey. Vertical jittering has been applied when plotting to reduce the number of overlapping points."
+
+supp_fig_2_text <- 'Supplemental figure 2: Model parameter estimates for each of the metrics in the full model, additionally broken down by their inclusion in the two-parameter (raw_data) and XCMS-exclusively models. Colors correspond to the dataset used to train the logistic regression model, with "both" indicating a combined model using all manually-labeled features across both datasets.'
+
+supp_fig_3_text <- "Supplemental figure 3: Robustness of the two most significant metrics across the full (all_params), XCMS-only (xcms_params), and two-parameter (raw_data_params) models. The x-axis corresponds to the fraction of the data used to train the model and the y-coordinate shows the estimated value for the specified term in the subset across 10-fold replicated subsampling. The grey bar in the background corresponds to the estimate of the full model +/- 1SE (thinner dark grey bar) and 2SE (thicker light grey bar)."
+
+supp_fig_4_text <- "Supplemental figure 4: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets."
+
+comb_supp_text <- paste(supp_fig_1_text, supp_fig_2_text, supp_fig_3_text, supp_fig_4_text, sep = "\n\n")
+
+writeLines(comb_supp_text, "manuscript/supplement/supp_text_to_copy_paste.txt")
+```
 
 ```{r Supp figure param distributions, warning=FALSE}
 both_datasets <- list(MESOSCOPE=MS3000_features, Falkor=FT2040_features) %>%
@@ -1411,8 +1424,6 @@ both_datasets %>%
 graphics.off()
 ```
 
-*Supplemental figure 1: Distribution and single-parameter logistic curves for each metric extracted for model training, shown separately for the MESOSCOPE and Falkor datasets. Histograms show the distribution of good and bad mass features by color across the span of the data on the x-axis with the number of MFs in each bin shown on the y-axis. Scatterplots show the same x-axis but show the results of a logistic regression on the single parameter, with the line of best fit in black and a ±1 standard error ribbon around it in grey. Vertical jittering has been applied when plotting to reduce the number of overlapping points.*
-
 ```{r model stability dotplot errorbars supp figure}
 both_features <- rbind(FT2040_features, MS3000_features)
 dataset_versions_both <- c(dataset_versions, "both_features")
@@ -1450,8 +1461,6 @@ ggsave(plot = suppfig_model_param_estimates_gp,
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 9, units = "in", dpi = 300)
 ```
-
-*Supplemental figure 2: Model parameter estimates for each of the metrics in the full model, additionally broken down by their inclusion in the two-parameter (raw_data) and XCMS-exclusively models. Colors correspond to the dataset used to train the logistic regression model, with "both" indicating a combined model using all manually-labeled features across both datasets.*
 
 ```{r subsampling model stability supp figure, warning=FALSE}
 set.seed(123)
@@ -1508,8 +1517,6 @@ ggsave(plot = sampled_model_est_gp,
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 5, units = "in", dpi = 300)
 ```
-
-*Supplemental figure 3: Robustness of the two most significant metrics across the full (all_params), XCMS-only (xcms_params), and two-parameter (raw_data_params) models. The x-axis corresponds to the fraction of the data used to train the model and the y-coordinate shows the estimated value for the specified term in the subset across 10-fold replicated subsampling. The grey bar in the background corresponds to the estimate of the full model +/- 1SE (thinner dark grey bar) and 2SE (thicker light grey bar).*
 
 ```{r elastic net and random forest}
 set.seed(123)
@@ -1614,8 +1621,6 @@ ggsave(plot = fdr_gff_cross_train_gp,
        device = "png", path = "manuscript/supplement",
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
-
-*Supplemental figure 4: Performance of regularized regression and random forest models on internally (same train-test) and externally (different train-test) validated datasets.*
 
 ```{r confusion matrices for all the models for supplement}
 model_levels <- c("all_params", "xcms_params", "raw_data_params", 
