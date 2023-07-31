@@ -6,10 +6,11 @@ output:
   word_document:
     reference_docx: template.docx
 bibliography: refs.bib
+csl: bmc-bioinformatics.csl
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=TRUE)
+knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
