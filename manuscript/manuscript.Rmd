@@ -1387,7 +1387,7 @@ supp_fig_4_text <- "Supplemental figure 4: Performance of regularized regression
 
 comb_supp_text <- paste(supp_fig_1_text, supp_fig_2_text, supp_fig_3_text, supp_fig_4_text, sep = "\n\n")
 
-writeLines(comb_supp_text, "manuscript/supplement/supp_text_to_copy_paste.txt")
+writeLines(comb_supp_text, "manuscript/supplement/supp_fig_legends.txt")
 ```
 
 ```{r Supp figure param distributions, warning=FALSE}
