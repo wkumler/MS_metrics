@@ -15,7 +15,7 @@ csl: bmc-bioinformatics.csl
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval=FALSE)
+knitr::opts_chunk$set(echo = FALSE, eval=TRUE)
 knitr::opts_knit$set(root.dir = '..')
 options(readr.show_col_types = FALSE)
 options(tidyverse.quiet = TRUE)
@@ -224,49 +224,6 @@ ggsave(plot = egg_complete,
 ```
 
 ![Figure 1: Histograms showing the estimated likelihood of a given mass feature being categorized as "Good" according to the two-parameter logistic model trained on the combined fully-labeled Falkor and MESOSCOPE environmental datasets. Colors indicate the category in which each feature was manually assigned by an expert, with "Stans only" referring to a good mass feature that was only visible in the standards run alongside the samples. Culture datasets CultureData and Pttime were manually labeled only for those features with an estimated likelihood above 90% (dotted black vertical line) according to the final model and were otherwise unclassified.](figures/fig_1_pred_prob_class_color_hists.png){width=100%}
-
-```{r full model estimate csv write}
-set.seed(123)
-both_datasets <- list(MESOSCOPE=MS3000_features, Falkor=FT2040_features) %>%
-  bind_rows(.id = "dataset") %>%
-  filter(feat_class%in%c("Good", "Bad")) %>%
-  mutate(feat_bin=ifelse(feat_class=="Good", 1, 0))
-
-glm_estimates <- both_datasets %>%
-  select(feat_bin, all_of(all_params)) %>%
-  # mutate(across(-feat_bin, \(x)scale(x)[,1])) %>%
-  glm(formula = feat_bin~., family=binomial) %>%
-  broom::tidy() %>%
-  rename_with(~paste0("GLM.", .x), -term)
-
-glmnet_estimates <- both_datasets %>% 
-  select(all_of(all_params), c("max_SNR", "max_cor", "medtop3_cor", "log_med_cor")) %>% 
-  data.matrix() %>%
-  glmnet::cv.glmnet(y=both_datasets$feat_bin, family="binomial", alpha=0.5) %>%
-  coef() %>%
-  as.matrix() %>%
-  as.data.frame() %>%
-  rownames_to_column("term") %>%
-  dplyr::rename(`Elastic.net.estimate`=s1)
-
-rf_estimates <- both_datasets %>% 
-  select(all_of(all_params), c("max_SNR", "max_cor", "medtop3_cor", "log_med_cor")) %>% 
-  randomForest::randomForest(factor(both_datasets$feat_bin), importance=TRUE) %>%
-  pluck("importance") %>%
-  as.data.frame() %>%
-  rownames_to_column("term") %>%
-  select(term, RF.accuracy.decrease=MeanDecreaseAccuracy,
-         RF.Gini.Decrease=MeanDecreaseGini)
-
-param_longnames %>%
-  as.data.frame() %>%
-  set_names("long_name") %>%
-  rownames_to_column("term") %>%
-  left_join(glm_estimates, by="term") %>%
-  left_join(glmnet_estimates, by="term") %>%
-  left_join(rf_estimates, by="term") %>%
-  write_csv("manuscript/supplement/supp_table_1_full_model_estimates.csv")
-```
 
 We explored the relative predictive power of the individual parameters using the full model and found that the predictors least likely to be different from zero due to chance were the mean *m/z* ratio, our novel peak shape correlation metric, and our novel SNR estimate, all with reported p-values < 10$^{-10}$. The value of the novel parameters was then validated using a random forest model that also found them to have the highest importance (Supp. table 1).
 
@@ -1627,7 +1584,79 @@ ggsave(plot = fdr_gff_cross_train_gp,
        width = 6.5, height = 3, units = "in", dpi = 300)
 ```
 
-```{r confusion matrices for all the models for supplement}
+```{r supp table Excel write model params and confusion matrices}
+library(openxlsx)
+wb <- createWorkbook(creator = "William Kumler, wkumler@uw.edu")
+addWorksheet(wb, sheetName = "Table titles and legends")
+data.frame("Supplemental table titles and legends"=c(
+  "Supplemental table 1:",
+  "Model parameters and significance according to both logistic and random forest models",
+  "Model outputs from the full (all parameters) model trained on the combined Falkor",
+  "and MESOSCOPE datasets. The parameter name is reported alongside its more detailed",
+  "name, with the logistic model estimate, standard error, test statistic, and p-value",
+  "for each predictive term. We also included the estimate obtained from the elastic",
+  "net model (alpha=0.5) and the accuracy and Gini index decreases per term. NA values",
+  "are reported for several terms that were removed from the non-regularized regression",
+  "because they were too highly correlated with other parameters.",
+  "",
+  "Supplemental table 2:",
+  "Confusion matrices for logistic, regularized, and random forest regressions",
+  "Confusion matrices reported in long format for the different models reported in this",
+  "manuscript. Models were all both internally tested using the same dataset for testing",
+  "and training as well as cross-validated against the other fully labeled dataset. For",
+  "the two-parameter model, we also report the values obtained when training on the two",
+  "datasets combined (train = Both). For each model and test-train set we report the",
+  'absolute number of false positives (manually labeled as "Bad" but model labeled as',
+  '"Good"), false negatives (manually labeled as "Good" but model labeled as "Bad"),',
+  'true positives (both manual and model labelled as "Good"), and true negatives (both',
+  'manual and model labeled as "Bad") as well as the calculated false discovery rate',
+  "(FDR, calculated as FP/(FP+TP)) and the fraction of good features found (GFF,",
+  "calculated as TP/(TP+FN)). Unless otherwise specified, all values reported here",
+  "used a likelihood threshold of 0.5 for categorization."
+), check.names = FALSE) %>%
+  writeData(wb = wb, sheet = "Table titles and legends")
+
+
+addWorksheet(wb, sheetName = "Supp table 1 Model parameters")
+set.seed(123)
+both_datasets <- list(MESOSCOPE=MS3000_features, Falkor=FT2040_features) %>%
+  bind_rows(.id = "dataset") %>%
+  filter(feat_class%in%c("Good", "Bad")) %>%
+  mutate(feat_bin=ifelse(feat_class=="Good", 1, 0))
+glm_estimates <- both_datasets %>%
+  select(feat_bin, all_of(all_params)) %>%
+  # mutate(across(-feat_bin, \(x)scale(x)[,1])) %>%
+  glm(formula = feat_bin~., family=binomial) %>%
+  broom::tidy() %>%
+  rename_with(~paste0("GLM.", .x), -term)
+glmnet_estimates <- both_datasets %>% 
+  select(all_of(all_params), c("max_SNR", "max_cor", "medtop3_cor", "log_med_cor")) %>% 
+  data.matrix() %>%
+  glmnet::cv.glmnet(y=both_datasets$feat_bin, family="binomial", alpha=0.5) %>%
+  coef() %>%
+  as.matrix() %>%
+  as.data.frame() %>%
+  rownames_to_column("term") %>%
+  dplyr::rename(`Elastic.net.estimate`=s1)
+rf_estimates <- both_datasets %>% 
+  select(all_of(all_params), c("max_SNR", "max_cor", "medtop3_cor", "log_med_cor")) %>% 
+  randomForest::randomForest(factor(both_datasets$feat_bin), importance=TRUE) %>%
+  pluck("importance") %>%
+  as.data.frame() %>%
+  rownames_to_column("term") %>%
+  select(term, RF.accuracy.decrease=MeanDecreaseAccuracy,
+         RF.Gini.Decrease=MeanDecreaseGini)
+param_longnames %>%
+  as.data.frame() %>%
+  set_names("long_name") %>%
+  rownames_to_column("term") %>%
+  left_join(glm_estimates, by="term") %>%
+  left_join(glmnet_estimates, by="term") %>%
+  left_join(rf_estimates, by="term") %>%
+  writeData(wb = wb, sheet = "Supp table 1 Model parameters")
+
+
+addWorksheet(wb, sheetName = "Supp table 2 Confusion matrices")
 model_levels <- c("all_params", "xcms_params", "raw_data_params", 
                   "ridge", "elastic", "lasso", "rf")
 model_labels <- c("Full model", "XCMS model", "Two-parameter model",
@@ -1667,7 +1696,6 @@ fdr_gff_full_model <- bind_rows(lst(FT2040_features, MS3000_features), .id = "da
     calc_type=="combined"~"Both"
   )) %>%
   select(model_type, train, test, TP, TN, FP, FN, FDR, GFF)
-
 fdr_gff_strict_all <- bind_rows(lst(FT2040_features, MS3000_features), .id = "dataset") %>%
   mutate(pred_prob=predict(object=both_min_model, newdata = ., type = "response")) %>%
   mutate(pred_class=ifelse(pred_prob>0.5, "Good", "Bad")) %>%
@@ -1695,14 +1723,13 @@ fdr_gff_strict_all <- bind_rows(lst(FT2040_features, MS3000_features), .id = "da
     calc_type=="combined"~"Both"
   )) %>%
   select(model_type, train, test, TP, TN, FP, FN, FDR, GFF)
-
 fdr_gff_stricter_thresh <- error_type_all_datasets %>%
   set_names(c("test", "FN", "FP", "TN", "TP", "FDR", "GFF")) %>%
   mutate(model_type="Both (threshold 0.9)") %>%
   mutate(train="Both") %>%
   select(model_type, train, test, TP, TN, FP, FN, FDR, GFF)
-
 bind_rows(fdr_gff_individual, fdr_gff_full_model, fdr_gff_stricter_thresh) %>%
-  write_csv("manuscript/supplement/supp_table_2_model_confusion_matrices.csv")
+  writeData(wb = wb, sheet = "Supp table 2 Confusion matrices")
+saveWorkbook(wb, file = "manuscript/supplement/BMC_supp_tables.xlsx", overwrite = TRUE)
 ```
 
