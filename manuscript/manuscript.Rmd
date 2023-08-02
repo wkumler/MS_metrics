@@ -6,7 +6,7 @@ author:
   - Bryna J. Hazelton$^{2, 3}$
   - Anitra E. Ingalls$^1$*
   - "Corresponding author email address: aingalls@uw.edu"
-  - "Author affiliations: $^1$University of Washington, School of Oceanography, Seattle, WA 98195, USA; $^2$University of Washington, eScience Institute, Seattle, WA 98195, USA; $^3$University of Washington, Department of Physics, Seattle, WA 98195, USA"
+  - "Author affiliations: $^1$University of Washington, School of Oceanography, Seattle, WA 98195, United States; $^2$University of Washington, eScience Institute, Seattle, WA 98195, United States; $^3$University of Washington, Department of Physics, Seattle, WA 98195, United States"
 output:
   word_document:
     reference_docx: template.docx
